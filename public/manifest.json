@@ -1,0 +1,16 @@
+{
+  "name": "PMSify — Privacy-First Women's Health",
+  "short_name": "PMSify",
+  "description": "Privacy-first, offline-first women's health ecosystem",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDFBF7",
+  "theme_color": "#2D1B2D",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

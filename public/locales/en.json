@@ -1,0 +1,97 @@
+{
+  "app": {
+    "title": "PMSify",
+    "tagline": "Dignified, Privacy-First Health Ecosystem"
+  },
+  "nav": {
+    "home": "Home",
+    "calendar": "Calendar",
+    "health": "Health Log",
+    "insights": "Insights",
+    "learn": "Education",
+    "secretChat": "SecretChat",
+    "aiAssistant": "AI Assistant",
+    "reports": "Reports",
+    "reminders": "Reminders",
+    "settings": "Settings",
+    "privacy": "Privacy",
+    "asha": "ASHA Portal",
+    "doctor": "Doctor Portal",
+    "healthCamps": "Health Camps"
+  },
+  "language": {
+    "select": "Language",
+    "en": "English",
+    "hi": "हिन्दी (Hindi)",
+    "kn": "ಕನ್ನಡ (Kannada)"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try Again",
+    "notFound": "Page Not Found",
+    "backHome": "Back to Home",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "offlineMode": "Offline Mode Active"
+  },
+  "privacy": {
+    "offlineNotice": "Your tracking logs are stored 100% locally on this device.",
+    "pinProtected": "Application PIN Lock Enabled"
+  },
+  "period": {
+    "title": "Period Records",
+    "subtitle": "Track your menstrual period dates and flow intensity locally and privately.",
+    "logPeriod": "Log Period",
+    "editPeriod": "Edit Period Record",
+    "deletePeriod": "Delete Record",
+    "startDate": "Start Date",
+    "endDate": "End Date (Optional)",
+    "flow": "Flow Intensity (Optional)",
+    "flowSpotting": "Spotting",
+    "flowLight": "Light",
+    "flowMedium": "Medium",
+    "flowHeavy": "Heavy",
+    "notes": "Private Notes (Optional)",
+    "saving": "Saving Record...",
+    "deleteConfirmTitle": "Delete Period Record?",
+    "deleteConfirmMessage": "Are you sure you want to delete this period entry? This action is permanent and clears the entry from your local device storage.",
+    "deleting": "Deleting...",
+    "emptyTitle": "No Period Records Logged",
+    "emptyDescription": "Log your period start and end dates to maintain your private health history.",
+    "logFirst": "Log Your First Period",
+    "ongoing": "Ongoing Period",
+    "daysCount": "{count, plural, =1 {1 Day} other {# Days}}",
+    "validation": {
+      "startDateRequired": "Period start date is required.",
+      "endDateBeforeStart": "End date cannot be earlier than start date.",
+      "futureDateDisallowed": "Future period dates cannot be logged ahead of time."
+    }
+  },
+  "calendar": {
+    "title": "Personal Health Calendar",
+    "subtitle": "Visualizing your recorded period history on an offline, private calendar.",
+    "today": "Today",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "recordedPeriod": "Recorded Period",
+    "periodStarted": "Period Started",
+    "periodEnded": "Period Ended",
+    "ongoingPeriod": "Ongoing Period",
+    "noRecord": "No period recorded for this date",
+    "logPeriodForDate": "Log Period For Selected Date",
+    "readyTitle": "Your Calendar Is Ready",
+    "readyDescription": "Log your period dates to see them visualized across monthly calendars.",
+    "weekdays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    }
+  }
+}

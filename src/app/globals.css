@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Brand Identity Palette */
+    --color-brand-primary: #2D1B2D;   /* Deep Plum */
+    --color-brand-accent: #E8837D;    /* Warm Rose */
+    --color-brand-soft: #F9EBEA;      /* Delicate Blush */
+
+    /* Health State Semantic Colors */
+    --color-health-period: #C94A46;   /* Muted Crimson */
+    --color-health-fertile: #B8860B;  /* Warm Gold */
+    --color-health-ovulation: #2E8B57; /* Deep Sage Teal */
+
+    /* Surface & Typography Colors */
+    --bg-surface-main: #FDFBF7;      /* Soft Organic Cream */
+    --bg-surface-card: #FFFFFF;      /* Pure White Surface */
+    --border-subtle: #E2D8D0;        /* Organic Soft Border */
+    --text-primary: #1E1E24;         /* Soft Charcoal (High Contrast Ratio > 7:1) */
+    --text-secondary: #5A5A66;       /* Slate Muted Text */
+
+    /* Touch & Focus Tokens */
+    --focus-ring: 3px solid #E8837D;
+    --min-touch-target: 48px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+  }
+
+  body {
+    background-color: var(--bg-surface-main);
+    color: var(--text-primary);
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-outfit), system-ui, -apple-system, sans-serif;
+    color: var(--color-brand-primary);
+    font-weight: 600;
+    margin-top: 0;
+  }
+
+  /* Accessible Focus Rings */
+  :focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
