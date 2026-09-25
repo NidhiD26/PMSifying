@@ -17,7 +17,10 @@
     "privacy": "Privacy",
     "asha": "ASHA Portal",
     "doctor": "Doctor Portal",
-    "healthCamps": "Health Camps"
+    "healthCamps": "Health Camps",
+    "healthEcosystem": "Health Ecosystem",
+    "personalTracker": "Personal Tracker",
+    "healthcarePortal": "Healthcare Portal"
   },
   "language": {
     "select": "Language",
@@ -38,8 +41,35 @@
     "offlineMode": "Offline Mode Active"
   },
   "privacy": {
+    "charterTitle": "Privacy Charter & Security Architecture",
+    "localStorageTitle": "Local Storage Guarantee",
+    "localStorageBody": "Your personal health logs, period dates, symptoms, and notes are stored privately and locally on this device. No cloud telemetry or automatic cloud backups are performed for your tracking data.",
     "offlineNotice": "Your tracking logs are stored 100% locally on this device.",
+    "offlineVault": "100% Offline Local Vault",
+    "localDexieVault": "Local Dexie Vault",
     "pinProtected": "Application PIN Lock Enabled"
+  },
+  "dashboard": {
+    "title": "Health Overview",
+    "subtitle": "Your private cycle & daily health summary",
+    "currentStatus": "Current Cycle Status",
+    "dayCount": "Day {day}",
+    "phaseFollicular": "Follicular Phase",
+    "phaseOvulatory": "Ovulatory Window",
+    "phaseLuteal": "Luteal Phase",
+    "phaseMenstrual": "Menstrual Phase",
+    "nextPeriod": "Next Period Prediction",
+    "fertileWindow": "Estimated Fertile Window",
+    "ovulationDate": "Estimated Ovulation",
+    "todayLog": "Today's Health Log",
+    "loggedToday": "Recorded Today",
+    "notLoggedToday": "Not recorded yet today",
+    "logTodayAction": "Log Today's Health",
+    "logPeriodAction": "Log Period Date",
+    "recentInsights": "Personal Observations",
+    "cycleSummary": "Cycle Statistics",
+    "noCycleData": "Log your period dates to view predicted cycles, fertile windows, and health statistics.",
+    "privacyFooter": "100% Offline & Private — Stored strictly on this device in local IndexedDB."
   },
   "period": {
     "title": "Period Records",
@@ -82,6 +112,8 @@
     "ongoingPeriod": "Ongoing Period",
     "noRecord": "No period recorded for this date",
     "logPeriodForDate": "Log Period For Selected Date",
+    "dailyLogRecorded": "Daily Health Log Recorded",
+    "offlineGuarantee": "100% Offline Personal Health Calendar — Recorded facts only (no prediction AI)",
     "readyTitle": "Your Calendar Is Ready",
     "readyDescription": "Log your period dates to see them visualized across monthly calendars.",
     "weekdays": {
@@ -93,5 +125,298 @@
       "fri": "Fri",
       "sat": "Sat"
     }
+  },
+  "dailyHealth": {
+    "title": "Daily Health Log",
+    "subtitle": "Record how you feel each day, privately on this device.",
+    "editExisting": "You are editing today's existing log",
+    "editingLabel": "Editing existing log",
+    "noLogTitle": "No health information recorded for this day",
+    "noLogDescription": "Add a daily log to keep a private record of how you felt today.",
+    "startLogging": "Start Daily Log",
+    "saveSuccess": "Daily log saved.",
+    "deleteSuccess": "Daily log removed.",
+    "saveFailed": "Could not save your daily log. Please try again.",
+    "loadFailed": "Could not load your health log. Please try again.",
+    "dateLabel": "Date",
+    "symptomsLabel": "Symptoms",
+    "symptomsHelper": "Select any that apply",
+    "moodLabel": "Mood",
+    "moodHelper": "Select how you felt today",
+    "painLabel": "Pain Level",
+    "painHelper": "0 = none, 10 = worst possible",
+    "sleepLabel": "Sleep (hours)",
+    "sleepHelper": "Numeric, e.g. 7.5",
+    "hydrationLabel": "Hydration",
+    "hydrationLiteral": "Water intake (ml)",
+    "hydrationHelper": "e.g. 2000",
+    "notesLabel": "Notes",
+    "notesHelper": "Optional private note",
+    "deleteTitle": "Delete Daily Health Log?",
+    "deleteMessage": "This will permanently remove today's health log from your local device storage.",
+    "deleteConfirm": "Delete Health Log",
+    "logSavable": "Save Daily Log",
+    "logFirst": "Log First Daily Entry",
+    "validation": {
+      "invalidSleep": "Sleep must be between 0 and 24 hours.",
+      "invalidHydration": "Hydration must be between 0 and 10000 ml.",
+      "invalidDate": "Please choose a valid date.",
+      "futureDateDisallowed": "Future health logs cannot be recorded ahead of time."
+    },
+    "symptomCramps": "Cramps",
+    "symptomHeadache": "Headache",
+    "symptomBloating": "Bloating",
+    "symptomBreastTenderness": "Breast tenderness",
+    "symptomFatigue": "Fatigue",
+    "symptomNausea": "Nausea",
+    "symptomBackPain": "Back pain",
+    "symptomAcne": "Acne",
+    "symptomCravings": "Cravings",
+    "symptomMoodChanges": "Mood changes",
+    "moodCalm": "Calm",
+    "moodHappy": "Happy",
+    "moodEnergetic": "Energetic",
+    "moodAnxious": "Anxious",
+    "moodIrritable": "Irritable",
+    "moodLow": "Low",
+    "painNone": "None",
+    "painVeryMild": "Very mild",
+    "painMild": "Mild",
+    "painMildModerate": "Mild to moderate",
+    "painModerate": "Moderate",
+    "painModerateSevere": "Moderate to severe",
+    "painSevere": "Severe",
+    "painVerySevere": "Very severe",
+    "painWorstPossible": "Worst possible",
+    "intensityLow": "Low",
+    "intensityMild": "Mild",
+    "intensityModerate": "Moderate",
+    "intensityHigh": "High",
+    "intensityVeryHigh": "Very high"
+  },
+  "health": {
+    "sectionPeriod": "Period Records",
+    "sectionDaily": "Daily Health",
+    "sectionPeriodSubtitle": "Your menstrual period history",
+    "sectionDailySubtitle": "Symptoms, mood, pain, sleep, and hydration"
+  },
+  "analytics": {
+    "title": "Your Recorded Health",
+    "subtitle": "Deterministic, factual summaries of your private records — computed entirely on this device.",
+    "rangeLabel": "Time range",
+    "rangeAll": "All time",
+    "rangeRecent": "Recent period",
+    "rangeRecentDays": "Recent {count, plural, =1 {# day} other {# days}}",
+    "noData": "No health records yet.",
+    "noCycleData": "Log your period dates to see cycle statistics here.",
+    "noDailyData": "Log daily health entries to see statistics here.",
+    "insufficientCycle": "Record another cycle to compare cycle lengths.",
+    "insufficientPeriod": "Record another period to compare durations.",
+    "insufficientPain": "Record pain on a few more days to compute an average.",
+    "insufficientSleep": "Record sleep on a few more days to compute an average.",
+    "insufficientHydration": "Record water intake on a few more days to compute an average.",
+    "sectionCycle": "Cycle",
+    "cycleRecordedCycles": "Recorded cycles",
+    "cycleAverage": "Average cycle",
+    "cycleShortest": "Shortest",
+    "cycleLongest": "Longest",
+    "cycleMostRecent": "Most recent cycle",
+    "cyclePredictionAvailable": "Next period prediction available",
+    "cyclePredictionUnavailable": "Prediction needs more cycles",
+    "sectionPeriod": "Period",
+    "periodRecorded": "Recorded periods",
+    "periodOngoing": "Ongoing period",
+    "periodAverage": "Average duration",
+    "periodShortest": "Shortest",
+    "periodLongest": "Longest",
+    "periodMostRecent": "Most recent duration",
+    "flowDistribution": "Flow intensity",
+    "sectionDailyHealth": "Daily health",
+    "sectionPain": "Pain",
+    "painAverage": "Average",
+    "painHighest": "Highest",
+    "painLowest": "Lowest",
+    "sectionSleep": "Sleep",
+    "sleepAverage": "Average",
+    "sleepMinimum": "Minimum",
+    "sleepMaximum": "Maximum",
+    "sectionHydration": "Hydration",
+    "hydrationAverage": "Average",
+    "hydrationMinimum": "Minimum",
+    "hydrationMaximum": "Maximum",
+    "sectionSymptoms": "Symptoms",
+    "sectionMood": "Mood",
+    "mostFrequentSymptoms": "Most recorded symptoms",
+    "mostFrequentMoods": "Most recorded moods",
+    "recordedDaysSuffix": "days",
+    "recordedOnDays": "Recorded on {count} {count, plural, =1 {day} other {days}}",
+    "daysUnit": "{value} days",
+    "hoursUnit": "{value} h",
+    "litersUnit": "{value} L",
+    "cycleTrendHeading": "Cycle length over time",
+    "cycleTrendHint": "Each entry is a recorded cycle length in days.",
+    "cycleTrendSeries": "Cycle lengths, newest first",
+    "loading": "Calculating your statistics…",
+    "error": "Could not load your health records. Please try again."
+  },
+  "insights": {
+    "sectionTitle": "Your insights",
+    "basedOn": "Based on what you have recorded",
+    "empty": "Log a few days to see personal insights here.",
+    "cycle": {
+      "range": {
+        "title": "Cycle range",
+        "message": "Your recorded cycles ranged from {min} to {max} days."
+      },
+      "recentVsAverage": {
+        "title": "Recent cycle",
+        "message": "Your most recent cycle was {recent} days, compared with an average of {average} days."
+      },
+      "recent": {
+        "title": "Recent cycle",
+        "message": "Your most recent recorded cycle was {days} days."
+      },
+      "variability": {
+        "title": "Cycle variation",
+        "stable": "Your recorded cycle lengths have varied within a narrow range.",
+        "moderate": "Your recorded cycle lengths have shown moderate variation.",
+        "variable": "Your recorded cycle lengths have shown wider variation.",
+        "insufficient": "Record more cycles to describe how your cycle lengths vary."
+      }
+    },
+    "period": {
+      "average": {
+        "title": "Period duration",
+        "message": "Your recorded periods have lasted an average of {avg} days."
+      },
+      "durationRange": {
+        "title": "Period duration",
+        "message": "Your recorded period durations ranged from {min} to {max} days."
+      },
+      "flow": {
+        "title": "Flow",
+        "message": "{flow} was your most frequently recorded flow level."
+      }
+    },
+    "symptoms": {
+      "mostFrequent": {
+        "title": "Symptoms",
+        "message": "{symptom} was your most recorded symptom, on {count} days."
+      },
+      "count": {
+        "title": "Symptoms",
+        "message": "You recorded {symptom} on {count} days."
+      }
+    },
+    "mood": {
+      "mostFrequent": {
+        "title": "Mood",
+        "message": "{mood} was your most frequent mood, on {count} days."
+      },
+      "count": {
+        "title": "Mood",
+        "message": "You recorded {mood} on {count} days."
+      }
+    },
+    "pain": {
+      "average": {
+        "title": "Pain",
+        "message": "Your average recorded pain was {value} out of 10."
+      },
+      "range": {
+        "title": "Pain",
+        "message": "Your recorded pain ranged from {min} to {max} out of 10."
+      }
+    },
+    "sleep": {
+      "average": {
+        "title": "Sleep",
+        "message": "Your average recorded sleep was {value} hours."
+      },
+      "range": {
+        "title": "Sleep",
+        "message": "Your recorded sleep ranged from {min} to {max} hours."
+      }
+    },
+    "hydration": {
+      "average": {
+        "title": "Hydration",
+        "message": "Your average recorded hydration was {value} ml."
+      },
+      "recordedDays": {
+        "title": "Hydration",
+        "message": "You recorded hydration data on {days} days."
+      }
+    },
+    "completeness": {
+      "title": "Recorded data",
+      "message": "You have recorded health information on {count} days in this period."
+    }
+  },
+  "reports": {
+    "title": "Health Report",
+    "subtitle": "A summary of your recorded health information.",
+    "dateRange": "Date range",
+    "rangeAll": "All time",
+    "range90d": "Last 90 days",
+    "range6m": "Last 6 months",
+    "rangeCustom": "Custom",
+    "from": "From",
+    "to": "To",
+    "invalidRange": "Start date must be before or equal to end date.",
+    "noData": "No health data recorded yet. Log period dates or daily health entries to generate a report.",
+    "noCycleData": "No cycle data recorded for this period.",
+    "noPeriodData": "No period data recorded for this period.",
+    "noSymptomData": "No symptom data recorded for this period.",
+    "noMoodData": "No mood data recorded for this period.",
+    "noPainData": "No pain data recorded for this period.",
+    "noSleepData": "No sleep data recorded for this period.",
+    "noHydrationData": "No hydration data recorded for this period.",
+    "noInsights": "No personalized insights available for this data.",
+    "reportPeriod": "Report period",
+    "sectionCycle": "Cycle",
+    "cycleRecordedCycles": "Recorded cycles",
+    "cycleAverage": "Average cycle length",
+    "cycleShortest": "Shortest cycle",
+    "cycleLongest": "Longest cycle",
+    "cycleMostRecent": "Most recent cycle",
+    "variability": "Variability",
+    "predictionAvailable": "Prediction available",
+    "sectionPeriod": "Period",
+    "periodRecorded": "Recorded periods",
+    "periodAverage": "Average duration",
+    "periodShortest": "Shortest duration",
+    "periodLongest": "Longest duration",
+    "periodOngoing": "Ongoing period",
+    "flowDistribution": "Flow distribution",
+    "sectionSymptoms": "Symptoms",
+    "sectionMood": "Mood",
+    "sectionPain": "Pain",
+    "sectionSleep": "Sleep",
+    "sectionHydration": "Hydration",
+    "sectionInsights": "Personalized Insights",
+    "recordedDays": "Recorded on {count} day(s).",
+    "recordedDaysLabel": "Recorded days",
+    "daysCount": "{count} day(s)",
+    "daysValue": "{value} days",
+    "hoursValue": "{value} hours",
+    "mlValue": "{value} ml",
+    "painAverage": "Average pain",
+    "painHighest": "Highest pain",
+    "painLowest": "Lowest pain",
+    "sleepAverage": "Average sleep",
+    "sleepMinimum": "Minimum sleep",
+    "sleepMaximum": "Maximum sleep",
+    "hydrationAverage": "Average hydration",
+    "hydrationMinimum": "Minimum hydration",
+    "hydrationMaximum": "Maximum hydration",
+    "insufficientData": "Insufficient data",
+    "yes": "Yes",
+    "no": "No",
+    "exportActions": "Export actions",
+    "exportPdf": "Export PDF",
+    "exportCsv": "Export CSV",
+    "exportJson": "Export JSON",
+    "privacyNote": "This report was generated locally on this device. No data was transmitted."
   }
 }

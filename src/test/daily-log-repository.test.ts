@@ -82,6 +82,29 @@ describe('DailyLogRepository (Local Health Log Isolation & Validation)', () => {
     expect(range[1].date).toBe('2026-09-03');
   });
 
+  it('enforces one log per date (upsert does not create duplicates)', async () => {
+    await DailyLogRepository.upsertDailyLog({
+      date: '2026-09-10',
+      symptoms: [{ id: 'cramps' }],
+      mood: [{ id: 'calm' }],
+      painLevel: 2,
+      sleepHours: 7,
+      hydrationMl: 2000,
+    });
+    await DailyLogRepository.upsertDailyLog({
+      date: '2026-09-10',
+      symptoms: [{ id: 'headache' }],
+      mood: [{ id: 'anxious' }],
+      painLevel: 5,
+      sleepHours: 6,
+      hydrationMl: 1500,
+    });
+
+    const all = await DailyLogRepository.getAllDailyLogs();
+    expect(all.length).toBe(1);
+    expect(all[0].symptoms[0].id).toBe('headache'); // latest write wins
+  });
+
   it('rejects invalid painLevel, sleepHours, and hydration values via Zod', async () => {
     // Pain level > 10
     await expect(

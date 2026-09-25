@@ -16,7 +16,7 @@ export const HeaderBar: React.FC = () => {
           {t('offlineNotice')}
         </span>
         <span className="text-xs font-medium text-[#2E8B57] sm:hidden">
-          100% Offline Local Vault
+          {t('offlineVault')}
         </span>
       </div>
       <div className="flex items-center gap-4">

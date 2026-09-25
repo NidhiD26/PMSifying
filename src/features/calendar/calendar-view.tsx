@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
 import { CycleRepository } from '@/lib/db/repositories/cycle-repository';
+import { DailyLogRepository } from '@/lib/db/repositories/daily-log-repository';
 import type { CycleDomainModel } from '@/types/health';
 import { CalendarHeader } from './calendar-header';
 import { CalendarGrid } from './calendar-grid';
@@ -20,6 +21,7 @@ export const CalendarView: React.FC = () => {
   const [currentDate, setCurrentDate] = React.useState<Date>(() => new Date());
   const [selectedDateIso, setSelectedDateIso] = React.useState<string>(todayIso);
   const [cycles, setCycles] = React.useState<CycleDomainModel[]>([]);
+  const [hasDailyLogForSelected, setHasDailyLogForSelected] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
@@ -42,6 +44,25 @@ export const CalendarView: React.FC = () => {
   React.useEffect(() => {
     loadCycles();
   }, [loadCycles]);
+
+  // Load whether a daily health log exists for the selected date
+  React.useEffect(() => {
+    if (!selectedDateIso) {
+      setHasDailyLogForSelected(false);
+      return;
+    }
+    let cancelled = false;
+    DailyLogRepository.getDailyLogByDate(selectedDateIso)
+      .then((log) => {
+        if (!cancelled) setHasDailyLogForSelected(!!log);
+      })
+      .catch(() => {
+        if (!cancelled) setHasDailyLogForSelected(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedDateIso]);
 
   const handlePrevMonth = () => {
     setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
@@ -117,6 +138,7 @@ export const CalendarView: React.FC = () => {
             selectedDateIso={selectedDateIso}
             cycles={cycles}
             onLogPeriodForDate={handleLogPeriodForDate}
+            hasDailyLog={hasDailyLogForSelected}
           />
         </div>
       )}
@@ -125,7 +147,7 @@ export const CalendarView: React.FC = () => {
       <div className="p-3.5 rounded-xl bg-[#F9EBEA]/60 border border-[#E2D8D0] flex items-center justify-between gap-3 text-xs text-[#5A5A66]">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-4 w-4 text-[#2E8B57] shrink-0" />
-          <span>100% Offline Personal Health Calendar — Recorded facts only (No prediction AI)</span>
+          <span>{t('offlineGuarantee')}</span>
         </div>
       </div>
 

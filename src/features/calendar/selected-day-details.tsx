@@ -12,15 +12,18 @@ export interface SelectedDayDetailsProps {
   selectedDateIso: string; // YYYY-MM-DD
   cycles: CycleDomainModel[];
   onLogPeriodForDate: (dateIso: string) => void;
+  hasDailyLog?: boolean;
 }
 
 export const SelectedDayDetails: React.FC<SelectedDayDetailsProps> = ({
   selectedDateIso,
   cycles,
   onLogPeriodForDate,
+  hasDailyLog = false,
 }) => {
   const t = useTranslations('calendar');
   const tPeriod = useTranslations('period');
+  const tPrivacy = useTranslations('privacy');
 
   const todayIso = new Date().toISOString().split('T')[0];
 
@@ -53,7 +56,8 @@ export const SelectedDayDetails: React.FC<SelectedDayDetailsProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          {hasDailyLog && <Badge variant="ovulation">{t('dailyLogRecorded')}</Badge>}
           {matchingCycle ? (
             <>
               {isStart && <Badge variant="period">{t('periodStarted')}</Badge>}
@@ -105,7 +109,7 @@ export const SelectedDayDetails: React.FC<SelectedDayDetailsProps> = ({
       <div className="pt-2 flex items-center justify-between gap-3 border-t border-[#E2D8D0]">
         <div className="flex items-center gap-1.5 text-xs text-[#2E8B57]">
           <ShieldCheck className="h-4 w-4" />
-          <span>Local Dexie Vault</span>
+          <span>{tPrivacy('localDexieVault')}</span>
         </div>
         <Button variant="primary" size="sm" onClick={() => onLogPeriodForDate(selectedDateIso)}>
           <Plus className="h-4 w-4 mr-1.5" />

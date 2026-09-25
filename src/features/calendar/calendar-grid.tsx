@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useTranslations } from 'next-intl';
 import type { CycleDomainModel } from '@/types/health';
 import { cn } from '@/lib/utils/cn';
+import { formatLocalDateIso } from '@/lib/utils/date-utils';
 
 export interface CalendarGridProps {
   currentDate: Date;
@@ -23,7 +24,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  const todayIso = new Date().toISOString().split('T')[0];
+  const todayIso = formatLocalDateIso(new Date());
 
   // Derive grid cells for the current month
   const gridCells = React.useMemo(() => {
@@ -37,14 +38,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
       const prevDay = daysInPrevMonth - i;
       const prevDate = new Date(year, month - 1, prevDay);
-      const iso = prevDate.toISOString().split('T')[0];
+      const iso = formatLocalDateIso(prevDate);
       cells.push({ dateIso: iso, dayNumber: prevDay, isCurrentMonth: false });
     }
 
     // Current month days
     for (let day = 1; day <= daysInMonth; day++) {
       const dayDate = new Date(year, month, day);
-      const iso = dayDate.toISOString().split('T')[0];
+      const iso = formatLocalDateIso(dayDate);
       cells.push({ dateIso: iso, dayNumber: day, isCurrentMonth: true });
     }
 
@@ -53,7 +54,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     const remaining = totalCells - cells.length;
     for (let day = 1; day <= remaining; day++) {
       const nextDate = new Date(year, month + 1, day);
-      const iso = nextDate.toISOString().split('T')[0];
+      const iso = formatLocalDateIso(nextDate);
       cells.push({ dateIso: iso, dayNumber: day, isCurrentMonth: false });
     }
 

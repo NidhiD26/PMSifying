@@ -25,6 +25,8 @@ export const DesktopSidebar: React.FC = () => {
   const t = useTranslations('nav');
   const pathname = usePathname();
 
+  const normalizedPathname = pathname ? (pathname.replace(/^\/(en|hi|kn)/, '') || '/') : '/';
+
   const userNavItems = [
     { href: '/', label: t('home'), icon: Home },
     { href: '/calendar', label: t('calendar'), icon: Calendar },
@@ -56,18 +58,18 @@ export const DesktopSidebar: React.FC = () => {
         </div>
         <div>
           <span className="font-semibold text-lg text-[#2D1B2D] block leading-tight">PMSify</span>
-          <span className="text-xs text-[#5A5A66]">Health Ecosystem</span>
+          <span className="text-xs text-[#5A5A66]">{t('healthEcosystem')}</span>
         </div>
       </div>
 
       <nav className="flex-1 flex flex-col gap-6 overflow-y-auto">
         <div className="flex flex-col gap-1">
           <span className="px-3 text-xs font-semibold uppercase tracking-wider text-[#5A5A66] mb-1">
-            Personal Tracker
+            {t('personalTracker')}
           </span>
           {userNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = normalizedPathname === item.href;
             return (
               <Link
                 key={item.href}
@@ -88,11 +90,11 @@ export const DesktopSidebar: React.FC = () => {
 
         <div className="flex flex-col gap-1 pt-4 border-t border-[#E2D8D0]">
           <span className="px-3 text-xs font-semibold uppercase tracking-wider text-[#5A5A66] mb-1">
-            Healthcare Portal
+            {t('healthcarePortal')}
           </span>
           {healthcareNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = normalizedPathname === item.href;
             return (
               <Link
                 key={item.href}

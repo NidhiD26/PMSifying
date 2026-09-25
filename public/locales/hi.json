@@ -17,7 +17,10 @@
     "privacy": "गोपनीयता",
     "asha": "आशा पोर्टल",
     "doctor": "डॉक्टर पोर्टल",
-    "healthCamps": "स्वास्थ्य शिविर"
+    "healthCamps": "स्वास्थ्य शिविर",
+    "healthEcosystem": "स्वास्थ्य पारिस्थितिकी तंत्र",
+    "personalTracker": "व्यक्तिगत ट्रैकर",
+    "healthcarePortal": "स्वास्थ्य देखभाल पोर्टल"
   },
   "language": {
     "select": "भाषा",
@@ -38,8 +41,35 @@
     "offlineMode": "ऑफ़लाइन मोड सक्रिय"
   },
   "privacy": {
+    "charterTitle": "गोपनीयता अधिकार एवं सुरक्षा वास्तुकला",
+    "localStorageTitle": "स्थानीय भंडारण गारंटी",
+    "localStorageBody": "आपके व्यक्तिगत स्वास्थ्य लॉग, पीरियड की तिथियां, लक्षण और नोट्स निजी रूप से और पूरी तरह आपके डिवाइस पर स्थानीय रूप से संग्रहीत हैं। आपके ट्रैकिंग डेटा के लिए कोई क्लाउड टेलीमेट्री या स्वचालित क्लाउड बैकअप नहीं किया जाता।",
     "offlineNotice": "आपके ट्रैकिंग लॉग इस डिवाइस पर 100% स्थानीय रूप से संग्रहीत हैं।",
+    "offlineVault": "100% ऑफ़लाइन लोकल वॉल्ट",
+    "localDexieVault": "लोकल डेक्सी वॉल्ट",
     "pinProtected": "एप्लिकेशन पिन लॉक सक्षम"
+  },
+  "dashboard": {
+    "title": "स्वास्थ्य अवलोकन",
+    "subtitle": "आपका निजी चक्र और दैनिक स्वास्थ्य सारांश",
+    "currentStatus": "वर्तमान चक्र स्थिति",
+    "dayCount": "दिन {day}",
+    "phaseFollicular": "फॉलिक्युलर चरण",
+    "phaseOvulatory": "डिंबोत्सर्जन विंडो",
+    "phaseLuteal": "ल्यूटियल चरण",
+    "phaseMenstrual": "मासिक धर्म चरण",
+    "nextPeriod": "अगले मासिक धर्म का पूर्वानुमान",
+    "fertileWindow": "अनुमानित उपजाऊ विंडो",
+    "ovulationDate": "अनुमानित डिंबोत्सर्जन",
+    "todayLog": "आज का स्वास्थ्य लॉग",
+    "loggedToday": "आज दर्ज किया गया",
+    "notLoggedToday": "आज अभी तक दर्ज नहीं किया गया",
+    "logTodayAction": "आज का स्वास्थ्य दर्ज करें",
+    "logPeriodAction": "मासिक धर्म की तिथि दर्ज करें",
+    "recentInsights": "व्यक्तिगत अवलोकन",
+    "cycleSummary": "चक्र आंकड़े",
+    "noCycleData": "अनुमानित चक्र, उपजाऊ विंडो और स्वास्थ्य आंकड़े देखने के लिए मासिक धर्म की तिथियां दर्ज करें।",
+    "privacyFooter": "100% ऑफ़लाइन और निजी — इस डिवाइस पर केवल स्थानीय IndexedDB में संग्रहीत।"
   },
   "period": {
     "title": "पीरियड रिकॉर्ड्स",
@@ -82,6 +112,8 @@
     "ongoingPeriod": "जारी पीरियड",
     "noRecord": "इस तिथि के लिए कोई पीरियड दर्ज नहीं है",
     "logPeriodForDate": "चयनित तिथि के लिए पीरियड दर्ज करें",
+    "dailyLogRecorded": "दैनिक स्वास्थ्य लॉग दर्ज किया गया",
+    "offlineGuarantee": "100% ऑफलाइन व्यक्तिगत स्वास्थ्य कैलेंडर — केवल दर्ज तथ्य (कोई पूर्वानुमान एआई नहीं)",
     "readyTitle": "आपका कैलेण्डर तैयार है",
     "readyDescription": "मासिक कैलेण्डर में उन्हें देखने के लिए अपनी पीरियड तिथियां लॉग करें।",
     "weekdays": {
@@ -93,5 +125,298 @@
       "fri": "शुक्र",
       "sat": "शनि"
     }
+  },
+  "dailyHealth": {
+    "title": "दैनिक स्वास्थ्य लॉग",
+    "subtitle": "इस डिवाइस पर निजी रूप से दर्ज करें कि आप हर दिन कैसा महसूस करते हैं।",
+    "editExisting": "आप आज के मौजूदा लॉग को संपादित कर रहे हैं",
+    "editingLabel": "मौजूदा लॉग संपादित करें",
+    "noLogTitle": "इस दिन के लिए कोई स्वास्थ्य जानकारी दर्ज नहीं है",
+    "noLogDescription": "आज आप कैसा महसूस कर रहे हैं इसका निजी रिकॉर्ड रखने के लिए दैनिक लॉग जोड़ें।",
+    "startLogging": "दैनिक लॉग शुरू करें",
+    "saveSuccess": "दैनिक लॉग सहेजा गया।",
+    "deleteSuccess": "दैनिक लॉग हटा दिया गया।",
+    "saveFailed": "आपका दैनिक लॉग सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।",
+    "loadFailed": "आपका स्वास्थ्य लॉग लोड नहीं हो सका। कृपया पुनः प्रयास करें।",
+    "dateLabel": "तिथि",
+    "symptomsLabel": "लक्षण",
+    "symptomsHelper": "जो लागू हों उन्हें चुनें",
+    "moodLabel": "मनोदशा",
+    "moodHelper": "चुनें कि आप आज कैसा महसूस कर रहे हैं",
+    "painLabel": "दर्द स्तर",
+    "painHelper": "0 = कोई नहीं, 10 = सबसे अधिक",
+    "sleepLabel": "नींद (घंटे)",
+    "sleepHelper": "संख्यात्मक, जैसे 7.5",
+    "hydrationLabel": "पानी का सेवन (मिली)",
+    "hydrationLiteral": "पानी का सेवन (मिली)",
+    "hydrationHelper": "जैसे 2000",
+    "notesLabel": "नोट्स",
+    "notesHelper": "वैकल्पिक निजी नोट",
+    "deleteTitle": "दैनिक स्वास्थ्य लॉग हटाएं?",
+    "deleteMessage": "इससे आज का स्वास्थ्य लॉग आपके डिवाइस स्टोरेज से स्थायी रूप से हटा दिया जाएगा।",
+    "deleteConfirm": "स्वास्थ्य लॉग हटाएं",
+    "logSavable": "दैनिक लॉग सहेजें",
+    "logFirst": "पहली दैनिक प्रविष्टि दर्ज करें",
+    "validation": {
+      "invalidSleep": "नींद 0 से 24 घंटे के बीच होनी चाहिए।",
+      "invalidHydration": "पानी का सेवन 0 से 10000 मिली के बीच होना चाहिए।",
+      "invalidDate": "कृपया एक वैध तिथि चुनें।",
+      "futureDateDisallowed": "भविष्य के स्वास्थ्य लॉग पहले से दर्ज नहीं किए जा सकते।"
+    },
+    "symptomCramps": "ऐंठन",
+    "symptomHeadache": "सिरदर्द",
+    "symptomBloating": "पेट फूलना",
+    "symptomBreastTenderness": "स्तन में कोमलता",
+    "symptomFatigue": "थकान",
+    "symptomNausea": "मतली",
+    "symptomBackPain": "पीठ दर्द",
+    "symptomAcne": "मुंहासे",
+    "symptomCravings": "क्रेविंग",
+    "symptomMoodChanges": "मनोदशा में बदलाव",
+    "moodCalm": "शांत",
+    "moodHappy": "खुश",
+    "moodEnergetic": "ऊर्जावान",
+    "moodAnxious": "चिंतित",
+    "moodIrritable": "चिड़चिड़ा",
+    "moodLow": "उदास",
+    "painNone": "कोई नहीं",
+    "painVeryMild": "बहुत हल्का",
+    "painMild": "हल्का",
+    "painMildModerate": "हल्का से मध्यम",
+    "painModerate": "मध्यम",
+    "painModerateSevere": "मध्यम से गंभीर",
+    "painSevere": "गंभीर",
+    "painVerySevere": "बहुत गंभीर",
+    "painWorstPossible": "सबसे अधिक संभव",
+    "intensityLow": "कम",
+    "intensityMild": "हल्का",
+    "intensityModerate": "मध्यम",
+    "intensityHigh": "उच्च",
+    "intensityVeryHigh": "बहुत उच्च"
+  },
+  "health": {
+    "sectionPeriod": "पीरियड रिकॉर्ड्स",
+    "sectionDaily": "दैनिक स्वास्थ्य",
+    "sectionPeriodSubtitle": "आपका मासिक धर्म इतिहास",
+    "sectionDailySubtitle": "लक्षण, मनोदशा, दर्द, नींद और जलयोजन"
+  },
+  "analytics": {
+    "title": "आपका दर्ज किया गया स्वास्थ्य",
+    "subtitle": "आपके निजी रिकॉर्ड का निश्चित, तथ्यात्मक सारांश — पूरी तरह इसी डिवाइस पर गणना किया गया।",
+    "rangeLabel": "समय सीमा",
+    "rangeAll": "पूरा समय",
+    "rangeRecent": "हालिया पीरियड",
+    "rangeRecentDays": "हाल के {count, plural, =1 {# दिन} other {# दिन}}",
+    "noData": "अभी कोई स्वास्थ्य रिकॉर्ड नहीं है।",
+    "noCycleData": "चक्र आँकड़े देखने के लिए अपनी पीरियड तिथियां दर्ज करें।",
+    "noDailyData": "यहां आँकड़े देखने के लिए दैनिक स्वास्थ्य प्रविष्टियां दर्ज करें।",
+    "insufficientCycle": "चक्र की अवधि की तुलना करने के लिए एक और चक्र दर्ज करें।",
+    "insufficientPeriod": "अवधि की तुलना करने के लिए एक और पीरियड दर्ज करें।",
+    "insufficientPain": "औसत निकालने के लिए कुछ और दिन दर्द दर्ज करें।",
+    "insufficientSleep": "औसत निकालने के लिए कुछ और दिन नींद दर्ज करें।",
+    "insufficientHydration": "औसत निकालने के लिए कुछ और दिन पानी का सेवन दर्ज करें।",
+    "sectionCycle": "चक्र",
+    "cycleRecordedCycles": "दर्ज किए गए चक्र",
+    "cycleAverage": "औसत चक्र",
+    "cycleShortest": "सबसे छोटा",
+    "cycleLongest": "सबसे लंबा",
+    "cycleMostRecent": "हालिया चक्र",
+    "cyclePredictionAvailable": "अगले पीरियड का पूर्वानुमान उपलब्ध",
+    "cyclePredictionUnavailable": "पूर्वानुमान के लिए और चक्र चाहिए",
+    "sectionPeriod": "पीरियड",
+    "periodRecorded": "दर्ज किए गए पीरियड",
+    "periodOngoing": "चालू पीरियड",
+    "periodAverage": "औसत अवधि",
+    "periodShortest": "सबसे छोटी",
+    "periodLongest": "सबसे लंबी",
+    "periodMostRecent": "हालिया अवधि",
+    "flowDistribution": "प्रवाह की तीव्रता",
+    "sectionDailyHealth": "दैनिक स्वास्थ्य",
+    "sectionPain": "दर्द",
+    "painAverage": "औसत",
+    "painHighest": "सबसे ज़्यादा",
+    "painLowest": "सबसे कम",
+    "sectionSleep": "नींद",
+    "sleepAverage": "औसत",
+    "sleepMinimum": "न्यूनतम",
+    "sleepMaximum": "अधिकतम",
+    "sectionHydration": "जलयोजन",
+    "hydrationAverage": "औसत",
+    "hydrationMinimum": "न्यूनतम",
+    "hydrationMaximum": "अधिकतम",
+    "sectionSymptoms": "लक्षण",
+    "sectionMood": "मनोदशा",
+    "mostFrequentSymptoms": "सबसे अधिक दर्ज लक्षण",
+    "mostFrequentMoods": "सबसे अधिक दर्ज मनोदशाएं",
+    "recordedDaysSuffix": "दिन",
+    "recordedOnDays": "{count} {count, plural, =1 {दिन} other {दिनों}} पर दर्ज",
+    "daysUnit": "{value} दिन",
+    "hoursUnit": "{value} घंटे",
+    "litersUnit": "{value} ली",
+    "cycleTrendHeading": "समय के साथ चक्र की लंबाई",
+    "cycleTrendHint": "हर प्रविष्टि दिनों में दर्ज चक्र लंबाई है।",
+    "cycleTrendSeries": "चक्र की लंबाई, नवीनतम पहले",
+    "loading": "आपके आँकड़ों की गणना हो रही है…",
+    "error": "आपके स्वास्थ्य रिकॉर्ड लोड नहीं हो सके। कृपया पुनः प्रयास करें।"
+  },
+  "insights": {
+    "sectionTitle": "आपकी अंतर्दृष्टियाँ",
+    "basedOn": "आपके दर्ज किए गए डेटा पर आधारित",
+    "empty": "व्यक्तिगत अंतर्दृष्टि देखने के लिए कुछ दिन लॉग करें।",
+    "cycle": {
+      "range": {
+        "title": "चक्र की सीमा",
+        "message": "आपके दर्ज चक्र {min} से {max} दिनों के बीच रहे।"
+      },
+      "recentVsAverage": {
+        "title": "हालिया चक्र",
+        "message": "आपका सबसे हालिया चक्र {recent} दिनों का था, जबकि औसत {average} दिनों का रहा।"
+      },
+      "recent": {
+        "title": "हालिया चक्र",
+        "message": "आपका सबसे हालिया दर्ज चक्र {days} दिनों का था।"
+      },
+      "variability": {
+        "title": "चक्र में बदलाव",
+        "stable": "आपके दर्ज चक्र की लंबाई एक संकीर्ण सीमा में रही है।",
+        "moderate": "आपके दर्ज चक्र की लंबाई में मध्यम बदलाव रहा है।",
+        "variable": "आपके दर्ज चक्र की लंबाई में अधिक बदलाव रहा है।",
+        "insufficient": "चक्र की लंबाई में बदलाव बताने के लिए और चक्र दर्ज करें।"
+      }
+    },
+    "period": {
+      "average": {
+        "title": "पीरियड की अवधि",
+        "message": "आपके दर्ज पीरियड्स की औसत अवधि {avg} दिन रही।"
+      },
+      "durationRange": {
+        "title": "पीरियड की अवधि",
+        "message": "आपकी दर्ज पीरियड अवधियाँ {min} से {max} दिनों के बीच रहीं।"
+      },
+      "flow": {
+        "title": "प्रवाह",
+        "message": "{flow} आपका सबसे अधिक दर्ज किया गया प्रवाह स्तर था।"
+      }
+    },
+    "symptoms": {
+      "mostFrequent": {
+        "title": "लक्षण",
+        "message": "{symptom} आपका सबसे अधिक दर्ज किया गया लक्षण था, {count} दिनों तक।"
+      },
+      "count": {
+        "title": "लक्षण",
+        "message": "आपने {count} दिनों तक {symptom} दर्ज किया।"
+      }
+    },
+    "mood": {
+      "mostFrequent": {
+        "title": "मनोदशा",
+        "message": "{mood} आपकी सबसे अधिक दर्ज मनोदशा थी, {count} दिनों तक।"
+      },
+      "count": {
+        "title": "मनोदशा",
+        "message": "आपने {count} दिनों तक {mood} दर्ज किया।"
+      }
+    },
+    "pain": {
+      "average": {
+        "title": "दर्द",
+        "message": "आपका औसत दर्द 10 में से {value} रहा।"
+      },
+      "range": {
+        "title": "दर्द",
+        "message": "आपका दर्द 10 में से {min} से {max} के बीच रहा।"
+      }
+    },
+    "sleep": {
+      "average": {
+        "title": "नींद",
+        "message": "आपकी औसत नींद {value} घंटे रही।"
+      },
+      "range": {
+        "title": "नींद",
+        "message": "आपकी नींद {min} से {max} घंटों के बीच रही।"
+      }
+    },
+    "hydration": {
+      "average": {
+        "title": "जलयोजन",
+        "message": "आपकी औसत जलयोजन {value} मिली रही।"
+      },
+      "recordedDays": {
+        "title": "जलयोजन",
+        "message": "आपने {days} दिनों तक जलयोजन डेटा दर्ज किया।"
+      }
+    },
+    "completeness": {
+      "title": "दर्ज डेटा",
+      "message": "आपने इस अवधि में {count} दिनों तक स्वास्थ्य जानकारी दर्ज की है।"
+    }
+  },
+  "reports": {
+    "title": "स्वास्थ्य रिपोर्ट",
+    "subtitle": "आपकी दर्ज स्वास्थ्य जानकारी का सारांश।",
+    "dateRange": "तिथि सीमा",
+    "rangeAll": "पूरा समय",
+    "range90d": "पिछले 90 दिन",
+    "range6m": "पिछले 6 महीने",
+    "rangeCustom": "कस्टम",
+    "from": "से",
+    "to": "तक",
+    "invalidRange": "प्रारंभ तिथि समाप्ति तिथि से पहले या उसके बराबर होनी चाहिए।",
+    "noData": "अभी तक कोई स्वास्थ्य डेटा दर्ज नहीं है। रिपोर्ट बनाने के लिए पीरियड तिथियां या दैनिक स्वास्थ्य प्रविष्टियां लॉग करें।",
+    "noCycleData": "इस अवधि के लिए कोई चक्र डेटा दर्ज नहीं है।",
+    "noPeriodData": "इस अवधि के लिए कोई पीरियड डेटा दर्ज नहीं है।",
+    "noSymptomData": "इस अवधि के लिए कोई लक्षण डेटा दर्ज नहीं है।",
+    "noMoodData": "इस अवधि के लिए कोई मनोदशा डेटा दर्ज नहीं है।",
+    "noPainData": "इस अवधि के लिए कोई दर्द डेटा दर्ज नहीं है।",
+    "noSleepData": "इस अवधि के लिए कोई नींद डेटा दर्ज नहीं है।",
+    "noHydrationData": "इस अवधि के लिए कोई जलयोजन डेटा दर्ज नहीं है।",
+    "noInsights": "इस डेटा के लिए कोई व्यक्तिगत अंतर्दृष्टि उपलब्ध नहीं है।",
+    "reportPeriod": "रिपोर्ट अवधि",
+    "sectionCycle": "चक्र",
+    "cycleRecordedCycles": "दर्ज चक्र",
+    "cycleAverage": "औसत चक्र लंबाई",
+    "cycleShortest": "सबसे छोटा चक्र",
+    "cycleLongest": "सबसे लंबा चक्र",
+    "cycleMostRecent": "सबसे हालिया चक्र",
+    "variability": "बदलाव",
+    "predictionAvailable": "पूर्वानुमान उपलब्ध",
+    "sectionPeriod": "पीरियड",
+    "periodRecorded": "दर्ज पीरियड",
+    "periodAverage": "औसत अवधि",
+    "periodShortest": "सबसे छोटी अवधि",
+    "periodLongest": "सबसे लंबी अवधि",
+    "periodOngoing": "जारी पीरियड",
+    "flowDistribution": "प्रवाह वितरण",
+    "sectionSymptoms": "लक्षण",
+    "sectionMood": "मनोदशा",
+    "sectionPain": "दर्द",
+    "sectionSleep": "नींद",
+    "sectionHydration": "जलयोजन",
+    "sectionInsights": "व्यक्तिगत अंतर्दृष्टियाँ",
+    "recordedDays": "{count} दिन(ों) पर दर्ज।",
+    "recordedDaysLabel": "दर्ज दिन",
+    "daysCount": "{count} दिन",
+    "daysValue": "{value} दिन",
+    "hoursValue": "{value} घंटे",
+    "mlValue": "{value} मिली",
+    "painAverage": "औसत दर्द",
+    "painHighest": "अधिकतम दर्द",
+    "painLowest": "न्यूनतम दर्द",
+    "sleepAverage": "औसत नींद",
+    "sleepMinimum": "न्यूनतम नींद",
+    "sleepMaximum": "अधिकतम नींद",
+    "hydrationAverage": "औसत जलयोजन",
+    "hydrationMinimum": "न्यूनतम जलयोजन",
+    "hydrationMaximum": "अधिकतम जलयोजन",
+    "insufficientData": "अपर्याप्त डेटा",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "exportActions": "निर्यात क्रियाएँ",
+    "exportPdf": "PDF निर्यात करें",
+    "exportCsv": "CSV निर्यात करें",
+    "exportJson": "JSON निर्यात करें",
+    "privacyNote": "यह रिपोर्ट इस डिवाइस पर स्थानीय रूप से बनाई गई थी। कोई डेटा प्रसारित नहीं किया गया।"
   }
 }

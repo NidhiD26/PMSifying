@@ -17,7 +17,10 @@
     "privacy": "ಖಾಸಗೀತನ",
     "asha": "ಆಶಾ ಪೋರ್ಟಲ್",
     "doctor": "ವೈದ್ಯರ ಪೋರ್ಟಲ್",
-    "healthCamps": "ಆರೋಗ್ಯ ಶಿಬಿರಗಳು"
+    "healthCamps": "ಆರೋಗ್ಯ ಶಿಬಿರಗಳು",
+    "healthEcosystem": "ಆರೋಗ್ಯ ವ್ಯವಸ್ಥೆ",
+    "personalTracker": "ವೈಯಕ್ತಿಕ ಟ್ರ್ಯಾಕರ್",
+    "healthcarePortal": "ಆರೋಗ್ಯ ರಕ್ಷಣೆ ಪೋರ್ಟಲ್"
   },
   "language": {
     "select": "ಭಾಷೆ",
@@ -38,8 +41,35 @@
     "offlineMode": "ಆಫ್‌ಲೈನ್ ಮೋಡ್ ಸಕ್ರಿಯವಾಗಿದೆ"
   },
   "privacy": {
+    "charterTitle": "ಗೌಪ್ಯತೆ ಚಾರ್ಟರ್ ಮತ್ತು ಭದ್ರತಾ ವಾಸ್ತುಶಿಲ್ಪ",
+    "localStorageTitle": "ಸ್ಥಳೀಯ ಸಂಗ್ರಹಣೆ ಭರವಸೆ",
+    "localStorageBody": "ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಆರೋಗ್ಯ ಲಾಗ್‌ಗಳು, ಮುಟ್ಟಿನ ದಿನಾಂಕಗಳು, ಲಕ್ಷಣಗಳು ಮತ್ತು ಟಿಪ್ಪಣಿಗಳನ್ನು ಖಾಸಗಿಯಾಗಿ ಮತ್ತು ಸ್ಥಳೀಯವಾಗಿ ಈ ಸಾಧನದಲ್ಲೇ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಟ್ರ್ಯಾಕಿಂಗ್ ಡೇಟಾಗೆ ಯಾವುದೇ ಕ್ಲೌಡ್ ಟೆಲಿಮೆಟ್ರಿ ಅಥವಾ ಸ್ವಯಂಚಾಲಿತ ಕ್ಲೌಡ್ ಬ್ಯಾಕಪ್ ಇಲ್ಲ.",
     "offlineNotice": "ನಿಮ್ಮ ಟ್ರ್ಯಾಕಿಂಗ್ ಡೇಟಾ ಸಂಪೂರ್ಣವಾಗಿ ಈ ಸಾಧನದಲ್ಲೇ ಸಂಗ್ರಹವಾಗಿರುತ್ತದೆ.",
+    "offlineVault": "100% ಆಫ್‌ಲೈನ್ ಲೋಕಲ್ ವಾಲ್ಟ್",
+    "localDexieVault": "ಲೋಕಲ್ ಡೆಕ್ಸಿ ವಾಲ್ಟ್",
     "pinProtected": "ಅಪ್ಲಿಕೇಶನ್ ಪಿನ್ ಲಾಕ್ ಸಕ್ರಿಯವಾಗಿದೆ"
+  },
+  "dashboard": {
+    "title": "ಆರೋಗ್ಯ ಅವಲೋಕನ",
+    "subtitle": "ನಿಮ್ಮ ಖಾಸಗಿ ಋತುಚಕ್ರ ಮತ್ತು ದೈನಂದಿನ ಆರೋಗ್ಯ ಸಾರಾಂಶ",
+    "currentStatus": "ಪ್ರಸ್ತುತ ಋತುಚಕ್ರದ ಸ್ಥಿತಿ",
+    "dayCount": "ದಿನ {day}",
+    "phaseFollicular": "ಫೋಲಿಕ್ಯುಲರ್ ಹಂತ",
+    "phaseOvulatory": "ಅಂಡೋತ್ಪತ್ತಿ ವಿಂಡೋ",
+    "phaseLuteal": "ಲ್ಯೂಟಿಯಲ್ ಹಂತ",
+    "phaseMenstrual": "ಋತುಸ್ರಾವದ ಹಂತ",
+    "nextPeriod": "ಮುಂದಿನ ಋತುಸ್ರಾವದ ಮುನ್ಸೂಚನೆ",
+    "fertileWindow": "ಅಂದಾಜು ಫಲವತ್ತತೆಯ ವಿಂಡೋ",
+    "ovulationDate": "ಅಂದಾಜು ಅಂಡೋತ್ಪತ್ತಿ",
+    "todayLog": "ಇಂದಿನ ಆರೋಗ್ಯ ಲಾಗ್",
+    "loggedToday": "ಇಂದು ದಾಖಲಿಸಲಾಗಿದೆ",
+    "notLoggedToday": "ಇಂದು ಇನ್ನೂ ದಾಖಲಾಗಿಲ್ಲ",
+    "logTodayAction": "ಇಂದಿನ ಆರೋಗ್ಯ ದಾಖಲಿಸಿ",
+    "logPeriodAction": "ಋತುಸ್ರಾವದ ದಿನಾಂಕ ದಾಖಲಿಸಿ",
+    "recentInsights": "ವೈಯಕ್ತಿಕ ವೀಕ್ಷಣೆಗಳು",
+    "cycleSummary": "ಋತುಚಕ್ರದ ಅಂಕಿಅಂಶಗಳು",
+    "noCycleData": "ಮುನ್ಸೂಚಿತ ಋತುಚಕ್ರಗಳು, ಫಲವತ್ತತೆಯ ವಿಂಡೋಗಳು ಮತ್ತು ಆರೋಗ್ಯ ಅಂಕಿಅಂಶಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಋತುಸ್ರಾವದ ದಿನಾಂಕಗಳನ್ನು ದಾಖಲಿಸಿ.",
+    "privacyFooter": "100% ಆಫ್‌ಲೈನ್ ಮತ್ತು ಖಾಸಗಿ — ಈ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳೀಯ IndexedDB ಯಲ್ಲಿ ಮಾತ್ರ ಸಂಗ್ರಹಿಸಲಾಗಿದೆ."
   },
   "period": {
     "title": "ಋತುಚಕ್ರದ ದಾಖಲೆಗಳು",
@@ -82,6 +112,8 @@
     "ongoingPeriod": "ಚಾಲ್ತಿಯಲ್ಲಿರುವ ಋತುಚಕ್ರ",
     "noRecord": "ಈ ದಿನಾಂಕಕ್ಕೆ ಯಾವುದೇ ದಾಖಲೆಯಿಲ್ಲ",
     "logPeriodForDate": "ಆಯ್ಕೆಮಾಡಿದ ದಿನಾಂಕಕ್ಕೆ ಋತುಚಕ್ರ ದಾಖಲಿಸಿ",
+    "dailyLogRecorded": "ದೈನಂದಿನ ಆರೋಗ್ಯ ಲಾಗ್ ದಾಖಲಾಗಿದೆ",
+    "offlineGuarantee": "100% ಆಫ್‌ಲೈನ್ ವೈಯಕ್ತಿಕ ಆರೋಗ್ಯ ಕ್ಯಾಲೆಂಡರ್ — ದಾಖಲಾದ ಸತ್ಯಗಳು ಮಾತ್ರ (ಯಾವುದೇ ಮುನ್ಸೂಚನೆ AI ಇಲ್ಲ)",
     "readyTitle": "ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್ ಸಿದ್ಧವಾಗಿದೆ",
     "readyDescription": "ಕ್ಯಾಲೆಂಡರ್‌ನಲ್ಲಿ ವೀಕ್ಷಿಸಲು ನಿಮ್ಮ ಋತುಚಕ್ರದ ದಿನಾಂಕಗಳನ್ನು ದಾಖಲಿಸಿ.",
     "weekdays": {
@@ -93,5 +125,298 @@
       "fri": "ಶುಕ್ರವಾರ",
       "sat": "ಶನಿವಾರ"
     }
+  },
+  "dailyHealth": {
+    "title": "ದೈನಂದಿನ ಆರೋಗ್ಯ ಲಾಗ್",
+    "subtitle": "ನೀವು ಪ್ರತಿದಿನ ಹೇಗೆ ಅನಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ಈ ಸಾಧನದಲ್ಲೇ ಖಾಸಗಿಯಾಗಿ ದಾಖಲಿಸಿ.",
+    "editExisting": "ನೀವು ಇಂದಿನ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಲಾಗ್ ಅನ್ನು ಸಂಪಾದಿಸುತ್ತಿದ್ದೀರಿ",
+    "editingLabel": "ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಲಾಗ್ ಸಂಪಾದಿಸಿ",
+    "noLogTitle": "ಈ ದಿನಕ್ಕೆ ಯಾವುದೇ ಆರೋಗ್ಯ ಮಾಹಿತಿ ದಾಖಲಾಗಿಲ್ಲ",
+    "noLogDescription": "ನೀವು ಇಂದು ಹೇಗೆ ಅನಿಸಿದ್ದೀರಿ ಎಂಬುದರ ಖಾಸಗಿ ದಾಖಲೆಯನ್ನು ಇರಿಸಿಕೊಳ್ಳಲು ದೈನಂದಿನ ಲಾಗ್ ಸೇರಿಸಿ.",
+    "startLogging": "ದೈನಂದಿನ ಲಾಗ್ ಪ್ರಾರಂಭಿಸಿ",
+    "saveSuccess": "ದೈನಂದಿನ ಲಾಗ್ ಉಳಿಸಲಾಗಿದೆ.",
+    "deleteSuccess": "ದೈನಂದಿನ ಲಾಗ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ.",
+    "saveFailed": "ನಿಮ್ಮ ದೈನಂದಿನ ಲಾಗ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+    "loadFailed": "ನಿಮ್ಮ ಆರೋಗ್ಯ ಲಾಗ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+    "dateLabel": "ದಿನಾಂಕ",
+    "symptomsLabel": "ಲಕ್ಷಣಗಳು",
+    "symptomsHelper": "ಅನ್ವಯಿಸುವ ಯಾವುದನ್ನಾದರೂ ಆಯ್ಕೆಮಾಡಿ",
+    "moodLabel": "ಮನಸ್ಥಿತಿ",
+    "moodHelper": "ನೀವು ಇಂದು ಹೇಗೆ ಅನಿಸಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+    "painLabel": "ನೋವಿನ ಮಟ್ಟ",
+    "painHelper": "0 = ಇಲ್ಲ, 10 = ಅತ್ಯಂತ ಹೆಚ್ಚು",
+    "sleepLabel": "ನಿದ್ರೆ (ಗಂಟೆಗಳು)",
+    "sleepHelper": "ಸಂಖ್ಯಾತ್ಮಕ, ಉದಾ 7.5",
+    "hydrationLabel": "ನೀರಿನ ಸೇವನೆ (ಮಿಲಿ)",
+    "hydrationLiteral": "ನೀರಿನ ಸೇವನೆ (ಮಿಲಿ)",
+    "hydrationHelper": "ಉದಾ 2000",
+    "notesLabel": "ಟಿಪ್ಪಣಿಗಳು",
+    "notesHelper": "ಐಚ್ಛಿಕ ಖಾಸಗಿ ಟಿಪ್ಪಣಿ",
+    "deleteTitle": "ದೈನಂದಿನ ಆರೋಗ್ಯ ಲಾಗ್ ಅಳಿಸುವುದೇ?",
+    "deleteMessage": "ಇದು ಇಂದಿನ ಆರೋಗ್ಯ ಲಾಗ್ ಅನ್ನು ನಿಮ್ಮ ಸ್ಥಳೀಯ ಸಾಧನದಿಂದ ಶಾಶ್ವತವಾಗಿ ತೆಗೆದುಹಾಕುತ್ತದೆ.",
+    "deleteConfirm": "ಆರೋಗ್ಯ ಲಾಗ್ ಅಳಿಸಿ",
+    "logSavable": "ದೈನಂದಿನ ಲಾಗ್ ಉಳಿಸಿ",
+    "logFirst": "ಮೊದಲ ದೈನಂದಿನ ನಮೂದೆಯನ್ನು ದಾಖಲಿಸಿ",
+    "validation": {
+      "invalidSleep": "ನಿದ್ರೆ 0 ರಿಂದ 24 ಗಂಟೆಗಳ ನಡುವೆ ಇರಬೇಕು.",
+      "invalidHydration": "ನೀರಿನ ಸೇವನೆ 0 ರಿಂದ 10000 ಮಿಲಿ ನಡುವೆ ಇರಬೇಕು.",
+      "invalidDate": "ದಯವಿಟ್ಟು ಮಾನ್ಯ ದಿನಾಂಕವನ್ನು ಆರಿಸಿ.",
+      "futureDateDisallowed": "ಭವಿಷ್ಯದ ಆರೋಗ್ಯ ಲಾಗ್ ಅನ್ನು ಮೊದಲೇ ದಾಖಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ."
+    },
+    "symptomCramps": "ಸೆಳೆತ",
+    "symptomHeadache": "ತಲೆನೋವು",
+    "symptomBloating": "ಊತ",
+    "symptomBreastTenderness": "ಸ್ತನ ಮೃದುತ್ವ",
+    "symptomFatigue": "ದಣಿವು",
+    "symptomNausea": "ವಾಕರಿಕೆ",
+    "symptomBackPain": "ಬೆನ್ನು ನೋವು",
+    "symptomAcne": "ಮೊಡವೆ",
+    "symptomCravings": "ಆಸೆ",
+    "symptomMoodChanges": "ಮನಸ್ಥಿತಿ ಬದಲಾವಣೆ",
+    "moodCalm": "ಶಾಂತ",
+    "moodHappy": "ಸಂತೋಷ",
+    "moodEnergetic": "ಶಕ್ತಿಯುತ",
+    "moodAnxious": "ಆತಂಕ",
+    "moodIrritable": "ಸಿಟ್ಟು",
+    "moodLow": "ಖಿನ್ನ",
+    "painNone": "ಯಾವುದೂ ಇಲ್ಲ",
+    "painVeryMild": "ಅತ್ಯಂತ ಸೌಮ್ಯ",
+    "painMild": "ಸೌಮ್ಯ",
+    "painMildModerate": "ಸೌಮ್ಯದಿಂದ ಮಧ್ಯಮ",
+    "painModerate": "ಮಧ್ಯಮ",
+    "painModerateSevere": "ಮಧ್ಯಮದಿಂದ ತೀವ್ರ",
+    "painSevere": "ತೀವ್ರ",
+    "painVerySevere": "ಅತ್ಯಂತ ತೀವ್ರ",
+    "painWorstPossible": "ಅತ್ಯಂತ ಕೆಟ್ಟದು",
+    "intensityLow": "ಕಡಿಮೆ",
+    "intensityMild": "ಸೌಮ್ಯ",
+    "intensityModerate": "ಮಧ್ಯಮ",
+    "intensityHigh": "ಹೆಚ್ಚು",
+    "intensityVeryHigh": "ತುಂಬಾ ಹೆಚ್ಚು"
+  },
+  "health": {
+    "sectionPeriod": "ಋತುಚಕ್ರದ ದಾಖಲೆಗಳು",
+    "sectionDaily": "ದೈನಂದಿನ ಆರೋಗ್ಯ",
+    "sectionPeriodSubtitle": "ನಿಮ್ಮ ಮುಟ್ಟಿನ ಇತಿಹಾಸ",
+    "sectionDailySubtitle": "ಲಕ್ಷಣಗಳು, ಮನಸ್ಥಿತಿ, ನೋವು, ನಿದ್ರೆ ಮತ್ತು ಜಲಸಂಚಯನ"
+  },
+  "analytics": {
+    "title": "ನಿಮ್ಮ ದಾಖಲಾದ ಆರೋಗ್ಯ",
+    "subtitle": "ನಿಮ್ಮ ಖಾಸಗಿ ದಾಖಲೆಗಳ ನಿರ್ಧಾರಾತ್ಮಕ, ಸತ್ಯಾಧಾರಿತ ಸಾರಾಂಶಗಳು — ಸಂಪೂರ್ಣವಾಗಿ ಈ ಸಾಧನದಲ್ಲಿ ಗಣಿಸಲಾಗಿದೆ.",
+    "rangeLabel": "ಅವಧಿ",
+    "rangeAll": "ಎಲ್ಲಾ ಸಮಯ",
+    "rangeRecent": "ಇತ್ತೀಚಿನ ಅವಧಿ",
+    "rangeRecentDays": "ಇತ್ತೀಚಿನ {count, plural, =1 {# ದಿನ} other {# ದಿನಗಳು}}",
+    "noData": "ಇನ್ನೂ ಯಾವುದೇ ಆರೋಗ್ಯ ದಾಖಲೆಗಳಿಲ್ಲ.",
+    "noCycleData": "ಚಕ್ರ ಅಂಕಿಅಂಶಗಳನ್ನು ನೋಡಲು ನಿಮ್ಮ ಮುಟ್ಟಿನ ದಿನಾಂಕಗಳನ್ನು ದಾಖಲಿಸಿ.",
+    "noDailyData": "ಇಲ್ಲಿ ಅಂಕಿಅಂಶಗಳನ್ನು ನೋಡಲು ದೈನಂದಿನ ಆರೋಗ್ಯ ನಮೂದುಗಳನ್ನು ದಾಖಲಿಸಿ.",
+    "insufficientCycle": "ಚಕ್ರದ ಉದ್ದವನ್ನು ಹೋಲಿಸಲು ಇನ್ನೊಂದು ಚಕ್ರವನ್ನು ದಾಖಲಿಸಿ.",
+    "insufficientPeriod": "ಅವಧಿಯನ್ನು ಹೋಲಿಸಲು ಇನ್ನೊಂದು ಮುಟ್ಟನ್ನು ದಾಖಲಿಸಿ.",
+    "insufficientPain": "ಸರಾಸರಿ ಲೆಕ್ಕಹಾಕಲು ಇನ್ನೂ ಕೆಲವು ದಿನಗಳ ನೋವನ್ನು ದಾಖಲಿಸಿ.",
+    "insufficientSleep": "ಸರಾಸರಿ ಲೆಕ್ಕಹಾಕಲು ಇನ್ನೂ ಕೆಲವು ದಿನಗಳ ನಿದ್ರೆಯನ್ನು ದಾಖಲಿಸಿ.",
+    "insufficientHydration": "ಸರಾಸರಿ ಲೆಕ್ಕಹಾಕಲು ಇನ್ನೂ ಕೆಲವು ದಿನಗಳ ನೀರಿನ ಸೇವನೆಯನ್ನು ದಾಖಲಿಸಿ.",
+    "sectionCycle": "ಚಕ್ರ",
+    "cycleRecordedCycles": "ದಾಖಲಾದ ಚಕ್ರಗಳು",
+    "cycleAverage": "ಸರಾಸರಿ ಚಕ್ರ",
+    "cycleShortest": "ಕಡಿಮೆ",
+    "cycleLongest": "ಹೆಚ್ಚು",
+    "cycleMostRecent": "ಇತ್ತೀಚಿನ ಚಕ್ರ",
+    "cyclePredictionAvailable": "ಮುಂದಿನ ಮುಟ್ಟಿನ ಮುನ್ಸೂಚನೆ ಲಭ್ಯವಿದೆ",
+    "cyclePredictionUnavailable": "ಮುನ್ಸೂಚನೆಗೆ ಹೆಚ್ಚಿನ ಚಕ್ರಗಳು ಬೇಕಾಗುತ್ತವೆ",
+    "sectionPeriod": "ಮುಟ್ಟು",
+    "periodRecorded": "ದಾಖಲಾದ ಮುಟ್ಟುಗಳು",
+    "periodOngoing": "ನಡೆಯುತ್ತಿರುವ ಮುಟ್ಟು",
+    "periodAverage": "ಸರಾಸರಿ ಅವಧಿ",
+    "periodShortest": "ಕಡಿಮೆ",
+    "periodLongest": "ಹೆಚ್ಚು",
+    "periodMostRecent": "ಇತ್ತೀಚಿನ ಅವಧಿ",
+    "flowDistribution": "ಹರಿವಿನ ತೀವ್ರತೆ",
+    "sectionDailyHealth": "ದೈನಂದಿನ ಆರೋಗ್ಯ",
+    "sectionPain": "ನೋವು",
+    "painAverage": "ಸರಾಸರಿ",
+    "painHighest": "ಹೆಚ್ಚು",
+    "painLowest": "ಕಡಿಮೆ",
+    "sectionSleep": "ನಿದ್ರೆ",
+    "sleepAverage": "ಸರಾಸರಿ",
+    "sleepMinimum": "ಕನಿಷ್ಠ",
+    "sleepMaximum": "ಗರಿಷ್ಠ",
+    "sectionHydration": "ಜಲಸಂಚಯನ",
+    "hydrationAverage": "ಸರಾಸರಿ",
+    "hydrationMinimum": "ಕನಿಷ್ಠ",
+    "hydrationMaximum": "ಗರಿಷ್ಠ",
+    "sectionSymptoms": "ಲಕ್ಷಣಗಳು",
+    "sectionMood": "ಮನಸ್ಥಿತಿ",
+    "mostFrequentSymptoms": "ಹೆಚ್ಚು ದಾಖಲಾದ ಲಕ್ಷಣಗಳು",
+    "mostFrequentMoods": "ಹೆಚ್ಚು ದಾಖಲಾದ ಮನಸ್ಥಿತಿಗಳು",
+    "recordedDaysSuffix": "ದಿನಗಳು",
+    "recordedOnDays": "{count} {count, plural, =1 {ದಿನ} other {ದಿನಗಳು}} ದಾಖಲಾಗಿದೆ",
+    "daysUnit": "{value} ದಿನಗಳು",
+    "hoursUnit": "{value} ಗಂ",
+    "litersUnit": "{value} ಲೀ",
+    "cycleTrendHeading": "ಕಾಲಾನುಕ್ರಮದಲ್ಲಿ ಚಕ್ರದ ಉದ್ದ",
+    "cycleTrendHint": "ಪ್ರತಿ ನಮೂದು ದಿನಗಳಲ್ಲಿ ದಾಖಲಾದ ಚಕ್ರದ ಉದ್ದವಾಗಿದೆ.",
+    "cycleTrendSeries": "ಚಕ್ರದ ಉದ್ದಗಳು, ಹೊಸದು ಮೊದಲು",
+    "loading": "ನಿಮ್ಮ ಅಂಕಿಅಂಶಗಳನ್ನು ಲೆಕ್ಕಹಾಕಲಾಗುತ್ತಿದೆ…",
+    "error": "ನಿಮ್ಮ ಆರೋಗ್ಯ ದಾಖಲೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+  },
+  "insights": {
+    "sectionTitle": "ನಿಮ್ಮ ಒಳನೋಟಗಳು",
+    "basedOn": "ನೀವು ದಾಖಲಿಸಿದ ಡೇಟಾದ ಆಧಾರದ ಮೇಲೆ",
+    "empty": "ವೈಯಕ್ತಿಕ ಒಳನೋಟಗಳನ್ನು ನೋಡಲು ಕೆಲವು ದಿನಗಳು ಲಾಗ್ ಮಾಡಿ.",
+    "cycle": {
+      "range": {
+        "title": "ಚಕ್ರದ ವ್ಯಾಪ್ತಿ",
+        "message": "ನಿಮ್ಮ ದಾಖಲಾದ ಚಕ್ರಗಳು {min} ರಿಂದ {max} ದಿನಗಳ ನಡುವೆ ಇದ್ದವು."
+      },
+      "recentVsAverage": {
+        "title": "ಇತ್ತೀಚಿನ ಚಕ್ರ",
+        "message": "ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಚಕ್ರ {recent} ದಿನಗಳದ್ದಾಗಿತ್ತು, ಸರಾಸರಿ {average} ದಿನಗಳಾಗಿತ್ತು."
+      },
+      "recent": {
+        "title": "ಇತ್ತೀಚಿನ ಚಕ್ರ",
+        "message": "ನಿಮ್ಮ ಇತ್ತೀಚಿನ ದಾಖಲಾದ ಚಕ್ರ {days} ದಿನಗಳದ್ದಾಗಿತ್ತು."
+      },
+      "variability": {
+        "title": "ಚಕ್ರದ ಬದಲಾವಣೆ",
+        "stable": "ನಿಮ್ಮ ದಾಖಲಾದ ಚಕ್ರದ ಉದ್ದಗಳು ಸಂಕುಚಿತ ವ್ಯಾಪ್ತಿಯಲ್ಲಿ ಇದ್ದವು.",
+        "moderate": "ನಿಮ್ಮ ದಾಖಲಾದ ಚಕ್ರದ ಉದ್ದಗಳಲ್ಲಿ ಮಧ್ಯಮ ಬದಲಾವಣೆ ಇತ್ತು.",
+        "variable": "ನಿಮ್ಮ ದಾಖಲಾದ ಚಕ್ರದ ಉದ್ದಗಳಲ್ಲಿ ಹೆಚ್ಚಿನ ಬದಲಾವಣೆ ಇತ್ತು.",
+        "insufficient": "ಚಕ್ರದ ಉದ್ದಗಳ ಬದಲಾವಣೆಯನ್ನು ವಿವರಿಸಲು ಹೆಚ್ಚಿನ ಚಕ್ರಗಳನ್ನು ದಾಖಲಿಸಿ."
+      }
+    },
+    "period": {
+      "average": {
+        "title": "ಮುಟ್ಟಿನ ಅವಧಿ",
+        "message": "ನಿಮ್ಮ ದಾಖಲಾದ ಮುಟ್ಟುಗಳ ಸರಾಸರಿ ಅವಧಿ {avg} ದಿನಗಳಾಗಿತ್ತು."
+      },
+      "durationRange": {
+        "title": "ಮುಟ್ಟಿನ ಅವಧಿ",
+        "message": "ನಿಮ್ಮ ದಾಖಲಾದ ಮುಟ್ಟಿನ ಅವಧಿಗಳು {min} ರಿಂದ {max} ದಿನಗಳ ನಡುವೆ ಇದ್ದವು."
+      },
+      "flow": {
+        "title": "ಹರಿವು",
+        "message": "{flow} ನಿಮ್ಮ ಹೆಚ್ಚು ದಾಖಲಾದ ಹರಿವಿನ ಮಟ್ಟವಾಗಿತ್ತು."
+      }
+    },
+    "symptoms": {
+      "mostFrequent": {
+        "title": "ಲಕ್ಷಣಗಳು",
+        "message": "{symptom} ನಿಮ್ಮ ಹೆಚ್ಚು ದಾಖಲಾದ ಲಕ್ಷಣವಾಗಿತ್ತು, {count} ದಿನಗಳವರೆಗೆ."
+      },
+      "count": {
+        "title": "ಲಕ್ಷಣಗಳು",
+        "message": "ನೀವು {count} ದಿನಗಳವರೆಗೆ {symptom} ದಾಖಲಿಸಿದ್ದೀರಿ."
+      }
+    },
+    "mood": {
+      "mostFrequent": {
+        "title": "ಮನಸ್ಥಿತಿ",
+        "message": "{mood} ನಿಮ್ಮ ಹೆಚ್ಚು ದಾಖಲಾದ ಮನಸ್ಥಿತಿಯಾಗಿತ್ತು, {count} ದಿನಗಳವರೆಗೆ."
+      },
+      "count": {
+        "title": "ಮನಸ್ಥಿತಿ",
+        "message": "ನೀವು {count} ದಿನಗಳವರೆಗೆ {mood} ದಾಖಲಿಸಿದ್ದೀರಿ."
+      }
+    },
+    "pain": {
+      "average": {
+        "title": "ನೋವು",
+        "message": "ನಿಮ್ಮ ಸರಾಸರಿ ನೋವು 10 ರಲ್ಲಿ {value} ಆಗಿತ್ತು."
+      },
+      "range": {
+        "title": "ನೋವು",
+        "message": "ನಿಮ್ಮ ನೋವು 10 ರಲ್ಲಿ {min} ರಿಂದ {max} ನಡುವೆ ಇತ್ತು."
+      }
+    },
+    "sleep": {
+      "average": {
+        "title": "ನಿದ್ರೆ",
+        "message": "ನಿಮ್ಮ ಸರಾಸರಿ ನಿದ್ರೆ {value} ಗಂಟೆಗಳಾಗಿತ್ತು."
+      },
+      "range": {
+        "title": "ನಿದ್ರೆ",
+        "message": "ನಿಮ್ಮ ನಿದ್ರೆ {min} ರಿಂದ {max} ಗಂಟೆಗಳ ನಡುವೆ ಇತ್ತು."
+      }
+    },
+    "hydration": {
+      "average": {
+        "title": "ಜಲಸಂಚಯನ",
+        "message": "ನಿಮ್ಮ ಸರಾಸರಿ ಜಲಸಂಚಯನ {value} ಮಿಲಿ ಆಗಿತ್ತು."
+      },
+      "recordedDays": {
+        "title": "ಜಲಸಂಚಯನ",
+        "message": "ನೀವು {days} ದಿನಗಳವರೆಗೆ ಜಲಸಂಚಯನ ಡೇಟಾವನ್ನು ದಾಖಲಿಸಿದ್ದೀರಿ."
+      }
+    },
+    "completeness": {
+      "title": "ದಾಖಲಾದ ಡೇಟಾ",
+      "message": "ನೀವು ಈ ಅವಧಿಯಲ್ಲಿ {count} ದಿನಗಳವರೆಗೆ ಆರೋಗ್ಯ ಮಾಹಿತಿಯನ್ನು ದಾಖಲಿಸಿದ್ದೀರಿ."
+    }
+  },
+  "reports": {
+    "title": "ಆರೋಗ್ಯ ವರದಿ",
+    "subtitle": "ನಿಮ್ಮ ದಾಖಲಾದ ಆರೋಗ್ಯ ಮಾಹಿತಿಯ ಸಾರಾಂಶ.",
+    "dateRange": "ದಿನಾಂಕ ವ್ಯಾಪ್ತಿ",
+    "rangeAll": "ಎಲ್ಲಾ ಸಮಯ",
+    "range90d": "ಕಳೆದ 90 ದಿನಗಳು",
+    "range6m": "ಕಳೆದ 6 ತಿಂಗಳುಗಳು",
+    "rangeCustom": "ಕಸ್ಟಮ್",
+    "from": "ಇಂದ",
+    "to": "ವರೆಗೆ",
+    "invalidRange": "ಪ್ರಾರಂಭ ದಿನಾಂಕ ಮುಕ್ತಾಯ ದಿನಾಂಕಕ್ಕಿಂತ ಮುಂಚಿತವಾಗಿ ಅಥವಾ ಸಮವಾಗಿರಬೇಕು.",
+    "noData": "ಇನ್ನೂ ಯಾವುದೇ ಆರೋಗ್ಯ ಡೇಟಾ ದಾಖಲಾಗಿಲ್ಲ. ವರದಿ ರಚಿಸಲು ಋತುಚಕ್ರದ ದಿನಾಂಕಗಳು ಅಥವಾ ದೈನಂದಿನ ಆರೋಗ್ಯ ನಮೂದುಗಳನ್ನು ಲಾಗ್ ಮಾಡಿ.",
+    "noCycleData": "ಈ ಅವಧಿಗೆ ಯಾವುದೇ ಚಕ್ರ ಡೇಟಾ ದಾಖಲಾಗಿಲ್ಲ.",
+    "noPeriodData": "ಈ ಅವಧಿಗೆ ಯಾವುದೇ ಮುಟ್ಟಿನ ಡೇಟಾ ದಾಖಲಾಗಿಲ್ಲ.",
+    "noSymptomData": "ಈ ಅವಧಿಗೆ ಯಾವುದೇ ಲಕ್ಷಣ ಡೇಟಾ ದಾಖಲಾಗಿಲ್ಲ.",
+    "noMoodData": "ಈ ಅವಧಿಗೆ ಯಾವುದೇ ಮನಸ್ಥಿತಿ ಡೇಟಾ ದಾಖಲಾಗಿಲ್ಲ.",
+    "noPainData": "ಈ ಅವಧಿಗೆ ಯಾವುದೇ ನೋವಿನ ಡೇಟಾ ದಾಖಲಾಗಿಲ್ಲ.",
+    "noSleepData": "ಈ ಅವಧಿಗೆ ಯಾವುದೇ ನಿದ್ರೆ ಡೇಟಾ ದಾಖಲಾಗಿಲ್ಲ.",
+    "noHydrationData": "ಈ ಅವಧಿಗೆ ಯಾವುದೇ ಜಲಸಂಚಯನ ಡೇಟಾ ದಾಖಲಾಗಿಲ್ಲ.",
+    "noInsights": "ಈ ಡೇಟಾಗೆ ಯಾವುದೇ ವೈಯಕ್ತಿಕ ಒಳನೋಟಗಳು ಲಭ್ಯವಿಲ್ಲ.",
+    "reportPeriod": "ವರದಿ ಅವಧಿ",
+    "sectionCycle": "ಚಕ್ರ",
+    "cycleRecordedCycles": "ದಾಖಲಾದ ಚಕ್ರಗಳು",
+    "cycleAverage": "ಸರಾಸರಿ ಚಕ್ರ ಉದ್ದ",
+    "cycleShortest": "ಅತ್ಯಂತ ಚಿಕ್ಕ ಚಕ್ರ",
+    "cycleLongest": "ಅತ್ಯಂತ ದೊಡ್ಡ ಚಕ್ರ",
+    "cycleMostRecent": "ಇತ್ತೀಚಿನ ಚಕ್ರ",
+    "variability": "ಬದಲಾವಣೆ",
+    "predictionAvailable": "ಮುನ್ಸೂಚನೆ ಲಭ್ಯವಿದೆ",
+    "sectionPeriod": "ಮುಟ್ಟು",
+    "periodRecorded": "ದಾಖಲಾದ ಮುಟ್ಟುಗಳು",
+    "periodAverage": "ಸರಾಸರಿ ಅವಧಿ",
+    "periodShortest": "ಅತ್ಯಂತ ಚಿಕ್ಕ ಅವಧಿ",
+    "periodLongest": "ಅತ್ಯಂತ ದೊಡ್ಡ ಅವಧಿ",
+    "periodOngoing": "ಚಾಲ್ತಿಯಲ್ಲಿರುವ ಮುಟ್ಟು",
+    "flowDistribution": "ಹರಿವಿನ ವಿತರಣೆ",
+    "sectionSymptoms": "ಲಕ್ಷಣಗಳು",
+    "sectionMood": "ಮನಸ್ಥಿತಿ",
+    "sectionPain": "ನೋವು",
+    "sectionSleep": "ನಿದ್ರೆ",
+    "sectionHydration": "ಜಲಸಂಚಯನ",
+    "sectionInsights": "ವೈಯಕ್ತಿಕ ಒಳನೋಟಗಳು",
+    "recordedDays": "{count} ದಿನ(ಗಳಲ್ಲಿ) ದಾಖಲಾಗಿದೆ.",
+    "recordedDaysLabel": "ದಾಖಲಾದ ದಿನಗಳು",
+    "daysCount": "{count} ದಿನ(ಗಳು)",
+    "daysValue": "{value} ದಿನಗಳು",
+    "hoursValue": "{value} ಗಂಟೆಗಳು",
+    "mlValue": "{value} ಮಿಲಿ",
+    "painAverage": "ಸರಾಸರಿ ನೋವು",
+    "painHighest": "ಗರಿಷ್ಠ ನೋವು",
+    "painLowest": "ಕನಿಷ್ಠ ನೋವು",
+    "sleepAverage": "ಸರಾಸರಿ ನಿದ್ರೆ",
+    "sleepMinimum": "ಕನಿಷ್ಠ ನಿದ್ರೆ",
+    "sleepMaximum": "ಗರಿಷ್ಠ ನಿದ್ರೆ",
+    "hydrationAverage": "ಸರಾಸರಿ ಜಲಸಂಚಯನ",
+    "hydrationMinimum": "ಕನಿಷ್ಠ ಜಲಸಂಚಯನ",
+    "hydrationMaximum": "ಗರಿಷ್ಠ ಜಲಸಂಚಯನ",
+    "insufficientData": "ಅಪೂರ್ಣ ಡೇಟಾ",
+    "yes": "ಹೌದು",
+    "no": "ಇಲ್ಲ",
+    "exportActions": "ರಫ್ತು ಕ್ರಿಯೆಗಳು",
+    "exportPdf": "PDF ರಫ್ತು ಮಾಡಿ",
+    "exportCsv": "CSV ರಫ್ತು ಮಾಡಿ",
+    "exportJson": "JSON ರಫ್ತು ಮಾಡಿ",
+    "privacyNote": "ಈ ವರದಿಯನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳೀಯವಾಗಿ ರಚಿಸಲಾಗಿದೆ. ಯಾವುದೇ ಡೇಟಾವನ್ನು ರವಾನಿಸಲಾಗಿಲ್ಲ."
   }
 }

@@ -11,6 +11,8 @@ export const MobileBottomNav: React.FC = () => {
   const t = useTranslations('nav');
   const pathname = usePathname();
 
+  const normalizedPathname = pathname ? (pathname.replace(/^\/(en|hi|kn)/, '') || '/') : '/';
+
   const mainNavItems = [
     { href: '/', label: t('home'), icon: Home },
     { href: '/calendar', label: t('calendar'), icon: Calendar },
@@ -27,7 +29,7 @@ export const MobileBottomNav: React.FC = () => {
       <div className="flex items-center justify-around">
         {mainNavItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = normalizedPathname === item.href;
           return (
             <Link
               key={item.href}

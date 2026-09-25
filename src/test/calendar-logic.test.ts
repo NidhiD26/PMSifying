@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { CycleDomainModel } from '@/types/health';
+import { formatLocalDateIso } from '@/lib/utils/date-utils';
 
 // Helper function to mirror calendar grid date calculation logic
 function generateMonthDays(year: number, month: number) {
@@ -73,5 +74,16 @@ describe('Calendar Logic & Date Grid Computations', () => {
     expect(isPeriodDay('2026-09-01')).toBe(true); // Sep start
     expect(isPeriodDay('2026-09-02')).toBe(true); // End
     expect(isPeriodDay('2026-09-03')).toBe(false);
+  });
+
+  it('formatLocalDateIso produces exact local YYYY-MM-DD string without timezone shifts', () => {
+    const sept1 = new Date(2026, 8, 1);
+    expect(formatLocalDateIso(sept1)).toBe('2026-09-01');
+
+    const jan15 = new Date(2026, 0, 15);
+    expect(formatLocalDateIso(jan15)).toBe('2026-01-15');
+
+    const dec31 = new Date(2026, 11, 31);
+    expect(formatLocalDateIso(dec31)).toBe('2026-12-31');
   });
 });
