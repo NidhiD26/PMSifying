@@ -70,7 +70,9 @@ const messages = {
     logPeriodAction: 'Log Period Date',
     recentInsights: 'Personal Observations',
     cycleSummary: 'Cycle Statistics',
+    cycleSummaryValue: 'Average {days} days across {count} cycles',
     noCycleData: 'Log your period dates to view predicted cycles, fertile windows, and health statistics.',
+    welcomeTitle: 'Welcome to PMSify',
     privacyFooter: '100% Offline & Private — Stored strictly on this device in local IndexedDB.',
   },
 };

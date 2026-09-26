@@ -22,5 +22,23 @@ export const HealthRepository = {
     await db.user_preferences.clear();
     await db.cycles.clear();
     await db.daily_logs.clear();
+    await db.reminders.clear();
+  },
+
+  /**
+   * Factual record counts for the local database, used by the Settings screen
+   * to tell the user what a wipe would actually remove.
+   */
+  async getLocalRecordCounts(): Promise<{ cycles: number; dailyLogs: number; reminders: number }> {
+    try {
+      const [cycles, dailyLogs, reminders] = await Promise.all([
+        db.cycles.count(),
+        db.daily_logs.count(),
+        db.reminders.count(),
+      ]);
+      return { cycles, dailyLogs, reminders };
+    } catch {
+      return { cycles: 0, dailyLogs: 0, reminders: 0 };
+    }
   },
 };

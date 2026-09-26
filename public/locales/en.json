@@ -33,6 +33,7 @@
     "error": "An error occurred",
     "retry": "Try Again",
     "notFound": "Page Not Found",
+    "notFoundBody": "The screen you are looking for does not exist or has been moved.",
     "backHome": "Back to Home",
     "save": "Save",
     "cancel": "Cancel",
@@ -42,12 +43,44 @@
   },
   "privacy": {
     "charterTitle": "Privacy Charter & Security Architecture",
+    "charterSubtitle": "How PMSify handles your information, and where the boundaries between its three systems sit.",
     "localStorageTitle": "Local Storage Guarantee",
     "localStorageBody": "Your personal health logs, period dates, symptoms, and notes are stored privately and locally on this device. No cloud telemetry or automatic cloud backups are performed for your tracking data.",
     "offlineNotice": "Your tracking logs are stored 100% locally on this device.",
     "offlineVault": "100% Offline Local Vault",
     "localDexieVault": "Local Dexie Vault",
-    "pinProtected": "Application PIN Lock Enabled"
+    "pinProtected": "Application PIN Lock Enabled",
+    "guaranteesTitle": "What PMSify guarantees",
+    "guaranteeNoCloudSync": "Period dates, daily health logs, and notes are never uploaded. They exist only in this browser's local storage.",
+    "guaranteeNoTelemetry": "PMSify does not send analytics, tracking, or usage data anywhere.",
+    "guaranteeExport": "You can export or erase everything PMSify holds, at any time, from Settings.",
+    "limitsTitle": "Honest limits",
+    "pinLockTitle": "The local PIN is a privacy lock, not security",
+    "pinLockBody": "Your PIN is never stored. PMSify keeps only a salted hash, in the same local database as your records. This deters someone casually opening PMSify on a shared or borrowed device. It does not protect you from a person with access to your browser's developer tools, and it is not a substitute for a device passcode.",
+    "pinLockRecoveryBody": "There is no PIN recovery. PMSify stores no email address, phone number, or account, so it has nothing that could identify you in order to reset it. A forgotten PIN can only be resolved by erasing all local data and starting again.",
+    "pinLockAction": "Manage the PIN in Settings",
+    "separationTitle": "How the three systems stay separate",
+    "separationBody": "PMSify has three systems with different rules. Keeping them separate is a design constraint, not a policy statement.",
+    "separationLocalToCommunity": "Nothing from your personal tracker is ever published to SecretChat. You choose each post yourself, and you type it yourself.",
+    "separationCommunityToHealthcare": "Your SecretChat identity and activity are not visible to ASHA workers, doctors, or anyone in the healthcare portals.",
+    "separationLocalToHealthcare": "A healthcare worker cannot see your local tracking data. Sharing a summary with a clinician is an action you take deliberately, and it is a separate copy — not a live link to this device.",
+    "systems": {
+      "localTitle": "Personal Health — local and private",
+      "localSummary": "Your cycle and daily health tracker. Runs entirely on this device, with no account and no server.",
+      "localPointStorage": "Your records live in this browser's local storage and are not transmitted.",
+      "localPointNoAccount": "There is no sign-up, no email, and no phone number.",
+      "localPointExport": "You can export or erase everything from Settings at any time.",
+      "communityTitle": "SecretChat — anonymous and online",
+      "communitySummary": "A peer support community. It requires an internet connection, and it is the only part of PMSify that posts anything anywhere.",
+      "communityPointAlias": "You appear under a generated alias, never your real name.",
+      "communityPointNoLocal": "It cannot read your local health records, and it is built so that it cannot.",
+      "communityPointRequiresNetwork": "It works online. Anonymous does not mean untraceable to a network operator.",
+      "healthcareTitle": "Healthcare — authenticated and role-scoped",
+      "healthcareSummary": "Portals for ASHA workers, doctors, and health camps. Each role sees only what its role requires, and each action is recorded.",
+      "healthcarePointRoleScoped": "Access is granted per role, not shared between ASHA and doctors.",
+      "healthcarePointConsent": "A patient's information is shared only after their explicit consent, and only for a stated purpose.",
+      "healthcarePointAudit": "Access and changes are recorded so they can be reviewed afterwards."
+    }
   },
   "dashboard": {
     "title": "Health Overview",
@@ -68,6 +101,8 @@
     "logPeriodAction": "Log Period Date",
     "recentInsights": "Personal Observations",
     "cycleSummary": "Cycle Statistics",
+    "cycleSummaryValue": "{days} days average across {count, plural, =1 {1 cycle} other {# cycles}}",
+    "welcomeTitle": "Welcome to PMSify",
     "noCycleData": "Log your period dates to view predicted cycles, fertile windows, and health statistics.",
     "privacyFooter": "100% Offline & Private — Stored strictly on this device in local IndexedDB."
   },
@@ -418,5 +453,265 @@
     "exportCsv": "Export CSV",
     "exportJson": "Export JSON",
     "privacyNote": "This report was generated locally on this device. No data was transmitted."
+  },
+  "navMore": {
+    "barLabel": "Primary navigation",
+    "open": "More",
+    "title": "All sections",
+    "close": "Close menu"
+  },
+  "healthcare": {
+    "badge": "Healthcare Portal",
+    "footerNote": "The healthcare portals are a separate, authenticated system. They do not read the personal tracking data stored on this device."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Privacy, security, and the data PMSify keeps on this device.",
+    "saving": "Saving…",
+    "cancelAction": "Cancel",
+    "securityTitle": "Privacy & Security",
+    "securityDescription": "Decide what is kept on this device and whether it is locked.",
+    "dataTitle": "Your Local Data",
+    "dataDescription": "Everything PMSify stores on this device, kept locally in your browser.",
+    "engine": {
+      "title": "How cycle calculations work",
+      "body": "Every prediction, fertile window, and statistic is computed on this device from the dates you have actually recorded, using fixed deterministic rules. There is no AI in the mathematics, and no adjustable average that can override your own records."
+    },
+    "pin": {
+      "title": "Local PIN lock",
+      "enabledBody": "A PIN is set. PMSify asks for it before showing your health screens.",
+      "disabledBody": "No PIN is set. Anyone who opens PMSify on this device can see your health records.",
+      "enableAction": "Set a PIN",
+      "changeAction": "Change PIN",
+      "removeAction": "Remove PIN",
+      "honestNote": "This is a local privacy lock, not full security. Your PIN is never stored — only a salted hash, kept in the same database as your records. It stops a family member or passer-by from casually reading your data, but it cannot protect you from someone using developer tools, and a forgotten PIN cannot be recovered.",
+      "setupTitle": "Set a local PIN",
+      "changeTitle": "Change your local PIN",
+      "removeTitle": "Remove your local PIN",
+      "newLabel": "New PIN ({length} digits)",
+      "confirmLabel": "Confirm new PIN",
+      "currentLabel": "Current PIN",
+      "saveAction": "Save PIN",
+      "invalidFormat": "Your PIN must be exactly {length} digits.",
+      "mismatch": "The two PINs do not match.",
+      "wrongCurrent": "That is not your current PIN.",
+      "noRecoveryWarning": "There is no way to recover a forgotten PIN. If you forget it, the only way back in is to erase all local data on this device.",
+      "removeWarning": "Your health records stay on this device, but anyone with access to this browser profile will be able to open PMSify without a PIN.",
+      "enabledStatus": "Local PIN lock is on.",
+      "disabledStatus": "Local PIN lock is off.",
+      "lockTitle": "PMSify is locked",
+      "lockSubtitle": "Enter your PIN to open your private health records.",
+      "lockLabel": "PIN",
+      "unlockAction": "Unlock",
+      "lockWrong": "That PIN is not correct.",
+      "forgotAction": "I forgot my PIN",
+      "lockScopeNote": "Your records are stored only in this browser. Clearing this site's data removes them permanently.",
+      "recoveryTitle": "Forgotten PIN",
+      "recoveryMessage": "There is no PIN recovery, because PMSify deliberately stores nothing that could identify you — no email address, no phone number, no account. The only option is to erase all local data on this device and start again.",
+      "recoveryEraseAction": "Erase local data and start again"
+    },
+    "data": {
+      "cycleRecords": "Period records",
+      "dailyRecords": "Daily health records",
+      "reminderRecords": "Reminders",
+      "exportAction": "Export all my data",
+      "wipeAction": "Erase all local data",
+      "exportNote": "The export file is created on this device and never uploaded. It contains your records and preferences, but never your PIN."
+    },
+    "export": {
+      "success": "Your local data was exported to a file on this device."
+    },
+    "wipe": {
+      "title": "Erase all local data?",
+      "message": "This permanently deletes every period record, daily health record, reminder, and preference stored in this browser. It cannot be undone, and there is no cloud copy to restore from.",
+      "confirmLabel": "Type \"{phrase}\" to confirm",
+      "confirmPhrase": "ERASE",
+      "confirmAction": "Erase everything",
+      "working": "Erasing…",
+      "success": "All local data was erased from this device."
+    }
+  },
+  "reminders": {
+    "title": "Reminders",
+    "subtitle": "Optional local nudges, derived only from what you have recorded.",
+    "sendTest": "Send a test",
+    "testTitle": "PMSify",
+    "testBody": "This is what a PMSify reminder looks like. Your health details are not shown here.",
+    "testFailed": "Your browser would not show the notification. Check notification permission for this site.",
+    "supportUnsupported": "This browser does not support notifications. Your reminder schedule is still saved, but nothing can be shown while PMSify is open.",
+    "supportDenied": "Notifications are blocked for this site. Reminders cannot appear until you allow notifications in your browser settings.",
+    "supportPrompt": "Allow notifications so PMSify can reach you while it is open.",
+    "enableNotifications": "Allow notifications",
+    "limitationWhileClosed": "PMSify has no background service, so a reminder can only appear while a PMSify tab is open. Closing the app silences it. This is a limitation of offline-first design, not a setting you can change.",
+    "scheduleHeading": "Reminder schedule",
+    "timeLabel": "Time of day",
+    "leadLabel": "Remind me",
+    "leadValue": "{days, plural, =0 {on the day} =1 {1 day before} other {# days before}}",
+    "notificationBody": "Open PMSify to see what is new. Your health details are not shown on your lock screen.",
+    "validation": {
+      "invalidTime": "Enter a valid time of day.",
+      "invalidLead": "Choose a lead time between 0 and 7 days."
+    },
+    "status": {
+      "disabled": "This reminder is off.",
+      "scheduled": "Next reminder: {date} at {time}",
+      "noPrediction": "Available once you have recorded enough cycles to predict your next period.",
+      "alreadyPassed": "This reminder time has already passed for your current prediction. It will arm again when a new prediction is available."
+    },
+    "periodExpectation": {
+      "title": "Period expectation",
+      "description": "A quiet nudge a few days before your predicted next period, using the same prediction as your calendar.",
+      "notificationTitle": "PMSify reminder"
+    },
+    "dailyCheckIn": {
+      "title": "Daily health check-in",
+      "description": "A daily reminder to record how you felt. The notification itself carries no health information.",
+      "notificationTitle": "PMSify reminder"
+    }
+  },
+  "learn": {
+    "title": "Health Education",
+    "subtitle": "A small offline library on women's health. General information only — never a diagnosis.",
+    "searchLabel": "Search the education library",
+    "searchPlaceholder": "Search articles",
+    "filterLabel": "Filter by topic",
+    "topicAll": "All topics",
+    "readMinutes": "{minutes} min read",
+    "articleCount": "{count, plural, =0 {No articles} =1 {# article} other {# articles}}",
+    "resultCount": "{count, plural, =0 {No articles found} =1 {# article found} other {# articles found}}",
+    "noResultsTitle": "No articles match that search",
+    "noResultsDescription": "Try a shorter or more general word, or clear the topic filter.",
+    "clearFilters": "Clear search and filters",
+    "emptyTitle": "The library is empty",
+    "emptyDescription": "Education articles will appear here once the library is available.",
+    "backToLibrary": "Back to the library",
+    "escalationTitle": "This is general information, not a diagnosis",
+    "escalationBody": "Only a qualified clinician who can examine you and review your history can diagnose a condition. If something feels wrong, or symptoms are severe or getting worse, please see a doctor.",
+    "offlineNote": "These articles are stored on your device and work without an internet connection.",
+    "topics": {
+      "cycleBasics": "Cycle basics",
+      "symptoms": "Symptoms",
+      "whenToSeeDoctor": "When to see a doctor",
+      "lifestyle": "Everyday health",
+      "conditions": "Common conditions"
+    },
+    "articles": {
+      "cyclePhases": {
+        "title": "What the four phases of your cycle are",
+        "summary": "Your cycle is not one event but four repeating phases, and each one tends to feel different.",
+        "body": "Menstruation is the phase where the uterine lining is shed, usually lasting a few days. Immediately after it, the follicular phase begins: rising oestrogen rebuilds the lining and energy and mood often lift. Somewhere in this phase, the pituitary gland releases luteinising hormone and an egg is released from an ovary — that is ovulation. After ovulation, the luteal phase runs until your next period, driven mainly by progesterone. Many people notice the most distinct physical and emotional changes during the luteal phase. || None of these phases lasts exactly the same number of days every time, and a phase that feels different from one cycle to the next is not automatically a problem. PMSify records your actual dates and works out your own pattern, rather than assuming a standard 28-day template."
+      },
+      "fertileWindow": {
+        "title": "What the fertile window means, and what it does not",
+        "summary": "The fertile window is a calculated estimate, not a guarantee, and it is not a contraceptive method.",
+        "body": "The fertile window is the span of days when pregnancy is considered more likely, based on when ovulation is estimated to occur and how long sperm and an egg can survive. PMSify estimates it from your own recorded cycle lengths, using fixed arithmetic — not by observing your body. || Because the estimate is only as good as the assumption that your cycles repeat, it will drift for anyone whose cycle length varies. It also cannot detect ovulation itself. Timing intercourse to avoid pregnancy using this estimate is not safe, because real ovulation can happen earlier or later than predicted. || If you are planning a pregnancy or avoiding one, please speak to a doctor or a qualified family-planning service about methods that do not depend on predicting a single day."
+      },
+      "pmsVsPmd": {
+        "title": "PMS and PMDD: what is the difference",
+        "summary": "Premenstrual symptoms are common. PMDD is a much more severe medical condition and is not simply 'bad PMS'.",
+        "body": "PMS covers a wide range of physical and emotional symptoms in the one to two weeks before a period, which settle once bleeding starts. Common ones include bloating, breast tenderness, headaches, cravings, and feeling irritable or low. PMS is treatable and many people find it manageable. || PMDD, premenstrual dysphoric disorder, is different in both severity and cause. Symptoms are severe enough to disrupt work, study, or relationships, and they are present for most cycles, not occasionally. PMDD is diagnosed by a clinician using a symptom diary recorded across at least two cycles. It can respond to treatments that ordinary PMS does not. || A useful reason to keep tracking: PMSify records your symptoms day by day, so if you and a doctor are trying to work out whether what you experience is PMS or something else, you will arrive with records rather than guesses."
+      },
+      "painTracking": {
+        "title": "Tracking pain, and when to stop tracking and see someone",
+        "summary": "Logging pain on a simple 0–10 scale turns 'it hurt a lot' into something a clinician can actually use.",
+        "body": "A pain score is subjective, which is exactly why a repeated series of scores is useful. One number alone means little; a trend across several cycles tells you whether your pain is changing. PMSify asks for a 0–10 number alongside the symptom names you select, so the record shows both what hurt and how much. || Record the timing as well as the number. Pain that builds steadily over several days and then eases with bleeding is a common pattern. Pain that starts well before bleeding and continues for days after it ends is a different pattern, and worth mentioning to a doctor. || Some pain is not something to wait out. Seek medical care promptly if the pain is severe and sudden, comes with fever, fainting, heavy or prolonged bleeding, pain during pregnancy, or pain that is getting steadily worse. You do not need to justify that — severe pain is a reason to be seen, not to be reassured."
+      },
+      "sleepStressCycle": {
+        "title": "Sleep, stress, and how they interact with your cycle",
+        "summary": "Sleep and stress do not sit apart from your cycle; they tend to move with it.",
+        "body": "Poor sleep and high stress commonly cluster in the luteal phase, the stretch after ovulation and before your next period. That is not a personal failing — it is a pattern many people notice. Hormonal changes in this phase can make sleep feel lighter and make stress feel harder to manage. || Poor sleep also affects what you can tolerate. Fatigue and low mood make pain feel worse and cravings more intense, which can turn a manageable cycle into a difficult one. The practical lever is usually consistency of sleep and wake time rather than total hours, especially around the days before a period. || If you are sleeping poorly for weeks at a time regardless of where you are in your cycle, or if you feel unable to cope with everyday demands, that is worth raising with a doctor rather than treating as a PMS symptom to endure."
+      },
+      "hydrationEnergy": {
+        "title": "Hydration, energy, and what to drink",
+        "summary": "Water intake is one of the simplest things to record, and small changes are easier to sustain than big ones.",
+        "body": "Hydration is worth tracking because it is directly measurable and directly changeable. Many people find their intake is lower on days they are busy or travelling, which is often also when their symptoms are worse. PMSify records millilitres so you can see the shape of your week rather than a single total. || Water is the safest default. Caffeine, strong tea, and alcohol all have real effects on sleep, and because sleep already tends to be disrupted before a period, reducing them around that window is a low-risk change many people find worthwhile. || A note on energy drinks and supplements: some interact with prescribed medicines, and supplement claims are often not well tested. Check with a doctor or pharmacist before starting any supplement, especially if you take regular medication."
+      },
+      "pcosOverview": {
+        "title": "PCOS: what it is and how it is diagnosed",
+        "summary": "Polycystic ovary syndrome is one of the most common conditions affecting periods — and it can take years to diagnose.",
+        "body": "PCOS is a hormonal and metabolic condition, not a gynaecological cosmetic issue. It is associated with irregular or infrequent periods, signs of androgen excess such as acne or excess hair, difficulty conceiving, and in some cases insulin resistance. It is also strongly associated with metabolic health, including type 2 diabetes risk, which is why assessment is not only about periods. || Diagnosis is made by a clinician using a defined set of criteria — typically a combination of menstrual pattern, blood tests, and sometimes an ultrasound — and other causes have to be ruled out first. It is frequently missed in younger women, in lean women, and in women whose symptoms are treated as simply stressful. || Nothing you track on your own can confirm or rule out PCOS. What tracking does give you is a precise history: how many days between periods, what pattern over how many months, and how the numbers have changed. That history is often the thing that finally moves a diagnosis forward."
+      },
+      "anaemiaFatigue": {
+        "title": "Anaemia, fatigue, and why they are easy to miss",
+        "summary": "Persistent tiredness is often blamed on stress or hormones. Sometimes it is low iron, and that is testable.",
+        "body": "Iron-deficiency anaemia is common in women, and it is frequently mistaken for tiredness, stress, or a difficult phase of the cycle. Common signs include fatigue that does not lift with rest, breathlessness on stairs, palpitations, headaches, dizziness, pale skin, and brittle nails. Heavy or prolonged periods are one of the main causes, and PMSify records flow intensity and duration, which gives a clinician a way to judge whether your losses are unusually heavy. || Anaemia is diagnosed with a simple blood test, not by how you feel. It is also treatable. What is not advisable is self-prescribing iron supplements, because iron overload is harmful and some causes of anaemia need different treatment. || If you are tired all the time and it has lasted more than a few weeks, ask a doctor for a blood test rather than adjusting your habits and hoping."
+      },
+      "endometriosisOverview": {
+        "title": "Endometriosis: what it is, and why it is so often missed",
+        "summary": "Severe period pain is routinely blamed on being normal. Endometriosis is a real, treatable condition, and the average diagnosis takes years.",
+        "body": "Endometriosis is a condition in which tissue similar to the lining of the uterus grows outside the uterus, most often on the ovaries, the fallopian tubes, or the lining of the pelvis. This tissue still responds to the menstrual cycle, so it tends to bleed and swell with each period in a place where the blood has no way out. That is what causes the inflammation, the adhesions, and the pain. It is not a lifestyle problem, and it is not caused by anything you have done. Prevalence estimates vary widely between studies, but it is commonly reported in around one in ten women of reproductive age, and a large share of them have never been diagnosed. || The pattern that raises suspicion is distinctive: period pain severe enough to stop normal daily activity, pain that worsens over the years rather than settling, pain during or after sex, pain when passing urine or opening your bowels around period time, heavy or prolonged bleeding, and difficulty conceiving. None of these symptoms is unique to endometriosis. They overlap heavily with adenomyosis, fibroids, ovarian cysts, pelvic infection, and irritable bowel syndrome, and telling them apart is a clinician’s job rather than an app’s. What PMSify can show is the pattern across time: how many days between periods, how heavy each period was, and how those numbers have changed. A clear history like that is often what makes a referral easier to act on. || Diagnosis cannot be made by an app, a symptom diary, or a routine blood test. It usually takes a combination of clinical history, an examination, and imaging, and sometimes a laparoscopy, and it is regularly missed or delayed for years, particularly in women whose pain was put down to ordinary menstrual cramps. Nothing you track in PMSify can confirm or rule out endometriosis, and this article does not suggest that you have it. Please seek medical care rather than managing it alone if your periods are painful enough to stop you working or studying, if the pain is getting worse, if you have had heavy bleeding across several cycles, if sex is painful, or if you have been trying to conceive for a year without success."
+      },
+      "whenToSeeDoctor": {
+        "title": "Symptoms that deserve a doctor's attention",
+        "summary": "Some changes are worth investigating on their own, without waiting to see whether they repeat.",
+        "body": "It is reasonable to seek medical advice rather than continue tracking when you notice: periods that have stopped for three months or more without a pregnancy; cycles that have become much shorter, much longer, or far more irregular than your own previous pattern; bleeding that soaks through protection hourly or lasts far longer than your usual; severe pain that is new, worsening, or not eased by ordinary measures; pain during sex; or bleeding after menopause. || Seek prompt care, rather than a routine appointment, for severe or sudden pelvic pain, pain with fever or vomiting, fainting, or heavy bleeding, and always for any possibility of pregnancy with pain or bleeding. || None of this means a symptom is serious. It means the question is answerable, and answering it early is easier than answering it late. A doctor cannot diagnose you over an app, and this page is not a diagnosis — it is a list of reasons not to delay a conversation you have been putting off."
+      },
+      "talkingToDoctor": {
+        "title": "Getting your concerns taken seriously",
+        "summary": "The way you raise a health concern has a measurable effect on what you are offered. This is about preparation, not assertiveness alone.",
+        "body": "Bring a record. Dates, a symptom list, a pain score series, and a note of what you have already tried are far more useful than a description from memory, because they turn a general worry into a specific question. PMSify's Insights and Reports screens are designed to be read out loud in a consultation. || State the main concern in your first sentence. A clinician will otherwise decide what the problem is based on the first thing you mention. You can also say plainly that you have looked into the cause and what you are asking for. || If you are told something is nothing and you disagree, it is legitimate to ask what would need to be different for it to be investigated, and to ask whether a follow-up or a second opinion is appropriate. If you have felt dismissed before, say that too — it is useful information, and you can ask for a doctor who works with women, or bring someone with you for support."
+      }
+    }
+  },
+  "assistant": {
+    "title": "AI Health Assistant",
+    "subtitle": "Answers about your cycle and women's health, drawn from your own records and our education library.",
+    "disclaimerTitle": "Not a doctor",
+    "disclaimerBody": "This assistant explains general health information. It cannot tell you whether you have a condition, and it cannot advise you on medicines. For diagnosis or treatment, please speak to a qualified doctor.",
+    "contextTitle": "What this assistant can read",
+    "contextBody": "Only the totals and averages below. Your actual entries stay on this device unless you switch on the optional online assistant.",
+    "contextEmpty": "No health records yet. Log a period or a daily health entry to get personal answers.",
+    "contextPrivacyNote": "Your PIN, your notes and your raw entries are never sent anywhere. Only the figures shown here can be.",
+    "factCycles": "Cycles",
+    "factDays": "Days logged",
+    "factAverageCycle": "Avg cycle",
+    "factAveragePeriod": "Avg period",
+    "daysValue": "{days} days",
+    "notAvailable": "Not enough data",
+    "fallbackNotice": "The optional online assistant is switched off, so this answer was prepared entirely on your device.",
+    "transcriptLabel": "Conversation",
+    "emptyTitle": "Ask about your health",
+    "emptyDescription": "You can ask about your cycle, about what you have recorded, or about anything in the education library.",
+    "browseLibraryAction": "Browse the education library",
+    "youLabel": "You",
+    "assistantLabel": "Assistant",
+    "enhancedBadge": "Written by the online assistant",
+    "sourcesHeading": "From the education library",
+    "sourceFrom": "From:",
+    "refusalNote": "A clinician is the right person for this question.",
+    "crisisTitle": "Please talk to someone now",
+    "thinkingLabel": "Preparing an answer",
+    "clearAction": "Clear conversation",
+    "inputLabel": "Your question",
+    "inputPlaceholder": "Ask about your cycle or your symptoms",
+    "sendAction": "Ask",
+    "loadError": "Your local records could not be read, so the assistant cannot answer yet.",
+    "suggestions": {
+      "cycle": "When is my next period likely?",
+      "symptoms": "What are common PMS symptoms?",
+      "records": "Summarise what I have recorded.",
+      "articles": "What is worth knowing before a doctor visit?"
+    },
+    "resources": {
+      "emergency": "Emergency services",
+      "kiran": "KIRAN mental health helpline",
+      "childline": "Childline India"
+    },
+    "responses": {
+      "greeting": "Hello. I can explain your cycle, what you have recorded, and the health information in our education library. What would you like to know?",
+      "crisisRefusal": "I am not able to help with this, and I do not want to leave you to handle it alone. Please speak to a health professional or call one of the numbers above today. If you are in immediate danger, please call emergency services.",
+      "diagnosisRefusal": "I cannot tell you whether you have a condition, and a guess from me could do real harm. What your records can show is a pattern worth taking to a doctor, who can give you a proper answer. Please book a consultation.",
+      "medicationRefusal": "I cannot advise on medicines, doses or supplements, because getting that wrong is genuinely dangerous. Please take that question to a doctor or a pharmacist.",
+      "outOfScopeRefusal": "I only answer questions about women's health, so that is not something I can help with.",
+      "noMatch": "I could not find anything about that in the education library. Try different words, or browse the library yourself.",
+      "predictionReady": "From the cycles you have recorded, your next period is estimated to start around {estimatedDate}. This is calculated from your own records, so please treat it as an estimate rather than a certainty.",
+      "predictionWithWindow": "From the cycles you have recorded, your next period is estimated to start around {estimatedDate}, and your estimated fertile window is {windowStart} to {windowEnd}. Both are calculated from your records, so please treat them as estimates.",
+      "predictionInsufficient": "I cannot estimate that yet. It takes at least two completed cycles, and you currently have {recordedCycles}. Log one more cycle and the estimate will appear here and on your calendar.",
+      "noData": "There is not enough recorded yet for me to say anything about dates.",
+      "summaryNoData": "You have not recorded anything yet. Once you log a period or a daily health entry, I can summarise what is there.",
+      "summaryWithCycle": "You have recorded {recordedCycles} cycles and {recordedDays} daily entries. Your average cycle is {averageCycle} days and your average period is {averagePeriod} days.",
+      "summaryNoCycle": "You have recorded {recordedCycles} cycles and {recordedDays} daily entries. There is not yet enough recorded to calculate an average cycle length.",
+      "education": "Here is what our education library says, from {count, plural, =1 {# article} other {# articles}}."
+    }
   }
 }

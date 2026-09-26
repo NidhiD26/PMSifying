@@ -225,7 +225,10 @@ export const DashboardView: React.FC = () => {
                   </span>
                   <p className="text-base font-bold text-[#2D1B2D]">
                     {cycleAnalysis.stats
-                      ? `${cycleAnalysis.stats.averageCycleLength} days avg (${cycleAnalysis.stats.sampleSize} cycles)`
+                      ? tDashboard('cycleSummaryValue', {
+                          days: cycleAnalysis.stats.averageCycleLength,
+                          count: cycleAnalysis.stats.sampleSize,
+                        })
                       : '—'}
                   </p>
                 </div>
@@ -238,7 +241,7 @@ export const DashboardView: React.FC = () => {
                 <Heart className="h-6 w-6" />
               </div>
               <div className="max-w-md mx-auto space-y-2">
-                <h3 className="text-lg font-bold text-[#2D1B2D]">Welcome to PMSify</h3>
+                <h3 className="text-lg font-bold text-[#2D1B2D]">{tDashboard('welcomeTitle')}</h3>
                 <p className="text-sm text-[#5A5A66]">{tDashboard('noCycleData')}</p>
               </div>
               <Button variant="primary" onClick={() => setIsPeriodModalOpen(true)}>

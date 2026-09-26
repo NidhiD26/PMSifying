@@ -1,10 +1,12 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { UserPreferencesRecord, CycleRecord, DailyLogRecord } from '@/types/db';
+import type { ReminderRecord } from '@/types/reminders';
 
 class PMSifyLocalDatabase extends Dexie {
   user_preferences!: EntityTable<UserPreferencesRecord, 'id'>;
   cycles!: EntityTable<CycleRecord, 'id'>;
   daily_logs!: EntityTable<DailyLogRecord, 'id'>;
+  reminders!: EntityTable<ReminderRecord, 'id'>;
 
   constructor() {
     super('PMSify_Local_DB');
@@ -21,6 +23,14 @@ class PMSifyLocalDatabase extends Dexie {
       user_preferences: 'id',
       cycles: '++id, startDate, endDate, createdAt',
       daily_logs: '++id, &date, painLevel, sleepHours, hydrationMl, updatedAt',
+    });
+
+    // Schema Version 3 (Local reminder schedule)
+    this.version(3).stores({
+      user_preferences: 'id',
+      cycles: '++id, startDate, endDate, createdAt',
+      daily_logs: '++id, &date, painLevel, sleepHours, hydrationMl, updatedAt',
+      reminders: 'id',
     });
   }
 }

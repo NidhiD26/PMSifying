@@ -36,6 +36,7 @@
     "eslint": "^9.20.0",
     "eslint-config-next": "15.1.7",
     "fake-indexeddb": "^6.2.5",
+    "intl-messageformat": "^10.7.18",
     "jsdom": "^26.0.0",
     "postcss": "^8.5.1",
     "tailwindcss": "^4.0.0",
