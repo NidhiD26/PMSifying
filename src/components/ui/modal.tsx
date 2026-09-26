@@ -8,6 +8,14 @@ export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  /**
+   * Accessible name for the close control.
+   *
+   * Optional rather than hardcoded, because this app renders every visible and
+   * assistive string from a locale file. A caller that omits it keeps a sensible
+   * default, so an existing caller is not broken by adding the prop.
+   */
+  closeLabel?: string;
   children: React.ReactNode;
   className?: string;
 }
@@ -16,6 +24,7 @@ export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
+  closeLabel,
   children,
   className,
 }) => {
@@ -51,7 +60,7 @@ export const Modal: React.FC<ModalProps> = ({
           {title && <h2 className="text-xl font-semibold text-[#2D1B2D]">{title}</h2>}
           <button
             onClick={onClose}
-            aria-label="Close dialog"
+            aria-label={closeLabel ?? 'Close dialog'}
             className="rounded-full p-2 text-[#5A5A66] hover:bg-[#F9EBEA] hover:text-[#2D1B2D] min-h-[40px] min-w-[40px] flex items-center justify-center"
           >
             <X className="h-5 w-5" />

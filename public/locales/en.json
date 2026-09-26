@@ -41,7 +41,10 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
-    "offlineMode": "Offline Mode Active"
+    "offlineMode": "Offline Mode Active",
+    "saving": "Saving…",
+    "close": "Close",
+    "dismiss": "Dismiss"
   },
   "privacy": {
     "charterTitle": "Privacy Charter & Security Architecture",
@@ -740,6 +743,114 @@
       "summaryWithCycle": "You have recorded {recordedCycles} cycles and {recordedDays} daily entries. Your average cycle is {averageCycle} days and your average period is {averagePeriod} days.",
       "summaryNoCycle": "You have recorded {recordedCycles} cycles and {recordedDays} daily entries. There is not yet enough recorded to calculate an average cycle length.",
       "education": "Here is what our education library says, from {count, plural, =1 {# article} other {# articles}}."
+    }
+  },
+  "secretChat": {
+    "badge": {
+      "label": "Anonymous",
+      "explanation": "Members are shown a random alias such as “Anonymous User #4821”. Your name and email are never shown next to anything you post."
+    },
+    "author": {
+      "you": "You",
+      "anonymous": "Anonymous User #{number}"
+    },
+    "identity": {
+      "title": "You are anonymous here",
+      "body": "Your alias is random and unrelated to your account. Nothing you post is connected to your cycle, symptoms or any other health record."
+    },
+    "privacy": {
+      "note": "Posts are anonymous and are not linked to your health log. Do not share identifying details about yourself or anyone else."
+    },
+    "composer": {
+      "heading": "Share something",
+      "label": "Write a post",
+      "placeholder": "You do not have to use your name, or anyone else’s.",
+      "submit": "Post",
+      "remaining": "{count} characters left",
+      "tooLong": "{count} characters over the limit"
+    },
+    "feed": {
+      "loading": "Loading the conversation…",
+      "loadingMore": "Loading more…",
+      "loadMore": "Load more",
+      "emptyTitle": "Nothing here yet",
+      "emptyBody": "Be the first to post. Your name will not be shown."
+    },
+    "comments": {
+      "heading": "Replies to {author}",
+      "label": "Write a reply",
+      "placeholder": "Write a kind reply…",
+      "submit": "Reply",
+      "empty": "No replies yet."
+    },
+    "actions": {
+      "like": "Like, {count} so far",
+      "comments": "Replies, {count} so far",
+      "more": "More actions for {author}",
+      "menuLabel": "Actions for {author}",
+      "report": "Report",
+      "block": "Block this member",
+      "delete": "Delete my post",
+      "deleteComment": "Delete my reply"
+    },
+    "report": {
+      "title": "Report",
+      "intro": "Tell us what is wrong with the post by {author}. A person will read this.",
+      "reasonLabel": "What is the problem?",
+      "reasons": {
+        "harassment": "Harassment or bullying",
+        "sexual_content": "Sexual content",
+        "self_harm": "Talk of self-harm or suicide",
+        "medical_misinformation": "False medical information",
+        "spam": "Spam or advertising",
+        "other": "Something else"
+      },
+      "detailsLabel": "What happened?",
+      "detailsHint": "Up to {count} characters.",
+      "anonymityNote": "The person you report is not told who reported them. Please do not include your name in the details.",
+      "submit": "Send report"
+    },
+    "blocked": {
+      "title": "Members you have blocked",
+      "loading": "Loading your blocked list…",
+      "empty": "You have not blocked anyone.",
+      "unblock": "Unblock"
+    },
+    "toast": {
+      "postDeleted": "Your post was deleted.",
+      "blocked": "You will no longer see posts by {author}.",
+      "unblocked": "That member is unblocked.",
+      "reported": "Thank you. A person will read your report."
+    },
+    "auth": {
+      "gateTitle": "Sign in to join the conversation",
+      "gateBody": "SecretChat is anonymous, but it still needs an account so replies have an author and abuse can be stopped. Your email is used to sign in and for nothing else — it is never shown next to anything you post.",
+      "signInTitle": "I already have an account",
+      "signInSubmit": "Sign in",
+      "signUpTitle": "I am new here",
+      "signUpSubmit": "Create an account",
+      "emailLabel": "Email address",
+      "passwordLabel": "Password",
+      "passwordHint": "At least 8 characters.",
+      "invalidEmail": "Enter a valid email address.",
+      "invalidCredentials": "That email and password do not match an account.",
+      "emailInUse": "An account already exists for that email address."
+    },
+    "setup": {
+      "title": "SecretChat is not connected yet",
+      "body": "A person who installs this app has to connect it to their own Supabase project first. Until then nothing here is sent or stored anywhere.",
+      "noLocalStorage": "Nothing from this page is saved on this device, and nothing from your health log can reach it."
+    },
+    "errors": {
+      "invalid_request": "That request was not valid. Check the form and try again.",
+      "unauthenticated": "Your session has ended. Sign in again to continue.",
+      "forbidden": "You cannot do that.",
+      "not_found": "That is no longer available.",
+      "conflict": "That has already been done.",
+      "not_configured": "SecretChat is not connected to a database yet. An administrator needs to finish setup.",
+      "upstream_unavailable": "We could not reach the community right now. Try again in a moment.",
+      "rate_limited": "Too many actions at once. Wait a moment and try again.",
+      "unknown": "Something went wrong. Try again."
     }
   }
 }
