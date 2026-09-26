@@ -20,7 +20,9 @@
     "healthCamps": "Health Camps",
     "healthEcosystem": "Health Ecosystem",
     "personalTracker": "Personal Tracker",
-    "healthcarePortal": "Healthcare Portal"
+    "healthcarePortal": "Healthcare Portal",
+    "dashboard": "Dashboard",
+    "desktopLabel": "Main navigation"
   },
   "language": {
     "select": "Language",
@@ -80,7 +82,8 @@
       "healthcarePointRoleScoped": "Access is granted per role, not shared between ASHA and doctors.",
       "healthcarePointConsent": "A patient's information is shared only after their explicit consent, and only for a stated purpose.",
       "healthcarePointAudit": "Access and changes are recorded so they can be reviewed afterwards."
-    }
+    },
+    "comingSoon": "This section is not connected yet. Nothing you record here is sent anywhere, and this page will tell you when it is."
   },
   "dashboard": {
     "title": "Health Overview",
@@ -104,7 +107,12 @@
     "cycleSummaryValue": "{days} days average across {count, plural, =1 {1 cycle} other {# cycles}}",
     "welcomeTitle": "Welcome to PMSify",
     "noCycleData": "Log your period dates to view predicted cycles, fertile windows, and health statistics.",
-    "privacyFooter": "100% Offline & Private — Stored strictly on this device in local IndexedDB."
+    "privacyFooter": "100% Offline & Private — Stored strictly on this device in local IndexedDB.",
+    "recentPeriod": "Last Recorded Period",
+    "seeAllInsights": "See all insights",
+    "askTitle": "Ask and talk",
+    "askAiBody": "Ask the AI Assistant about cycle phases, symptoms, or what is worth tracking. It answers from your recorded data and general health information only.",
+    "askSecretChatBody": "Talk anonymously with others going through similar experiences. Nothing from your local tracker is shared, and posting is always your own choice."
   },
   "period": {
     "title": "Period Records",
@@ -159,7 +167,15 @@
       "thu": "Thu",
       "fri": "Fri",
       "sat": "Sat"
-    }
+    },
+    "legendPeriod": "Recorded period",
+    "legendToday": "Today",
+    "legendSelected": "Selected day",
+    "cycleDay": "Cycle day {day}",
+    "beforeFirstRecord": "Before your first recorded period",
+    "futureDateHint": "This date has not happened yet. You can log a period once the day arrives.",
+    "noRecordHint": "Nothing is recorded for this date. If you remember it accurately, log the period; otherwise record how you felt that day.",
+    "logHealthForDate": "Log health for this day"
   },
   "dailyHealth": {
     "title": "Daily Health Log",
@@ -227,7 +243,8 @@
     "intensityMild": "Mild",
     "intensityModerate": "Moderate",
     "intensityHigh": "High",
-    "intensityVeryHigh": "Very high"
+    "intensityVeryHigh": "Very high",
+    "isTodayLabel": "Today"
   },
   "health": {
     "sectionPeriod": "Period Records",
@@ -292,7 +309,9 @@
     "cycleTrendHint": "Each entry is a recorded cycle length in days.",
     "cycleTrendSeries": "Cycle lengths, newest first",
     "loading": "Calculating your statistics…",
-    "error": "Could not load your health records. Please try again."
+    "error": "Could not load your health records. Please try again.",
+    "noDataHint": "Log your period dates and daily health entries, and the summaries built from them will appear here.",
+    "cyclePredictionReady": "Available"
   },
   "insights": {
     "sectionTitle": "Your insights",
@@ -386,7 +405,10 @@
     "completeness": {
       "title": "Recorded data",
       "message": "You have recorded health information on {count} days in this period."
-    }
+    },
+    "careTitle": "When to consider professional care",
+    "careBody": "These figures describe what you recorded; they are not a diagnosis. If periods stop for three months, bleeding becomes very heavy, pain is severe or getting worse, or something simply does not feel right, book an appointment instead of waiting for the numbers to change.",
+    "notMedicalAdvice": "PMSify does not diagnose, and nothing here replaces a clinician who can examine you."
   },
   "reports": {
     "title": "Health Report",
@@ -458,11 +480,15 @@
     "barLabel": "Primary navigation",
     "open": "More",
     "title": "All sections",
-    "close": "Close menu"
+    "close": "Close menu",
+    "secondaryTitle": "More sections"
   },
   "healthcare": {
     "badge": "Healthcare Portal",
-    "footerNote": "The healthcare portals are a separate, authenticated system. They do not read the personal tracking data stored on this device."
+    "footerNote": "The healthcare portals are a separate, authenticated system. They do not read the personal tracking data stored on this device.",
+    "ashaDescription": "For ASHA workers: a role-scoped portal for community health follow-up. Not connected in this build.",
+    "doctorDescription": "For doctors: a role-scoped portal for reviewing consented patient summaries. Not connected in this build.",
+    "healthCampsDescription": "For health camps: a role-scoped portal for registering and following up camp sessions. Not connected in this build."
   },
   "settings": {
     "title": "Settings",
@@ -651,7 +677,9 @@
         "summary": "The way you raise a health concern has a measurable effect on what you are offered. This is about preparation, not assertiveness alone.",
         "body": "Bring a record. Dates, a symptom list, a pain score series, and a note of what you have already tried are far more useful than a description from memory, because they turn a general worry into a specific question. PMSify's Insights and Reports screens are designed to be read out loud in a consultation. || State the main concern in your first sentence. A clinician will otherwise decide what the problem is based on the first thing you mention. You can also say plainly that you have looked into the cause and what you are asking for. || If you are told something is nothing and you disagree, it is legitimate to ask what would need to be different for it to be investigated, and to ask whether a follow-up or a second opinion is appropriate. If you have felt dismissed before, say that too — it is useful information, and you can ask for a doctor who works with women, or bring someone with you for support."
       }
-    }
+    },
+    "clearSearch": "Clear search",
+    "nextArticle": "Read next"
   },
   "assistant": {
     "title": "AI Health Assistant",

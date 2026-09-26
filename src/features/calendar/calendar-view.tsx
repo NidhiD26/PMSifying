@@ -10,13 +10,16 @@ import { CalendarGrid } from './calendar-grid';
 import { SelectedDayDetails } from './selected-day-details';
 import { PeriodModal } from '@/features/period-logging/period-modal';
 import { Surface } from '@/components/ui/surface';
-import { AlertCircle, ShieldCheck } from 'lucide-react';
+import { ErrorState, LoadingState } from '@/components/ui/state';
+import { ShieldCheck } from 'lucide-react';
+import { formatLocalDateIso } from '@/lib/utils/date-utils';
 
 export const CalendarView: React.FC = () => {
   const t = useTranslations('calendar');
-  const tCommon = useTranslations('common');
 
-  const todayIso = React.useMemo(() => new Date().toISOString().split('T')[0], []);
+  // Local calendar dates throughout: toISOString() would shift the day for
+  // anyone east or west of UTC.
+  const todayIso = React.useMemo(() => formatLocalDateIso(new Date()), []);
 
   const [currentDate, setCurrentDate] = React.useState<Date>(() => new Date());
   const [selectedDateIso, setSelectedDateIso] = React.useState<string>(todayIso);
@@ -45,7 +48,7 @@ export const CalendarView: React.FC = () => {
     loadCycles();
   }, [loadCycles]);
 
-  // Load whether a daily health log exists for the selected date
+  // Whether a daily health log exists for the selected date
   React.useEffect(() => {
     if (!selectedDateIso) {
       setHasDailyLogForSelected(false);
@@ -73,51 +76,40 @@ export const CalendarView: React.FC = () => {
   };
 
   const handleToday = () => {
-    const now = new Date();
-    setCurrentDate(now);
-    setSelectedDateIso(now.toISOString().split('T')[0]);
+    setCurrentDate(new Date());
+    setSelectedDateIso(todayIso);
+  };
+
+  const handleSelectDate = (dateIso: string) => {
+    setSelectedDateIso(dateIso);
   };
 
   const handleLogPeriodForDate = (dateIso: string) => {
-    // Check if date already matches an existing cycle start date
     const existing = cycles.find((c) => c.startDate === dateIso);
-    if (existing) {
-      setModalCycleToEdit(existing);
-    } else {
-      setModalCycleToEdit({
+    setModalCycleToEdit(
+      existing ?? {
         startDate: dateIso,
         createdAt: '',
         updatedAt: '',
-      });
-    }
+      }
+    );
     setIsModalOpen(true);
   };
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-[#2D1B2D]">{t('title')}</h1>
-        <p className="text-sm text-[#5A5A66] mt-1">{t('subtitle')}</p>
-      </div>
+    <div className="mx-auto max-w-4xl space-y-6">
+      <header>
+        <h1 className="text-2xl font-bold text-[#2D1B2D] sm:text-3xl">{t('title')}</h1>
+        <p className="mt-1 text-sm text-[#5A5A66]">{t('subtitle')}</p>
+      </header>
 
-      {/* Error State */}
-      {errorMsg && (
-        <Surface variant="bordered" className="p-4 border-[#C94A46]/30 bg-[#C94A46]/10 flex items-center gap-3 text-sm text-[#C94A46]">
-          <AlertCircle className="h-5 w-5 shrink-0" />
-          <p>{errorMsg}</p>
-        </Surface>
-      )}
+      {errorMsg && <ErrorState message={errorMsg} onRetry={loadCycles} />}
 
-      {/* Loading State */}
       {isLoading ? (
-        <div className="py-16 text-center text-sm text-[#5A5A66]">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#2D1B2D] border-t-transparent mx-auto mb-3" />
-          <span>{tCommon('loading')}</span>
-        </div>
+        <LoadingState />
       ) : (
-        <div className="space-y-8">
-          <Surface variant="bordered" className="p-6 space-y-6">
+        <div className="space-y-6">
+          <Surface variant="bordered" className="space-y-5 p-4 sm:p-6">
             <CalendarHeader
               currentDate={currentDate}
               onPrevMonth={handlePrevMonth}
@@ -129,11 +121,10 @@ export const CalendarView: React.FC = () => {
               currentDate={currentDate}
               selectedDate={selectedDateIso}
               cycles={cycles}
-              onSelectDate={setSelectedDateIso}
+              onSelectDate={handleSelectDate}
             />
           </Surface>
 
-          {/* Contextual Selected Date Details */}
           <SelectedDayDetails
             selectedDateIso={selectedDateIso}
             cycles={cycles}
@@ -143,15 +134,11 @@ export const CalendarView: React.FC = () => {
         </div>
       )}
 
-      {/* Local Offline Guarantee Footer */}
-      <div className="p-3.5 rounded-xl bg-[#F9EBEA]/60 border border-[#E2D8D0] flex items-center justify-between gap-3 text-xs text-[#5A5A66]">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-[#2E8B57] shrink-0" />
-          <span>{t('offlineGuarantee')}</span>
-        </div>
+      <div className="flex items-center gap-2 text-xs text-[#5A5A66]">
+        <ShieldCheck className="h-4 w-4 shrink-0 text-[#2E8B57]" aria-hidden="true" />
+        <span className="leading-relaxed">{t('offlineGuarantee')}</span>
       </div>
 
-      {/* Period Modal */}
       <PeriodModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

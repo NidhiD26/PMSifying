@@ -4,10 +4,21 @@ import Link from 'next/link';
 import { Surface } from '@/components/ui/surface';
 import { Button } from '@/components/ui/button';
 import { ShieldCheck, Smartphone, Users, Stethoscope, Lock, CloudOff, FileDown } from 'lucide-react';
+import { withLocale } from '@/lib/navigation/locale-path';
+import { isValidLocale } from '@/i18n/config';
+import { DEFAULT_LOCALE } from '@/types/i18n';
 
-export default async function PrivacyPage() {
+export default async function PrivacyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const t = await getTranslations('privacy');
   const tNav = await getTranslations('nav');
+
+  const { locale: rawLocale } = await params;
+  const locale = isValidLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const settingsHref = withLocale('/settings', locale);
 
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
@@ -29,7 +40,7 @@ export default async function PrivacyPage() {
             t('systems.localPointExport'),
           ]}
           action={
-            <Link href="/settings">
+            <Link href={settingsHref}>
               <Button variant="outline" size="sm">
                 {tNav('settings')}
               </Button>
@@ -97,7 +108,7 @@ export default async function PrivacyPage() {
           <p className="text-sm text-[#5A5A66] leading-relaxed">{t('pinLockBody')}</p>
           <p className="text-sm text-[#5A5A66] leading-relaxed">{t('pinLockRecoveryBody')}</p>
           <div className="pt-2">
-            <Link href="/settings">
+            <Link href={settingsHref}>
               <Button variant="outline" size="sm">
                 {t('pinLockAction')}
               </Button>

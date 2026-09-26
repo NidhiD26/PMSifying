@@ -1,38 +1,63 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { Activity, ArrowRight, Bot, CheckCircle2, Heart, MessageSquare, Plus, ShieldCheck, Sparkles } from 'lucide-react';
 import { CycleRepository } from '@/lib/db/repositories/cycle-repository';
 import { DailyLogRepository } from '@/lib/db/repositories/daily-log-repository';
 import type { CycleDomainModel, DailyLogDomainModel } from '@/types/health';
 import { analyzeCycles } from '@/lib/cycle-engine/engine';
 import { computeHealthAnalytics } from '@/lib/analytics';
 import { getInsights } from '@/lib/insights';
+import { PAIN_LABELS } from '@/lib/health/daily-health-options';
 import { formatLocalDateIso } from '@/lib/utils/date-utils';
 import { PeriodModal } from '@/features/period-logging/period-modal';
+import { deriveCycleStatus } from '@/features/shared/cycle-status';
+import { LocaleLink } from '@/components/navigation/locale-link';
 import { Surface } from '@/components/ui/surface';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  CalendarClock,
-  Plus,
-  ShieldCheck,
-  CheckCircle2,
-  Calendar as CalendarIcon,
-  Sparkles,
-  BarChart2,
-  FileText,
-  Activity,
-  Heart,
-  ArrowRight,
-  AlertCircle,
-} from 'lucide-react';
+import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state';
+
+const NOT_AVAILABLE = '—';
+
+/**
+ * Section heading.
+ *
+ * A rule under the heading does the grouping work, so the page reads as four
+ * or five blocks of information rather than a stack of cards.
+ */
+const SectionHeading: React.FC<{ id: string; children: React.ReactNode; action?: React.ReactNode }> = ({
+  id,
+  children,
+  action,
+}) => (
+  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[#E2D8D0] pb-3">
+    <h2 id={id} className="text-lg font-semibold text-[#2D1B2D]">
+      {children}
+    </h2>
+    {action}
+  </div>
+);
+
+/** One label/value line inside a section. */
+const DetailRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+  <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-0.5 py-2.5">
+    <dt className="text-sm text-[#5A5A66]">{label}</dt>
+    <dd className="text-sm font-medium text-[#1E1E24] text-right break-words">{children}</dd>
+  </div>
+);
+
+const DetailList: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <dl className="divide-y divide-[#F1E7E3]">{children}</dl>
+);
 
 export const DashboardView: React.FC = () => {
-  const tDashboard = useTranslations('dashboard');
+  const t = useTranslations('dashboard');
   const tNav = useTranslations('nav');
-  const tCommon = useTranslations('common');
+  const tAnalytics = useTranslations('analytics');
+  const tDaily = useTranslations('dailyHealth');
+  const tPeriod = useTranslations('period');
   const tInsights = useTranslations('insights');
 
   const todayIso = React.useMemo(() => formatLocalDateIso(new Date()), []);
@@ -69,283 +94,270 @@ export const DashboardView: React.FC = () => {
   }, [loadData]);
 
   // Pure deterministic cycle analysis
-  const cycleAnalysis = React.useMemo(() => {
-    return analyzeCycles(cycles);
-  }, [cycles]);
+  const cycleAnalysis = React.useMemo(() => analyzeCycles(cycles), [cycles]);
+  const status = React.useMemo(
+    () => deriveCycleStatus(cycles, todayIso, cycleAnalysis),
+    [cycles, todayIso, cycleAnalysis]
+  );
 
-  // Derived current cycle status
-  const currentCycleInfo = React.useMemo(() => {
-    if (cycles.length === 0) return null;
-    const lastCycle = cycles[cycles.length - 1];
-
-    let daysCount = 1;
-    if (todayIso >= lastCycle.startDate) {
-      const a = new Date(lastCycle.startDate + 'T00:00:00Z');
-      const b = new Date(todayIso + 'T00:00:00Z');
-      daysCount = Math.max(1, Math.round((b.getTime() - a.getTime()) / 86_400_000) + 1);
-    }
-
-    let phaseKey: 'phaseFollicular' | 'phaseOvulatory' | 'phaseLuteal' | 'phaseMenstrual' = 'phaseFollicular';
-    let badgeVariant: 'period' | 'ovulation' | 'fertile' | 'neutral' = 'neutral';
-
-    const fertile = cycleAnalysis.fertileWindow;
-
-    if (!lastCycle.endDate || todayIso <= lastCycle.endDate) {
-      phaseKey = 'phaseMenstrual';
-      badgeVariant = 'period';
-    } else if (
-      fertile.status === 'estimated' &&
-      fertile.startDate &&
-      fertile.endDate &&
-      todayIso >= fertile.startDate &&
-      todayIso <= fertile.endDate
-    ) {
-      phaseKey = 'phaseOvulatory';
-      badgeVariant = 'ovulation';
-    } else if (
-      fertile.status === 'estimated' &&
-      fertile.endDate &&
-      todayIso > fertile.endDate
-    ) {
-      phaseKey = 'phaseLuteal';
-      badgeVariant = 'fertile';
-    } else {
-      phaseKey = 'phaseFollicular';
-      badgeVariant = 'neutral';
-    }
-
-    return {
-      lastCycle,
-      cycleDay: daysCount,
-      phaseKey,
-      badgeVariant,
-    };
-  }, [cycles, todayIso, cycleAnalysis]);
+  const analytics = React.useMemo(
+    () => computeHealthAnalytics({ cycles, dailyLogs, today: todayIso }),
+    [cycles, dailyLogs, todayIso]
+  );
 
   // Derived top personalized insights
   const topInsights = React.useMemo(() => {
     if (cycles.length === 0 && dailyLogs.length === 0) return [];
-    const analytics = computeHealthAnalytics({ cycles, dailyLogs, today: todayIso });
     return getInsights({
       analytics,
       recordedDates: dailyLogs.map((l) => l.date),
       limit: 2,
     });
-  }, [cycles, dailyLogs, todayIso]);
+  }, [analytics, cycles.length, dailyLogs]);
+
+  const lastPeriod = status?.lastCycle ?? null;
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="mx-auto max-w-4xl space-y-10">
+      {/* ---- Page header and the two things someone came here to do ---- */}
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#2D1B2D]">{tDashboard('title')}</h1>
-          <p className="text-sm text-[#5A5A66] mt-1">{tDashboard('subtitle')}</p>
+          <h1 className="text-3xl font-bold text-[#2D1B2D]">{t('title')}</h1>
+          <p className="mt-1 text-sm text-[#5A5A66]">{t('subtitle')}</p>
         </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <Button variant="primary" size="sm" onClick={() => setIsPeriodModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            {tDashboard('logPeriodAction')}
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="primary" onClick={() => setIsPeriodModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            {t('logPeriodAction')}
           </Button>
-          <Link href="/health">
-            <Button variant="outline" size="sm">
-              <Activity className="h-4 w-4 mr-1.5 text-[#2D1B2D]" />
-              {tDashboard('logTodayAction')}
-            </Button>
-          </Link>
+          <LocaleLink
+            href="/health"
+            className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-[#E2D8D0] px-5 py-2.5 text-base font-medium text-[#1E1E24] transition-colors hover:bg-[#FDFBF7]"
+          >
+            <Activity className="h-4 w-4 mr-1.5 text-[#2D1B2D]" aria-hidden="true" />
+            {t('logTodayAction')}
+          </LocaleLink>
         </div>
-      </div>
+      </header>
 
-      {/* Error state */}
-      {errorMsg && (
-        <Surface variant="bordered" className="p-4 border-[#C94A46]/30 bg-[#C94A46]/10 flex items-center gap-3 text-sm text-[#C94A46]">
-          <AlertCircle className="h-5 w-5 shrink-0" />
-          <p>{errorMsg}</p>
-        </Surface>
-      )}
+      {errorMsg && <ErrorState message={errorMsg} onRetry={loadData} />}
 
-      {/* Loading state */}
       {isLoading ? (
-        <div className="py-16 text-center text-sm text-[#5A5A66]">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#2D1B2D] border-t-transparent mx-auto mb-3" />
-          <span>{tCommon('loading')}</span>
-        </div>
+        <LoadingState />
       ) : (
-        <div className="space-y-8">
-          {/* Main Status Timeline Banner */}
-          {currentCycleInfo ? (
-            <Surface variant="bordered" className="p-6 space-y-6 bg-gradient-to-br from-[#FFFFFF] to-[#F9EBEA]/30">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2D8D0] pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-2xl bg-[#2D1B2D] flex items-center justify-center text-[#FDFBF7]">
-                    <CalendarClock className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-[#2D1B2D]">
-                        {tDashboard('dayCount', { day: currentCycleInfo.cycleDay })}
-                      </span>
-                      <Badge variant={currentCycleInfo.badgeVariant}>
-                        {tDashboard(currentCycleInfo.phaseKey)}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-[#5A5A66] mt-0.5">
-                      {tDashboard('currentStatus')} • {todayIso}
-                    </p>
-                  </div>
-                </div>
-              </div>
+        <>
+          {/* ---- Where the cycle stands today ---- */}
+          <section aria-labelledby="dashboard-cycle" className="space-y-4">
+            <SectionHeading id="dashboard-cycle">{t('currentStatus')}</SectionHeading>
 
-              {/* Cycle Predictions & Stats Summary */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[#E2D8D0] space-y-1">
-                  <span className="text-xs font-semibold text-[#5A5A66] block">
-                    {tDashboard('nextPeriod')}
+            {status ? (
+              <>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <span className="text-4xl font-bold leading-none text-[#2D1B2D]">
+                    {t('dayCount', { day: status.cycleDay })}
                   </span>
-                  <p className="text-base font-bold text-[#2D1B2D]">
+                  <Badge variant={status.tone}>{t(status.phaseKey)}</Badge>
+                  <span className="text-sm text-[#5A5A66]">{todayIso}</span>
+                </div>
+
+                <DetailList>
+                  <DetailRow label={t('nextPeriod')}>
                     {cycleAnalysis.nextPeriod.status === 'predicted'
                       ? cycleAnalysis.nextPeriod.estimatedStartDate
-                      : tDashboard('noCycleData').split('.')[0]}
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[#E2D8D0] space-y-1">
-                  <span className="text-xs font-semibold text-[#5A5A66] block">
-                    {tDashboard('fertileWindow')}
-                  </span>
-                  <p className="text-base font-bold text-[#2D1B2D]">
+                      : NOT_AVAILABLE}
+                  </DetailRow>
+                  <DetailRow label={t('fertileWindow')}>
                     {cycleAnalysis.fertileWindow.status === 'estimated'
-                      ? `${cycleAnalysis.fertileWindow.startDate} – ${cycleAnalysis.fertileWindow.endDate}`
-                      : '—'}
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[#E2D8D0] space-y-1">
-                  <span className="text-xs font-semibold text-[#5A5A66] block">
-                    {tDashboard('cycleSummary')}
-                  </span>
-                  <p className="text-base font-bold text-[#2D1B2D]">
+                      ? `${cycleAnalysis.fertileWindow.startDate} ${NOT_AVAILABLE} ${cycleAnalysis.fertileWindow.endDate}`
+                      : NOT_AVAILABLE}
+                  </DetailRow>
+                  <DetailRow label={t('cycleSummary')}>
                     {cycleAnalysis.stats
-                      ? tDashboard('cycleSummaryValue', {
+                      ? t('cycleSummaryValue', {
                           days: cycleAnalysis.stats.averageCycleLength,
                           count: cycleAnalysis.stats.sampleSize,
                         })
-                      : '—'}
-                  </p>
-                </div>
-              </div>
-            </Surface>
-          ) : (
-            /* Empty State when zero period entries exist */
-            <Surface variant="bordered" className="p-8 text-center space-y-4">
-              <div className="h-12 w-12 rounded-2xl bg-[#F9EBEA] flex items-center justify-center text-[#2D1B2D] mx-auto">
-                <Heart className="h-6 w-6" />
-              </div>
-              <div className="max-w-md mx-auto space-y-2">
-                <h3 className="text-lg font-bold text-[#2D1B2D]">{tDashboard('welcomeTitle')}</h3>
-                <p className="text-sm text-[#5A5A66]">{tDashboard('noCycleData')}</p>
-              </div>
-              <Button variant="primary" onClick={() => setIsPeriodModalOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                {tDashboard('logPeriodAction')}
-              </Button>
-            </Surface>
+                      : NOT_AVAILABLE}
+                  </DetailRow>
+                </DetailList>
+              </>
+            ) : (
+              <EmptyState
+                icon={<Heart className="h-6 w-6" />}
+                title={t('welcomeTitle')}
+                description={t('noCycleData')}
+                action={
+                  <Button variant="primary" onClick={() => setIsPeriodModalOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
+                    {t('logPeriodAction')}
+                  </Button>
+                }
+              />
+            )}
+          </section>
+
+          {/* ---- The last recorded period, as recorded ---- */}
+          {lastPeriod && (
+            <section aria-labelledby="dashboard-period" className="space-y-4">
+              <SectionHeading id="dashboard-period">{t('recentPeriod')}</SectionHeading>
+              <DetailList>
+                <DetailRow label={tPeriod('startDate')}>{lastPeriod.startDate}</DetailRow>
+                {lastPeriod.endDate ? (
+                  <DetailRow label={tPeriod('endDate')}>{lastPeriod.endDate}</DetailRow>
+                ) : (
+                  <DetailRow label={tPeriod('endDate')}>{tPeriod('ongoing')}</DetailRow>
+                )}
+                {analytics.period.recordedPeriods > 0 && (
+                  <DetailRow label={tAnalytics('periodMostRecent')}>
+                    {analytics.period.mostRecentDuration.sufficiency === 'available' &&
+                    analytics.period.mostRecentDuration.value !== null
+                      ? tAnalytics('daysUnit', {
+                          value: Math.round(analytics.period.mostRecentDuration.value),
+                        })
+                      : NOT_AVAILABLE}
+                  </DetailRow>
+                )}
+              </DetailList>
+            </section>
           )}
 
-          {/* Today's Health Log Quick Status */}
-          <Surface variant="bordered" className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-[#2E8B57]/10 flex items-center justify-center text-[#2E8B57]">
-                {todayLog ? <CheckCircle2 className="h-5 w-5" /> : <Activity className="h-5 w-5" />}
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-[#2D1B2D]">{tDashboard('todayLog')}</h3>
-                <p className="text-xs text-[#5A5A66] mt-0.5">
+          {/* ---- Today ---- */}
+          <section aria-labelledby="dashboard-today" className="space-y-4">
+            <SectionHeading id="dashboard-today">{t('todayLog')}</SectionHeading>
+
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <span
+                  className={
+                    todayLog
+                      ? 'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#2E8B57]/10 text-[#2E8B57]'
+                      : 'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F9EBEA] text-[#2D1B2D]'
+                  }
+                >
                   {todayLog ? (
-                    <span className="text-[#2E8B57] font-semibold">{tDashboard('loggedToday')}</span>
+                    <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
                   ) : (
-                    <span>{tDashboard('notLoggedToday')}</span>
+                    <Activity className="h-5 w-5" aria-hidden="true" />
                   )}
+                </span>
+                <p className="text-sm font-medium text-[#1E1E24]">
+                  {todayLog ? t('loggedToday') : t('notLoggedToday')}
                 </p>
               </div>
-            </div>
-            <Link href="/health">
-              <Button variant="secondary" size="sm">
-                {tDashboard('logTodayAction')}
-                <ArrowRight className="h-4 w-4 ml-1.5" />
-              </Button>
-            </Link>
-          </Surface>
 
-          {/* Personalized Observations & Insights */}
-          {topInsights.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-[#2D1B2D]" />
-                <h2 className="text-xl font-bold text-[#2D1B2D]">{tDashboard('recentInsights')}</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <LocaleLink
+                href="/health"
+                className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#F9EBEA] px-4 py-2 text-sm font-medium text-[#2D1B2D] transition-colors hover:bg-[#F2D7D5]"
+              >
+                {t('logTodayAction')}
+                <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+              </LocaleLink>
+            </div>
+
+            {todayLog && (
+              <DetailList>
+                <DetailRow label={tDaily('painLabel')}>
+                  {tDaily(PAIN_LABELS[todayLog.painLevel]?.i18nKey ?? PAIN_LABELS[0].i18nKey)} (
+                  {todayLog.painLevel})
+                </DetailRow>
+                <DetailRow label={tDaily('sleepLabel')}>
+                  {todayLog.sleepHours > 0 ? todayLog.sleepHours : NOT_AVAILABLE}
+                </DetailRow>
+                <DetailRow label={tDaily('hydrationLiteral')}>
+                  {todayLog.hydrationMl > 0 ? todayLog.hydrationMl : NOT_AVAILABLE}
+                </DetailRow>
+              </DetailList>
+            )}
+          </section>
+
+          {/* ---- What the recorded data suggests ---- */}
+          <section aria-labelledby="dashboard-insights" className="space-y-4">
+            <SectionHeading
+              id="dashboard-insights"
+              action={
+                <LocaleLink
+                  href="/insights"
+                  className="inline-flex min-h-[40px] items-center text-sm font-medium text-[#2D1B2D] underline underline-offset-4 hover:text-[#C94A46]"
+                >
+                  {t('seeAllInsights')}
+                </LocaleLink>
+              }
+            >
+              {t('recentInsights')}
+            </SectionHeading>
+
+            {topInsights.length > 0 ? (
+              <ul className="space-y-4">
                 {topInsights.map((insight) => {
-                  const titleKey = insight.titleKey.replace('insights.', '') as Parameters<typeof tInsights>[0];
-                  const msgKey = insight.messageKey.replace('insights.', '') as Parameters<typeof tInsights>[0];
+                  const titleKey = insight.titleKey.replace('insights.', '');
+                  const messageKey = insight.messageKey.replace('insights.', '');
                   return (
-                    <Surface key={insight.id} variant="bordered" className="p-5 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-[#5A5A66] uppercase tracking-wider">
-                          {insight.category}
-                        </span>
-                      </div>
-                      <h4 className="text-sm font-bold text-[#2D1B2D]">
+                    <li key={insight.id} className="space-y-1">
+                      <h3 className="flex items-center gap-2 text-sm font-semibold text-[#2D1B2D]">
+                        <Sparkles className="h-4 w-4 shrink-0" aria-hidden="true" />
                         {tInsights(titleKey, insight.params)}
-                      </h4>
-                      <p className="text-xs text-[#5A5A66] leading-relaxed">
-                        {tInsights(msgKey, insight.params)}
+                      </h3>
+                      <p className="text-sm leading-relaxed text-[#5A5A66]">
+                        {tInsights(messageKey, insight.params)}
                       </p>
-                    </Surface>
+                    </li>
                   );
                 })}
-              </div>
-            </div>
-          )}
+              </ul>
+            ) : (
+              <p className="text-sm text-[#5A5A66]">{tInsights('empty')}</p>
+            )}
+          </section>
 
-          {/* Quick Navigation Links */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Link href="/calendar">
-              <div className="p-4 rounded-2xl border border-[#E2D8D0] bg-[#FFFFFF] hover:bg-[#F9EBEA]/40 transition-colors flex flex-col items-center text-center space-y-2 cursor-pointer">
-                <CalendarIcon className="h-6 w-6 text-[#2D1B2D]" />
-                <span className="text-xs font-semibold text-[#2D1B2D]">{tNav('calendar')}</span>
-              </div>
-            </Link>
-            <Link href="/health">
-              <div className="p-4 rounded-2xl border border-[#E2D8D0] bg-[#FFFFFF] hover:bg-[#F9EBEA]/40 transition-colors flex flex-col items-center text-center space-y-2 cursor-pointer">
-                <Activity className="h-6 w-6 text-[#2D1B2D]" />
-                <span className="text-xs font-semibold text-[#2D1B2D]">{tNav('health')}</span>
-              </div>
-            </Link>
-            <Link href="/insights">
-              <div className="p-4 rounded-2xl border border-[#E2D8D0] bg-[#FFFFFF] hover:bg-[#F9EBEA]/40 transition-colors flex flex-col items-center text-center space-y-2 cursor-pointer">
-                <BarChart2 className="h-6 w-6 text-[#2D1B2D]" />
-                <span className="text-xs font-semibold text-[#2D1B2D]">{tNav('insights')}</span>
-              </div>
-            </Link>
-            <Link href="/reports">
-              <div className="p-4 rounded-2xl border border-[#E2D8D0] bg-[#FFFFFF] hover:bg-[#F9EBEA]/40 transition-colors flex flex-col items-center text-center space-y-2 cursor-pointer">
-                <FileText className="h-6 w-6 text-[#2D1B2D]" />
-                <span className="text-xs font-semibold text-[#2D1B2D]">{tNav('reports')}</span>
-              </div>
-            </Link>
-          </div>
-        </div>
+          {/* ---- Support: a deterministic assistant, and a community ---- */}
+          <section aria-labelledby="dashboard-support" className="space-y-4">
+            <SectionHeading id="dashboard-support">{t('askTitle')}</SectionHeading>
+            <ul className="divide-y divide-[#F1E7E3]">
+              <li>
+                <LocaleLink
+                  href="/ai-assistant"
+                  className="flex items-start gap-3 py-3.5 transition-opacity hover:opacity-80"
+                >
+                  <Bot className="mt-0.5 h-5 w-5 shrink-0 text-[#2D1B2D]" aria-hidden="true" />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-[#2D1B2D]">
+                      {tNav('aiAssistant')}
+                    </span>
+                    <span className="mt-0.5 block text-sm leading-relaxed text-[#5A5A66]">
+                      {t('askAiBody')}
+                    </span>
+                  </span>
+                </LocaleLink>
+              </li>
+              <li>
+                <LocaleLink
+                  href="/secret-chat"
+                  className="flex items-start gap-3 py-3.5 transition-opacity hover:opacity-80"
+                >
+                  <MessageSquare
+                    className="mt-0.5 h-5 w-5 shrink-0 text-[#2D1B2D]"
+                    aria-hidden="true"
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-[#2D1B2D]">
+                      {tNav('secretChat')}
+                    </span>
+                    <span className="mt-0.5 block text-sm leading-relaxed text-[#5A5A66]">
+                      {t('askSecretChatBody')}
+                    </span>
+                  </span>
+                </LocaleLink>
+              </li>
+            </ul>
+          </section>
+        </>
       )}
 
-      {/* Offline Privacy Guarantee Banner */}
-      <div className="p-3.5 rounded-xl bg-[#F9EBEA]/60 border border-[#E2D8D0] flex items-center justify-between gap-3 text-xs text-[#5A5A66]">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-[#2E8B57] shrink-0" />
-          <span>{tDashboard('privacyFooter')}</span>
-        </div>
-      </div>
+      <Surface variant="flat" className="flex items-center gap-2 p-3.5 text-xs text-[#5A5A66]">
+        <ShieldCheck className="h-4 w-4 shrink-0 text-[#2E8B57]" aria-hidden="true" />
+        <span>{t('privacyFooter')}</span>
+      </Surface>
 
-      {/* Period Modal */}
       <PeriodModal
         isOpen={isPeriodModalOpen}
         onClose={() => setIsPeriodModalOpen(false)}

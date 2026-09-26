@@ -1,118 +1,75 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { LocaleLink } from './locale-link';
+import { NavGroupLabel, NavItemLink } from './nav-item-link';
 import {
-  Home,
-  Calendar,
-  Activity,
-  BarChart2,
-  BookOpen,
-  MessageSquare,
-  Bot,
-  FileText,
-  Bell,
-  Settings,
-  ShieldCheck,
-  Stethoscope,
-  Users,
-} from 'lucide-react';
-import { cn } from '@/lib/utils/cn';
+  HEALTHCARE_NAV,
+  PRIMARY_NAV,
+  SECONDARY_NAV,
+  type NavItem,
+} from '@/lib/navigation/nav-config';
 
 export const DesktopSidebar: React.FC = () => {
   const t = useTranslations('nav');
-  const pathname = usePathname();
+  const tNavMore = useTranslations('navMore');
+  const tHealthcare = useTranslations('healthcare');
+  const tApp = useTranslations('app');
+  const pathname = usePathname() ?? '/';
 
-  const normalizedPathname = pathname ? (pathname.replace(/^\/(en|hi|kn)/, '') || '/') : '/';
-
-  const userNavItems = [
-    { href: '/', label: t('home'), icon: Home },
-    { href: '/calendar', label: t('calendar'), icon: Calendar },
-    { href: '/health', label: t('health'), icon: Activity },
-    { href: '/insights', label: t('insights'), icon: BarChart2 },
-    { href: '/learn', label: t('learn'), icon: BookOpen },
-    { href: '/secret-chat', label: t('secretChat'), icon: MessageSquare },
-    { href: '/ai-assistant', label: t('aiAssistant'), icon: Bot },
-    { href: '/reports', label: t('reports'), icon: FileText },
-    { href: '/reminders', label: t('reminders'), icon: Bell },
-    { href: '/settings', label: t('settings'), icon: Settings },
-    { href: '/privacy', label: t('privacy'), icon: ShieldCheck },
-  ];
-
-  const healthcareNavItems = [
-    { href: '/asha', label: t('asha'), icon: Users },
-    { href: '/doctor', label: t('doctor'), icon: Stethoscope },
-    { href: '/health-camps', label: t('healthCamps'), icon: Activity },
+  const groups: { title: string; items: NavItem[]; bordered?: boolean }[] = [
+    { title: t('personalTracker'), items: PRIMARY_NAV },
+    { title: tNavMore('secondaryTitle'), items: SECONDARY_NAV, bordered: true },
+    { title: t('healthcarePortal'), items: HEALTHCARE_NAV, bordered: true },
   ];
 
   return (
     <aside
-      className="hidden lg:flex flex-col w-64 border-r border-[#E2D8D0] bg-[#FFFFFF] min-h-screen p-4 sticky top-0"
-      aria-label="Desktop Navigation"
+      className="hidden lg:flex flex-col w-64 shrink-0 border-r border-[#E2D8D0] bg-[#FFFFFF] min-h-screen sticky top-0"
+      aria-label={t('desktopLabel')}
     >
-      <div className="flex items-center gap-3 px-3 py-4 mb-4 border-b border-[#E2D8D0]">
-        <div className="h-9 w-9 rounded-xl bg-[#2D1B2D] flex items-center justify-center text-[#FDFBF7] font-bold text-lg">
+      <LocaleLink
+        href="/"
+        className="flex items-center gap-3 px-4 py-5 border-b border-[#E2D8D0] hover:bg-[#F9EBEA]/50 transition-colors"
+      >
+        <span
+          className="h-9 w-9 rounded-xl bg-[#2D1B2D] flex items-center justify-center text-[#FDFBF7] font-bold text-lg"
+          aria-hidden="true"
+        >
           P
-        </div>
-        <div>
-          <span className="font-semibold text-lg text-[#2D1B2D] block leading-tight">PMSify</span>
-          <span className="text-xs text-[#5A5A66]">{t('healthEcosystem')}</span>
-        </div>
-      </div>
-
-      <nav className="flex-1 flex flex-col gap-6 overflow-y-auto">
-        <div className="flex flex-col gap-1">
-          <span className="px-3 text-xs font-semibold uppercase tracking-wider text-[#5A5A66] mb-1">
-            {t('personalTracker')}
+        </span>
+        <span className="min-w-0">
+          <span className="block text-lg font-semibold leading-tight text-[#2D1B2D]">
+            {tApp('title')}
           </span>
-          {userNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = normalizedPathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors min-h-[44px]',
-                  isActive
-                    ? 'bg-[#2D1B2D] text-[#FDFBF7]'
-                    : 'text-[#1E1E24] hover:bg-[#F9EBEA] hover:text-[#2D1B2D]'
-                )}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
+          <span className="block truncate text-xs text-[#5A5A66]">{t('healthEcosystem')}</span>
+        </span>
+      </LocaleLink>
 
-        <div className="flex flex-col gap-1 pt-4 border-t border-[#E2D8D0]">
-          <span className="px-3 text-xs font-semibold uppercase tracking-wider text-[#5A5A66] mb-1">
-            {t('healthcarePortal')}
-          </span>
-          {healthcareNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = normalizedPathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors min-h-[44px]',
-                  isActive
-                    ? 'bg-[#2D1B2D] text-[#FDFBF7]'
-                    : 'text-[#1E1E24] hover:bg-[#F9EBEA] hover:text-[#2D1B2D]'
-                )}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
+      <nav className="flex flex-1 flex-col gap-6 overflow-y-auto px-3 py-5">
+        {groups.map((group) => (
+          <div
+            key={group.title}
+            className={
+              group.bordered
+                ? 'flex flex-col gap-1 border-t border-[#E2D8D0] pt-4'
+                : 'flex flex-col gap-1'
+            }
+          >
+            <NavGroupLabel>{group.title}</NavGroupLabel>
+            {group.items.map((item) => (
+              <NavItemLink key={item.href} item={item} pathname={pathname} />
+            ))}
+          </div>
+        ))}
       </nav>
+
+      {/* The portals are a separate system; say so instead of implying continuity. */}
+      <p className="border-t border-[#E2D8D0] px-4 py-4 text-[11px] leading-relaxed text-[#5A5A66]">
+        {tHealthcare('footerNote')}
+      </p>
     </aside>
   );
 };

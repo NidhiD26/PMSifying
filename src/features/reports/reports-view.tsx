@@ -14,6 +14,7 @@ import { SYMPTOM_OPTIONS, MOOD_OPTIONS } from '@/lib/health/daily-health-options
 import { todayIso } from '@/lib/health/date-utils';
 import type { CycleDomainModel, DailyLogDomainModel } from '@/types/health';
 import { AlertCircle, ShieldCheck, FileText, Download } from 'lucide-react';
+import { LoadingState } from '@/components/ui/state';
 
 type ExportFormat = 'pdf' | 'csv' | 'json';
 
@@ -287,10 +288,7 @@ export const ReportsView: React.FC = () => {
 
       {/* Loading */}
       {isLoading ? (
-        <div className="py-16 text-center text-sm text-[#5A5A66]">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#2D1B2D] border-t-transparent mx-auto mb-3" />
-          <span>{tCommon('loading')}</span>
-        </div>
+        <LoadingState />
       ) : !hasAnyData ? (
         <div className="py-16 text-center">
           <p className="text-sm text-[#5A5A66]">{t('noData')}</p>
