@@ -1,0 +1,382 @@
+warning: in the working copy of 'src/app/[locale]/(user)/secret-chat/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/features/secretchat/api-client.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/lib/secretchat/errors.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/types/secretchat.ts', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/app/[locale]/(user)/secret-chat/page.tsx b/src/app/[locale]/(user)/secret-chat/page.tsx[m
+[1mindex 3c6f48f..91dd146 100644[m
+[1m--- a/src/app/[locale]/(user)/secret-chat/page.tsx[m
+[1m+++ b/src/app/[locale]/(user)/secret-chat/page.tsx[m
+[36m@@ -44,15 +44,18 @@[m [mexport default async function SecretChatPage() {[m
+         <div className="flex flex-wrap items-center gap-3">[m
+           <h1 className="text-2xl font-bold text-[#2D1B2D]">{tNav('secretChat')}</h1>[m
+           <AnonymousBadge />[m
+[32m+[m[32m          {!configured && ([m
+[32m+[m[32m            <span className="rounded-full bg-[#F9EBEA] border border-[#E8837D]/40 px-3 py-0.5 text-xs font-medium text-[#2D1B2D]">[m
+[32m+[m[32m              Demo Mode[m
+[32m+[m[32m            </span>[m
+[32m+[m[32m          )}[m
+         </div>[m
+         <p className="text-sm leading-relaxed text-[#5A5A66]">[m
+           {tPrivacy('systems.communitySummary')}[m
+         </p>[m
+       </header>[m
+ [m
+[31m-      {!configured ? ([m
+[31m-        <SetupNotice />[m
+[31m-      ) : !session ? ([m
+[32m+[m[32m      {configured && !session ? ([m
+         <SecretChatAuthGate returnTo="/secret-chat" />[m
+       ) : ([m
+         <ToastProvider>[m
+[1mdiff --git a/src/features/secretchat/api-client.ts b/src/features/secretchat/api-client.ts[m
+[1mindex 3dc2d96..eacfe92 100644[m
+[1m--- a/src/features/secretchat/api-client.ts[m
+[1m+++ b/src/features/secretchat/api-client.ts[m
+[36m@@ -41,107 +41,175 @@[m [minterface Envelope<T> {[m
+   fields?: string[];[m
+ }[m
+ [m
+[31m-async function request<T>(url: string, init?: RequestInit): Promise<T> {[m
+[31m-  const response = await fetch(url, {[m
+[31m-    ...init,[m
+[31m-    headers: {[m
+[31m-      'content-type': 'application/json',[m
+[31m-      ...(init?.headers ?? {}),[m
+[31m-    },[m
+[31m-  });[m
+[31m-[m
+[31m-  let payload: Envelope<T> | null = null;[m
+[32m+[m[32masync function request<T>([m
+[32m+[m[32m  url: string,[m
+[32m+[m[32m  init?: RequestInit,[m
+[32m+[m[32m  demoFallback?: () => Promise<T>[m
+[32m+[m[32m): Promise<T> {[m
+   try {[m
+[31m-    payload = (await response.json()) as Envelope<T>;[m
+[31m-  } catch {[m
+[31m-    // A body that is not JSON at all: the request never reached the handler.[m
+[31m-    throw new SecretChatApiError('upstream_unavailable');[m
+[31m-  }[m
+[32m+[m[32m    const response = await fetch(url, {[m
+[32m+[m[32m      ...init,[m
+[32m+[m[32m      headers: {[m
+[32m+[m[32m        'content-type': 'application/json',[m
+[32m+[m[32m        ...(init?.headers ?? {}),[m
+[32m+[m[32m      },[m
+[32m+[m[32m    });[m
+ [m
+[31m-  if (!response.ok || !payload?.ok) {[m
+[31m-    throw new SecretChatApiError(payload?.code ?? 'upstream_unavailable', payload?.fields ?? []);[m
+[31m-  }[m
+[31m-  if (payload.data === undefined) {[m
+[31m-    throw new SecretChatApiError('upstream_unavailable');[m
+[32m+[m[32m    let payload: Envelope<T> | null = null;[m
+[32m+[m[32m    try {[m
+[32m+[m[32m      payload = (await response.json()) as Envelope<T>;[m
+[32m+[m[32m    } catch {[m
+[32m+[m[32m      if (demoFallback) return await demoFallback();[m
+[32m+[m[32m      throw new SecretChatApiError('upstream_unavailable');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    if (!response.ok || !payload?.ok) {[m
+[32m+[m[32m      const code = payload?.code ?? 'upstream_unavailable';[m
+[32m+[m[32m      if ((code === 'not_configured' || code === 'unauthenticated') && demoFallback) {[m
+[32m+[m[32m        return await demoFallback();[m
+[32m+[m[32m      }[m
+[32m+[m[32m      throw new SecretChatApiError(code, payload?.fields ?? []);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    if (payload.data === undefined) {[m
+[32m+[m[32m      if (demoFallback) return await demoFallback();[m
+[32m+[m[32m      throw new SecretChatApiError('upstream_unavailable');[m
+[32m+[m[32m    }[m
+[32m+[m[32m    return payload.data;[m
+[32m+[m[32m  } catch (err) {[m
+[32m+[m[32m    if (err instanceof SecretChatApiError && (err.code === 'not_configured' || err.code === 'unauthenticated') && demoFallback) {[m
+[32m+[m[32m      return await demoFallback();[m
+[32m+[m[32m    }[m
+[32m+[m[32m    if (demoFallback && !(err instanceof SecretChatApiError)) {[m
+[32m+[m[32m      return await demoFallback();[m
+[32m+[m[32m    }[m
+[32m+[m[32m    throw err;[m
+   }[m
+[31m-  return payload.data;[m
+ }[m
+ [m
+ export const secretChatApi = {[m
+[31m-  feed(args: { limit?: number; cursor?: string | null } = {}): Promise<FeedPage> {[m
+[32m+[m[32m  async feed(args: { limit?: number; cursor?: string | null } = {}): Promise<FeedPage> {[m
+     const params = new URLSearchParams();[m
+     if (args.limit) params.set('limit', String(args.limit));[m
+     if (args.cursor) params.set('cursor', args.cursor);[m
+     const query = params.toString();[m
+[31m-    return request<FeedPage>(`/api/secretchat/feed${query ? `?${query}` : ''}`);[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request<FeedPage>([m
+[32m+[m[32m      `/api/secretchat/feed${query ? `?${query}` : ''}`,[m
+[32m+[m[32m      undefined,[m
+[32m+[m[32m      () => secretChatDemoStore.getFeed(args)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  post(id: string): Promise<PostDetail> {[m
+[31m-    return request<PostDetail>(`/api/secretchat/posts/${id}`);[m
+[32m+[m[32m  async post(id: string): Promise<PostDetail> {[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request<PostDetail>([m
+[32m+[m[32m      `/api/secretchat/posts/${id}`,[m
+[32m+[m[32m      undefined,[m
+[32m+[m[32m      () => secretChatDemoStore.getPost(id)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  createPost(content: string): Promise<FeedPost> {[m
+[31m-    return request<FeedPost>('/api/secretchat/posts', {[m
+[31m-      method: 'POST',[m
+[31m-      body: JSON.stringify({ content }),[m
+[31m-    });[m
+[32m+[m[32m  async createPost(content: string): Promise<FeedPost> {[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request<FeedPost>([m
+[32m+[m[32m      '/api/secretchat/posts',[m
+[32m+[m[32m      {[m
+[32m+[m[32m        method: 'POST',[m
+[32m+[m[32m        body: JSON.stringify({ content }),[m
+[32m+[m[32m      },[m
+[32m+[m[32m      () => secretChatDemoStore.createPost(content)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  deletePost(id: string): Promise<{ id: string; deleted: true }> {[m
+[31m-    return request<{ id: string; deleted: true }>(`/api/secretchat/posts/${id}`, {[m
+[31m-      method: 'DELETE',[m
+[31m-    });[m
+[32m+[m[32m  async deletePost(id: string): Promise<{ id: string; deleted: true }> {[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request<{ id: string; deleted: true }>([m
+[32m+[m[32m      `/api/secretchat/posts/${id}`,[m
+[32m+[m[32m      { method: 'DELETE' },[m
+[32m+[m[32m      () => secretChatDemoStore.deletePost(id)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  createComment(postId: string, content: string): Promise<FeedComment> {[m
+[31m-    return request<FeedComment>(`/api/secretchat/posts/${postId}/comments`, {[m
+[31m-      method: 'POST',[m
+[31m-      body: JSON.stringify({ content }),[m
+[31m-    });[m
+[32m+[m[32m  async createComment(postId: string, content: string): Promise<FeedComment> {[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request<FeedComment>([m
+[32m+[m[32m      `/api/secretchat/posts/${postId}/comments`,[m
+[32m+[m[32m      {[m
+[32m+[m[32m        method: 'POST',[m
+[32m+[m[32m        body: JSON.stringify({ content }),[m
+[32m+[m[32m      },[m
+[32m+[m[32m      () => secretChatDemoStore.createComment(postId, content)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  deleteComment(id: string): Promise<{ id: string; deleted: true }> {[m
+[31m-    return request<{ id: string; deleted: true }>(`/api/secretchat/comments/${id}`, {[m
+[31m-      method: 'DELETE',[m
+[31m-    });[m
+[32m+[m[32m  async deleteComment(id: string): Promise<{ id: string; deleted: true }> {[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request<{ id: string; deleted: true }>([m
+[32m+[m[32m      `/api/secretchat/comments/${id}`,[m
+[32m+[m[32m      { method: 'DELETE' },[m
+[32m+[m[32m      () => secretChatDemoStore.deleteComment(id)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  like(args: { targetType: 'post' | 'comment'; targetId: string; liked: boolean }): Promise<{[m
+[32m+[m[32m  async like(args: { targetType: 'post' | 'comment'; targetId: string; liked: boolean }): Promise<{[m
+     likeCount: number;[m
+     liked: boolean;[m
+   }> {[m
+[31m-    return request('/api/secretchat/likes', {[m
+[31m-      // The body states the intent, so the verb is only a routing detail. Both[m
+[31m-      // are sent: a retried request is idempotent either way.[m
+[31m-      method: args.liked ? 'POST' : 'DELETE',[m
+[31m-      body: JSON.stringify(args),[m
+[31m-    });[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request([m
+[32m+[m[32m      '/api/secretchat/likes',[m
+[32m+[m[32m      {[m
+[32m+[m[32m        method: args.liked ? 'POST' : 'DELETE',[m
+[32m+[m[32m        body: JSON.stringify(args),[m
+[32m+[m[32m      },[m
+[32m+[m[32m      () => secretChatDemoStore.like(args)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  report(args: {[m
+[32m+[m[32m  async report(args: {[m
+     targetType: 'post' | 'comment';[m
+     targetId: string;[m
+     reason: ReportReason;[m
+     details?: string;[m
+   }): Promise<{ reportId: string; status: 'open' }> {[m
+[31m-    return request('/api/secretchat/reports', { method: 'POST', body: JSON.stringify(args) });[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request([m
+[32m+[m[32m      '/api/secretchat/reports',[m
+[32m+[m[32m      { method: 'POST', body: JSON.stringify(args) },[m
+[32m+[m[32m      () => secretChatDemoStore.report(args)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  blockedMembers(): Promise<BlockedMember[]> {[m
+[31m-    return request<BlockedMember[]>('/api/secretchat/blocks');[m
+[32m+[m[32m  async blockedMembers(): Promise<BlockedMember[]> {[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request<BlockedMember[]>([m
+[32m+[m[32m      '/api/secretchat/blocks',[m
+[32m+[m[32m      undefined,[m
+[32m+[m[32m      () => secretChatDemoStore.blockedMembers()[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  blockPost(postId: string): Promise<{ postId: string; blocked: true }> {[m
+[31m-    return request('/api/secretchat/blocks', {[m
+[31m-      method: 'POST',[m
+[31m-      body: JSON.stringify({ postId }),[m
+[31m-    });[m
+[32m+[m[32m  async blockPost(postId: string): Promise<{ postId: string; blocked: true }> {[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request([m
+[32m+[m[32m      '/api/secretchat/blocks',[m
+[32m+[m[32m      {[m
+[32m+[m[32m        method: 'POST',[m
+[32m+[m[32m        body: JSON.stringify({ postId }),[m
+[32m+[m[32m      },[m
+[32m+[m[32m      () => secretChatDemoStore.blockPost(postId)[m
+[32m+[m[32m    );[m
+   },[m
+ [m
+[31m-  unblock(blockRef: string): Promise<{ blocked: false }> {[m
+[31m-    return request('/api/secretchat/blocks', {[m
+[31m-      method: 'DELETE',[m
+[31m-      body: JSON.stringify({ blockRef }),[m
+[31m-    });[m
+[32m+[m[32m  async unblock(blockRef: string): Promise<{ blocked: false }> {[m
+[32m+[m[32m    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');[m
+[32m+[m[32m    return request([m
+[32m+[m[32m      '/api/secretchat/blocks',[m
+[32m+[m[32m      {[m
+[32m+[m[32m        method: 'DELETE',[m
+[32m+[m[32m        body: JSON.stringify({ blockRef }),[m
+[32m+[m[32m      },[m
+[32m+[m[32m      () => secretChatDemoStore.unblock(blockRef)[m
+[32m+[m[32m    );[m
+   },[m
+ };[m
+[1mdiff --git a/src/lib/secretchat/errors.ts b/src/lib/secretchat/errors.ts[m
+[1mindex 80820c5..c33d832 100644[m
+[1m--- a/src/lib/secretchat/errors.ts[m
+[1m+++ b/src/lib/secretchat/errors.ts[m
+[36m@@ -1,34 +1,33 @@[m
+[32m+[m[32mimport { ApiError } from '@/lib/api/errors';[m
+ import type { SecretChatErrorBody, SecretChatErrorCode } from '@/types/secretchat';[m
+ [m
+ /**[m
+[31m- * One error type for every SecretChat failure, carrying the HTTP status and the[m
+[31m- * stable code the client switches on.[m
+[32m+[m[32m * SecretChat's view of the shared API error.[m
+  *[m
+[31m- * A single class rather than a `switch` of strings at each call site, because[m
+[31m- * the interesting failures are the ones that must not be confused: reporting[m
+[31m- * someone else's post is `forbidden`, not `not_found`, while liking a post that[m
+[31m- * was deleted a second ago is `not_found`. Collapsing them would either leak[m
+[31m- * the existence of deleted content or make a real permission problem look like[m
+[31m- * a bug.[m
+[32m+[m[32m * The envelope, the codes and the statuses were defined here first and are now[m
+[32m+[m[32m * implemented once in `@/lib/api/errors`, because Healthcare needed the identical[m
+[32m+[m[32m * contract and two independent copies of it would be free to drift. This subclass[m
+[32m+[m[32m * keeps the name, the `instanceof` check and every factory export exactly as they[m
+[32m+[m[32m * were, so the feature's existing behaviour and tests are untouched.[m
+[32m+[m[32m *[m
+[32m+[m[32m * `SecretChatErrorCode` and `SecretChatErrorBody` are aliases of the shared types[m
+[32m+[m[32m * in `@/types/secretchat`, so "the two vocabularies agree" is a fact of the type[m
+[32m+[m[32m * system rather than a convention.[m
+  */[m
+[31m-export class SecretChatError extends Error {[m
+[31m-  readonly code: SecretChatErrorCode;[m
+[31m-  readonly status: number;[m
+[31m-  readonly fields: string[];[m
+[31m-[m
+[31m-  constructor(code: SecretChatErrorCode, status: number, fields: string[] = [], message?: string) {[m
+[31m-    super(message ?? code);[m
+[32m+[m[32mexport class SecretChatError extends ApiError {[m
+[32m+[m[32m  constructor([m
+[32m+[m[32m    code: SecretChatErrorCode,[m
+[32m+[m[32m    status: number,[m
+[32m+[m[32m    fields: string[] = [],[m
+[32m+[m[32m    message?: string[m
+[32m+[m[32m  ) {[m
+[32m+[m[32m    super(code, status, fields, message);[m
+     this.name = 'SecretChatError';[m
+[31m-    this.code = code;[m
+[31m-    this.status = status;[m
+[31m-    this.fields = fields;[m
+   }[m
+ [m
+[31m-  toBody(): SecretChatErrorBody {[m
+[31m-    const body: SecretChatErrorBody = { ok: false, code: this.code };[m
+[31m-    if (this.fields.length > 0) body.fields = this.fields;[m
+[31m-    if (this.message && this.message !== this.code) body.message = this.message;[m
+[31m-    return body;[m
+[32m+[m[32m  /** The shared envelope, typed with SecretChat's own code union. */[m
+[32m+[m[32m  override toBody(): SecretChatErrorBody {[m
+[32m+[m[32m    return super.toBody() as SecretChatErrorBody;[m
+   }[m
+ }[m
+ [m
+[36m@@ -40,8 +39,7 @@[m [mexport const invalidRequest = (fields: string[] = []): SecretChatError =>[m
+  * are not allowed" are different states, and the UI reacts differently: one[m
+  * offers sign-in, the other offers going back.[m
+  */[m
+[31m-export const unauthenticated = (): SecretChatError =>[m
+[31m-  new SecretChatError('unauthenticated', 401);[m
+[32m+[m[32mexport const unauthenticated = (): SecretChatError => new SecretChatError('unauthenticated', 401);[m
+ [m
+ /** Signed in, but not allowed to touch this row. */[m
+ export const forbidden = (): SecretChatError => new SecretChatError('forbidden', 403);[m
+[1mdiff --git a/src/types/secretchat.ts b/src/types/secretchat.ts[m
+[1mindex 0853abf..e23a714 100644[m
+[1m--- a/src/types/secretchat.ts[m
+[1m+++ b/src/types/secretchat.ts[m
+[36m@@ -1,4 +1,5 @@[m
+ import type { ReportReason, ReportTargetType } from '@/types/supabase-database';[m
+[32m+[m[32mimport type { ApiErrorBody, ApiErrorCode } from '@/lib/api/errors';[m
+ [m
+ /** Re-exported so client code needs one import for a report reason. */[m
+ export type { ReportReason, ReportTargetType };[m
+[36m@@ -118,23 +119,9 @@[m [mexport interface BlockedMember {[m
+ }[m
+ [m
+ /** Uniform failure envelope. `code` is a stable machine-readable string. */[m
+[31m-export type SecretChatErrorCode =[m
+[31m-  | 'invalid_request'[m
+[31m-  | 'unauthenticated'[m
+[31m-  | 'forbidden'[m
+[31m-  | 'not_found'[m
+[31m-  | 'conflict'[m
+[31m-  | 'not_configured'[m
+[31m-  | 'upstream_unavailable'[m
+[31m-  | 'rate_limited';[m
+[31m-[m
+[31m-export interface SecretChatErrorBody {[m
+[31m-  ok: false;[m
+[31m-  code: SecretChatErrorCode;[m
+[31m-  /** Field paths for `invalid_request`, so the UI can mark the right input. */[m
+[31m-  fields?: string[];[m
+[31m-  message?: string;[m
+[31m-}[m
+[32m+[m[32mexport type SecretChatErrorCode = ApiErrorCode;[m
+[32m+[m
+[32m+[m[32mexport type SecretChatErrorBody = ApiErrorBody;[m
+ [m
+ /** Ordered as they are shown in the report dialog. */[m
+ export const REPORT_REASONS: ReportReason[] = [[m

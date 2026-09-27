@@ -8,10 +8,11 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 import {
   ALL_NAV,
-  HEALTHCARE_NAV,
   MOBILE_BAR_NAV,
-  PRIMARY_NAV,
-  SECONDARY_NAV,
+  PERSONAL_NAV,
+  EXPLORE_NAV,
+  HEALTHCARE_DEMO_NAV,
+  SYSTEM_NAV,
   isNavItemActive,
   type NavItem,
 } from '@/lib/navigation/nav-config';
@@ -58,9 +59,10 @@ export const MobileBottomNav: React.FC = () => {
   );
 
   const groups: { title: string; items: NavItem[] }[] = [
-    { title: t('personalTracker'), items: PRIMARY_NAV },
-    { title: tNavMore('secondaryTitle'), items: SECONDARY_NAV },
-    { title: t('healthcarePortal'), items: HEALTHCARE_NAV },
+    { title: t('personal'), items: PERSONAL_NAV },
+    { title: t('explore'), items: EXPLORE_NAV },
+    { title: t('healthcare'), items: HEALTHCARE_DEMO_NAV },
+    { title: t('system'), items: SYSTEM_NAV },
   ];
 
   return (

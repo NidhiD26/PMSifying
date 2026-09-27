@@ -1,34 +1,33 @@
+import { ApiError } from '@/lib/api/errors';
 import type { SecretChatErrorBody, SecretChatErrorCode } from '@/types/secretchat';
 
 /**
- * One error type for every SecretChat failure, carrying the HTTP status and the
- * stable code the client switches on.
+ * SecretChat's view of the shared API error.
  *
- * A single class rather than a `switch` of strings at each call site, because
- * the interesting failures are the ones that must not be confused: reporting
- * someone else's post is `forbidden`, not `not_found`, while liking a post that
- * was deleted a second ago is `not_found`. Collapsing them would either leak
- * the existence of deleted content or make a real permission problem look like
- * a bug.
+ * The envelope, the codes and the statuses were defined here first and are now
+ * implemented once in `@/lib/api/errors`, because Healthcare needed the identical
+ * contract and two independent copies of it would be free to drift. This subclass
+ * keeps the name, the `instanceof` check and every factory export exactly as they
+ * were, so the feature's existing behaviour and tests are untouched.
+ *
+ * `SecretChatErrorCode` and `SecretChatErrorBody` are aliases of the shared types
+ * in `@/types/secretchat`, so "the two vocabularies agree" is a fact of the type
+ * system rather than a convention.
  */
-export class SecretChatError extends Error {
-  readonly code: SecretChatErrorCode;
-  readonly status: number;
-  readonly fields: string[];
-
-  constructor(code: SecretChatErrorCode, status: number, fields: string[] = [], message?: string) {
-    super(message ?? code);
+export class SecretChatError extends ApiError {
+  constructor(
+    code: SecretChatErrorCode,
+    status: number,
+    fields: string[] = [],
+    message?: string
+  ) {
+    super(code, status, fields, message);
     this.name = 'SecretChatError';
-    this.code = code;
-    this.status = status;
-    this.fields = fields;
   }
 
-  toBody(): SecretChatErrorBody {
-    const body: SecretChatErrorBody = { ok: false, code: this.code };
-    if (this.fields.length > 0) body.fields = this.fields;
-    if (this.message && this.message !== this.code) body.message = this.message;
-    return body;
+  /** The shared envelope, typed with SecretChat's own code union. */
+  override toBody(): SecretChatErrorBody {
+    return super.toBody() as SecretChatErrorBody;
   }
 }
 
@@ -40,8 +39,7 @@ export const invalidRequest = (fields: string[] = []): SecretChatError =>
  * are not allowed" are different states, and the UI reacts differently: one
  * offers sign-in, the other offers going back.
  */
-export const unauthenticated = (): SecretChatError =>
-  new SecretChatError('unauthenticated', 401);
+export const unauthenticated = (): SecretChatError => new SecretChatError('unauthenticated', 401);
 
 /** Signed in, but not allowed to touch this row. */
 export const forbidden = (): SecretChatError => new SecretChatError('forbidden', 403);

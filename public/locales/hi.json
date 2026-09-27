@@ -21,8 +21,16 @@
     "healthEcosystem": "स्वास्थ्य पारिस्थितिकी तंत्र",
     "personalTracker": "व्यक्तिगत ट्रैकर",
     "healthcarePortal": "स्वास्थ्य देखभाल पोर्टल",
+    "personal": "व्यक्तिगत",
+    "explore": "एक्सप्लोर",
+    "healthcare": "स्वास्थ्य सेवा",
+    "system": "सिस्टम",
     "dashboard": "डैशबोर्ड",
-    "desktopLabel": "मुख्य नेविगेशन"
+    "desktopLabel": "मुख्य नेविगेशन",
+    "households": "परिवार",
+    "cases": "मामले",
+    "referrals": "रेफरल",
+    "followUps": "फॉलो-अप"
   },
   "language": {
     "select": "भाषा",
@@ -97,10 +105,286 @@
   },
   "healthcare": {
     "badge": "स्वास्थ्य सेवा पोर्टल",
-    "footerNote": "स्वास्थ्य सेवा पोर्टल एक अलग, प्रमाणित सिस्टम है। ये इस डिवाइस पर संग्रहीत आपके निजी ट्रैकिंग डेटा को नहीं पढ़ते।",
-    "ashaDescription": "आशा कार्यकर्ताओं के लिए: सामुदायिक स्वास्थ्य फ़ॉलो-अप के लिए भूमिका-आधारित पोर्टल। इस बिल्ड में जुड़ा नहीं है।",
-    "doctorDescription": "डॉक्टरों के लिए: सहमति प्राप्त रोगी सारांशों की समीक्षा के लिए भूमिका-आधारित पोर्टल। इस बिल्ड में जुड़ा नहीं है।",
-    "healthCampsDescription": "स्वास्थ्य शिविरों के लिए: शिविर सत्रों के पंजीकरण और फ़ॉलो-अप के लिए भूमिका-आधारित पोर्टल। इस बिल्ड में जुड़ा नहीं है।"
+    "footerNote": "स्वास्थ्य सेवा तक पहुंच भूमिका के आधार पर नियंत्रित है। मरीज की जानकारी गोपनीय रखी जाती है।",
+    "ashaDescription": "सौंपे गए परिवारों, सदस्यों, मामलों, रेफरल और फॉलो-अप का प्रबंधन करें।",
+    "doctorDescription": "रेफर किए गए मामलों, चिकित्सकीय जानकारी, प्रिस्क्रिप्शन और फॉलो-अप की समीक्षा करें।",
+    "healthCampsDescription": "सामुदायिक स्वास्थ्य शिविर देखें, प्रबंधित करें और उनमें भाग लें।",
+    "status": {
+      "OPEN": "खुला",
+      "REFERRED": "रेफर किया गया",
+      "UNDER_REVIEW": "समीक्षा में",
+      "FOLLOW_UP": "फॉलो-अप",
+      "CLOSED": "बंद",
+      "PENDING": "लंबित",
+      "ACCEPTED": "स्वीकृत",
+      "IN_REVIEW": "समीक्षा में",
+      "COMPLETED": "पूरा हुआ",
+      "CANCELLED": "रद्द",
+      "MISSED": "छूट गया",
+      "DRAFT": "ड्राफ्ट",
+      "PUBLISHED": "प्रकाशित",
+      "REGISTERED": "पंजीकृत",
+      "ATTENDED": "उपस्थित",
+      "ABSENT": "अनुपस्थित",
+      "ROUTINE": "सामान्य",
+      "URGENT": "तत्काल",
+      "MILD": "हल्का",
+      "MODERATE": "मध्यम",
+      "SEVERE": "गंभीर"
+    },
+    "statusUnknown": "स्थिति अज्ञात",
+    "errors": {
+      "invalid_request": "अमान्य अनुरोध",
+      "unauthenticated": "जारी रखने के लिए साइन इन करें",
+      "forbidden": "आपको यह कार्य करने की अनुमति नहीं है",
+      "not_found": "मांगी गई जानकारी नहीं मिली",
+      "conflict": "यह कार्य वर्तमान स्थिति से मेल नहीं खाता",
+      "not_configured": "स्वास्थ्य सेवा पोर्टल कॉन्फ़िगर नहीं किया गया है",
+      "upstream_unavailable": "स्वास्थ्य सेवा अभी अस्थायी रूप से उपलब्ध नहीं है",
+      "rate_limited": "बहुत अधिक अनुरोध किए गए हैं। बाद में फिर प्रयास करें",
+      "unknown": "कुछ गलत हो गया"
+    },
+    "roles": {
+      "ADMIN": "प्रशासक",
+      "ASHA": "आशा कार्यकर्ता",
+      "DOCTOR": "डॉक्टर",
+      "USER": "उपयोगकर्ता"
+    },
+    "actions": {
+      "back": "वापस",
+      "column": "कॉलम",
+      "open": "खोलें",
+      "save": "सहेजें"
+    },
+    "dashboard": {
+      "ashaTitle": "आशा डैशबोर्ड",
+      "doctorTitle": "डॉक्टर डैशबोर्ड",
+      "assignedHouseholds": "सौंपे गए परिवार",
+      "campActivity": "शिविर गतिविधि",
+      "campsThisMonth": "इस महीने के शिविर",
+      "casesUnderReview": "समीक्षा में मामले",
+      "followUpList": "फॉलो-अप सूची",
+      "followUpsDue": "लंबित फॉलो-अप",
+      "householdMembers": "परिवार के सदस्य",
+      "openCases": "खुले मामले",
+      "pendingReferralList": "लंबित रेफरल सूची",
+      "pendingReferrals": "लंबित रेफरल",
+      "recentCases": "हाल के मामले",
+      "upcomingFollowUps": "आगामी फॉलो-अप",
+      "viewAll": "सभी देखें"
+    },
+    "households": {
+      "title": "परिवार",
+      "code": "परिवार कोड",
+      "members": "{count, plural, one {# member} other {# members}}",
+      "openCases": "खुले मामले",
+      "empty": {
+        "title": "कोई परिवार नहीं मिला",
+        "body": "अभी तक आपको कोई परिवार नहीं सौंपा गया है।"
+      }
+    },
+    "household": {
+      "assignedWorker": "सौंपा गया कार्यकर्ता",
+      "noWorker": "कोई कार्यकर्ता नहीं सौंपा गया",
+      "openCases": "खुले मामले",
+      "emptyMembers": {
+        "title": "कोई सदस्य नहीं",
+        "body": "इस परिवार में अभी तक कोई सदस्य नहीं जोड़ा गया है।"
+      }
+    },
+    "members": {
+      "title": "सदस्य",
+      "age": "उम्र",
+      "ageUnknown": "उम्र अज्ञात",
+      "relation": "संबंध",
+      "relationUnknown": "संबंध अज्ञात",
+      "note": "नोट",
+      "sex": "लिंग",
+      "sexUnknown": "लिंग अज्ञात",
+      "years": "वर्ष",
+      "countOne": "सदस्य",
+      "countMany": "सदस्य",
+      "sexValues": {
+        "FEMALE": "महिला",
+        "MALE": "पुरुष",
+        "OTHER": "अन्य"
+      }
+    },
+    "cases": {
+      "title": "मामले",
+      "household": "परिवार",
+      "member": "सदस्य",
+      "opened": "खोला गया",
+      "priority": "प्राथमिकता",
+      "status": "स्थिति",
+      "summary": "सारांश",
+      "empty": {
+        "title": "कोई मामला नहीं",
+        "body": "दिखाने के लिए कोई मामला नहीं है।"
+      }
+    },
+    "caseReview": {
+      "actions": {
+        "clinicalNote": "क्लिनिकल नोट लिखें",
+        "prescription": "प्रिस्क्रिप्शन लिखें",
+        "followUp": "फॉलो-अप शेड्यूल करें",
+        "observation": "अवलोकन दर्ज करें"
+      },
+      "title": "केस समीक्षा",
+      "member": "सदस्य",
+      "referralReason": "रेफरल का कारण",
+      "history": "इतिहास",
+      "observations": "अवलोकन",
+      "clinicalNotes": "चिकित्सकीय नोट्स",
+      "prescription": "प्रिस्क्रिप्शन",
+      "followUps": "फॉलो-अप",
+      "emptyObservations": {
+        "title": "कोई अवलोकन नहीं"
+      },
+      "emptyNotes": {
+        "title": "कोई चिकित्सकीय नोट्स नहीं"
+      },
+      "emptyPrescriptions": {
+        "title": "कोई प्रिस्क्रिप्शन नहीं"
+      },
+      "emptyFollowUps": {
+        "title": "कोई फॉलो-अप नहीं"
+      }
+    },
+    "observations": {
+      "symptoms": "लक्षण",
+      "severity": "गंभीरता",
+      "duration": "अवधि",
+      "durationDays": "अवधि (दिन)",
+      "durationUnknown": "अवधि अज्ञात",
+      "notes": "नोट्स",
+      "recordedBy": "दर्ज करने वाला",
+      "none": "कोई अवलोकन दर्ज नहीं है"
+    },
+    "clinicalNotes": {
+      "assessment": "आकलन",
+      "advice": "सलाह",
+      "observations": "अवलोकन",
+      "author": "लेखक",
+      "followUpOn": "फॉलो-अप की तारीख"
+    },
+    "prescriptions": {
+      "medicine": "दवा",
+      "dosage": "खुराक",
+      "frequency": "आवृत्ति",
+      "duration": "अवधि",
+      "instructions": "निर्देश",
+      "prescriber": "प्रिस्क्राइबर"
+    },
+    "referrals": {
+      "action": {
+        "accept": "स्वीकार करें",
+        "startReview": "समीक्षा शुरू करें",
+        "complete": "पूरा करें",
+        "cancel": "रद्द करें"
+      },
+      "title": "रेफरल",
+      "referredTo": "रेफर किया गया",
+      "raised": "बनाया गया",
+      "reason": "कारण",
+      "priority": "प्राथमिकता",
+      "status": "स्थिति",
+      "unassigned": "असाइन नहीं किया गया",
+      "noDoctors": {
+        "title": "रोस्टर में कोई डॉक्टर नहीं",
+        "body": "फिलहाल रेफरल के लिए कोई डॉक्टर उपलब्ध नहीं है।"
+      },
+      "empty": {
+        "title": "कोई रेफरल नहीं",
+        "body": "दिखाने के लिए कोई रेफरल नहीं है।"
+      }
+    },
+    "followUps": {
+      "action": {
+        "complete": "पूरा करें",
+        "cancel": "रद्द करें",
+        "markMissed": "मिस्ड के रूप में चिह्नित करें"
+      },
+      "title": "फॉलो-अप",
+      "assignedTo": "असाइन किया गया",
+      "due": "नियत तिथि",
+      "completedAt": "पूरा किया गया",
+      "notes": "नोट्स",
+      "empty": {
+        "title": "कोई फॉलो-अप नहीं",
+        "body": "दिखाने के लिए कोई फॉलो-अप नहीं है।"
+      }
+    },
+    "camps": {
+      "spotsLeft": "{count} स्थान शेष",
+      "full": "पूरी तरह भर गया",
+      "cancelRegistration": "पंजीकरण रद्द करें",
+      "completeCamp": "कैंप पूरा करें",
+      "publish": "प्रकाशित करें",
+      "title": "स्वास्थ्य शिविर",
+      "subtitle": "सामुदायिक स्वास्थ्य शिविर और पंजीकरण",
+      "date": "तारीख",
+      "time": "समय",
+      "location": "स्थान",
+      "capacity": "क्षमता",
+      "statusChanges": "स्थिति में बदलाव",
+      "open": "खुला",
+      "registered": "पंजीकृत",
+      "attended": "उपस्थित",
+      "register": "पंजीकरण करें",
+      "registered_action": "पंजीकृत",
+      "cancelCamp": "शिविर रद्द करें",
+      "empty": {
+        "title": "कोई स्वास्थ्य शिविर नहीं",
+        "body": "दिखाने के लिए कोई स्वास्थ्य शिविर नहीं है।"
+      },
+      "roster": {
+        "title": "शिविर रोस्टर",
+        "attendee": "प्रतिभागी",
+        "attendance": "उपस्थिति",
+        "markAttended": "उपस्थित चिह्नित करें",
+        "markAbsent": "अनुपस्थित चिह्नित करें",
+        "empty": {
+          "title": "अभी तक कोई पंजीकरण नहीं",
+          "body": "इस शिविर के लिए अभी तक कोई पंजीकरण नहीं है।"
+        }
+      },
+      "action": {
+        "publish": "शिविर प्रकाशित करें",
+        "cancel": "शिविर रद्द करें",
+        "complete": "शिविर पूरा करें"
+      }
+    },
+    "forms": {
+      "newHousehold": "नया परिवार जोड़ें",
+      "newMember": "नया सदस्य जोड़ें",
+      "name": "नाम",
+      "address": "पता",
+      "choose": "चुनें",
+      "optional": "वैकल्पिक",
+      "editHousehold": "परिवार की जानकारी संपादित करें",
+      "newObservation": "अवलोकन दर्ज करें",
+      "newNote": "चिकित्सकीय नोट लिखें",
+      "newPrescription": "प्रिस्क्रिप्शन लिखें",
+      "newReferral": "डॉक्टर को रेफर करें",
+      "newFollowUp": "फॉलो-अप निर्धारित करें",
+      "symptomsHint": "लक्षणों का विवरण दें",
+      "invalidSummary": "कृपया दर्ज की गई जानकारी जाँचें।"
+    },
+    "confidentialityNote": "स्वास्थ्य सेवा की जानकारी गोपनीय है और इसका उपयोग केवल अधिकृत देखभाल के लिए किया जाना चाहिए।",
+    "forbidden": {
+      "title": "पहुंच प्रतिबंधित"
+    },
+    "wrongRole": {
+      "title": "गलत भूमिका",
+      "body": "आपके पास इस पृष्ठ तक पहुँचने की अनुमति नहीं है।",
+      "action": "डैशबोर्ड पर जाएँ"
+    },
+    "loading": "लोड हो रहा है...",
+    "notConfigured": {
+      "title": "कॉन्फ़िगर नहीं किया गया",
+      "body": "यह सुविधा अभी कॉन्फ़िगर नहीं की गई है।"
+    }
   },
   "settings": {
     "title": "सेटिंग्स",

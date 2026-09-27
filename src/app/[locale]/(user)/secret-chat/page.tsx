@@ -44,15 +44,18 @@ export default async function SecretChatPage() {
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold text-[#2D1B2D]">{tNav('secretChat')}</h1>
           <AnonymousBadge />
+          {!configured && (
+            <span className="rounded-full bg-[#F9EBEA] border border-[#E8837D]/40 px-3 py-0.5 text-xs font-medium text-[#2D1B2D]">
+              Demo Mode
+            </span>
+          )}
         </div>
         <p className="text-sm leading-relaxed text-[#5A5A66]">
           {tPrivacy('systems.communitySummary')}
         </p>
       </header>
 
-      {!configured ? (
-        <SetupNotice />
-      ) : !session ? (
+      {configured && !session ? (
         <SecretChatAuthGate returnTo="/secret-chat" />
       ) : (
         <ToastProvider>

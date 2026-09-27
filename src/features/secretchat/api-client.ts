@@ -41,107 +41,175 @@ interface Envelope<T> {
   fields?: string[];
 }
 
-async function request<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      'content-type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-  });
-
-  let payload: Envelope<T> | null = null;
+async function request<T>(
+  url: string,
+  init?: RequestInit,
+  demoFallback?: () => Promise<T>
+): Promise<T> {
   try {
-    payload = (await response.json()) as Envelope<T>;
-  } catch {
-    // A body that is not JSON at all: the request never reached the handler.
-    throw new SecretChatApiError('upstream_unavailable');
-  }
+    const response = await fetch(url, {
+      ...init,
+      headers: {
+        'content-type': 'application/json',
+        ...(init?.headers ?? {}),
+      },
+    });
 
-  if (!response.ok || !payload?.ok) {
-    throw new SecretChatApiError(payload?.code ?? 'upstream_unavailable', payload?.fields ?? []);
+    let payload: Envelope<T> | null = null;
+    try {
+      payload = (await response.json()) as Envelope<T>;
+    } catch {
+      if (demoFallback) return await demoFallback();
+      throw new SecretChatApiError('upstream_unavailable');
+    }
+
+    if (!response.ok || !payload?.ok) {
+      const code = payload?.code ?? 'upstream_unavailable';
+      if ((code === 'not_configured' || code === 'unauthenticated') && demoFallback) {
+        return await demoFallback();
+      }
+      throw new SecretChatApiError(code, payload?.fields ?? []);
+    }
+    if (payload.data === undefined) {
+      if (demoFallback) return await demoFallback();
+      throw new SecretChatApiError('upstream_unavailable');
+    }
+    return payload.data;
+  } catch (err) {
+    if (err instanceof SecretChatApiError && (err.code === 'not_configured' || err.code === 'unauthenticated') && demoFallback) {
+      return await demoFallback();
+    }
+    if (demoFallback && !(err instanceof SecretChatApiError)) {
+      return await demoFallback();
+    }
+    throw err;
   }
-  if (payload.data === undefined) {
-    throw new SecretChatApiError('upstream_unavailable');
-  }
-  return payload.data;
 }
 
 export const secretChatApi = {
-  feed(args: { limit?: number; cursor?: string | null } = {}): Promise<FeedPage> {
+  async feed(args: { limit?: number; cursor?: string | null } = {}): Promise<FeedPage> {
     const params = new URLSearchParams();
     if (args.limit) params.set('limit', String(args.limit));
     if (args.cursor) params.set('cursor', args.cursor);
     const query = params.toString();
-    return request<FeedPage>(`/api/secretchat/feed${query ? `?${query}` : ''}`);
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request<FeedPage>(
+      `/api/secretchat/feed${query ? `?${query}` : ''}`,
+      undefined,
+      () => secretChatDemoStore.getFeed(args)
+    );
   },
 
-  post(id: string): Promise<PostDetail> {
-    return request<PostDetail>(`/api/secretchat/posts/${id}`);
+  async post(id: string): Promise<PostDetail> {
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request<PostDetail>(
+      `/api/secretchat/posts/${id}`,
+      undefined,
+      () => secretChatDemoStore.getPost(id)
+    );
   },
 
-  createPost(content: string): Promise<FeedPost> {
-    return request<FeedPost>('/api/secretchat/posts', {
-      method: 'POST',
-      body: JSON.stringify({ content }),
-    });
+  async createPost(content: string): Promise<FeedPost> {
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request<FeedPost>(
+      '/api/secretchat/posts',
+      {
+        method: 'POST',
+        body: JSON.stringify({ content }),
+      },
+      () => secretChatDemoStore.createPost(content)
+    );
   },
 
-  deletePost(id: string): Promise<{ id: string; deleted: true }> {
-    return request<{ id: string; deleted: true }>(`/api/secretchat/posts/${id}`, {
-      method: 'DELETE',
-    });
+  async deletePost(id: string): Promise<{ id: string; deleted: true }> {
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request<{ id: string; deleted: true }>(
+      `/api/secretchat/posts/${id}`,
+      { method: 'DELETE' },
+      () => secretChatDemoStore.deletePost(id)
+    );
   },
 
-  createComment(postId: string, content: string): Promise<FeedComment> {
-    return request<FeedComment>(`/api/secretchat/posts/${postId}/comments`, {
-      method: 'POST',
-      body: JSON.stringify({ content }),
-    });
+  async createComment(postId: string, content: string): Promise<FeedComment> {
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request<FeedComment>(
+      `/api/secretchat/posts/${postId}/comments`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ content }),
+      },
+      () => secretChatDemoStore.createComment(postId, content)
+    );
   },
 
-  deleteComment(id: string): Promise<{ id: string; deleted: true }> {
-    return request<{ id: string; deleted: true }>(`/api/secretchat/comments/${id}`, {
-      method: 'DELETE',
-    });
+  async deleteComment(id: string): Promise<{ id: string; deleted: true }> {
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request<{ id: string; deleted: true }>(
+      `/api/secretchat/comments/${id}`,
+      { method: 'DELETE' },
+      () => secretChatDemoStore.deleteComment(id)
+    );
   },
 
-  like(args: { targetType: 'post' | 'comment'; targetId: string; liked: boolean }): Promise<{
+  async like(args: { targetType: 'post' | 'comment'; targetId: string; liked: boolean }): Promise<{
     likeCount: number;
     liked: boolean;
   }> {
-    return request('/api/secretchat/likes', {
-      // The body states the intent, so the verb is only a routing detail. Both
-      // are sent: a retried request is idempotent either way.
-      method: args.liked ? 'POST' : 'DELETE',
-      body: JSON.stringify(args),
-    });
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request(
+      '/api/secretchat/likes',
+      {
+        method: args.liked ? 'POST' : 'DELETE',
+        body: JSON.stringify(args),
+      },
+      () => secretChatDemoStore.like(args)
+    );
   },
 
-  report(args: {
+  async report(args: {
     targetType: 'post' | 'comment';
     targetId: string;
     reason: ReportReason;
     details?: string;
   }): Promise<{ reportId: string; status: 'open' }> {
-    return request('/api/secretchat/reports', { method: 'POST', body: JSON.stringify(args) });
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request(
+      '/api/secretchat/reports',
+      { method: 'POST', body: JSON.stringify(args) },
+      () => secretChatDemoStore.report(args)
+    );
   },
 
-  blockedMembers(): Promise<BlockedMember[]> {
-    return request<BlockedMember[]>('/api/secretchat/blocks');
+  async blockedMembers(): Promise<BlockedMember[]> {
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request<BlockedMember[]>(
+      '/api/secretchat/blocks',
+      undefined,
+      () => secretChatDemoStore.blockedMembers()
+    );
   },
 
-  blockPost(postId: string): Promise<{ postId: string; blocked: true }> {
-    return request('/api/secretchat/blocks', {
-      method: 'POST',
-      body: JSON.stringify({ postId }),
-    });
+  async blockPost(postId: string): Promise<{ postId: string; blocked: true }> {
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request(
+      '/api/secretchat/blocks',
+      {
+        method: 'POST',
+        body: JSON.stringify({ postId }),
+      },
+      () => secretChatDemoStore.blockPost(postId)
+    );
   },
 
-  unblock(blockRef: string): Promise<{ blocked: false }> {
-    return request('/api/secretchat/blocks', {
-      method: 'DELETE',
-      body: JSON.stringify({ blockRef }),
-    });
+  async unblock(blockRef: string): Promise<{ blocked: false }> {
+    const { secretChatDemoStore } = await import('@/lib/demo/secretchat-demo');
+    return request(
+      '/api/secretchat/blocks',
+      {
+        method: 'DELETE',
+        body: JSON.stringify({ blockRef }),
+      },
+      () => secretChatDemoStore.unblock(blockRef)
+    );
   },
 };

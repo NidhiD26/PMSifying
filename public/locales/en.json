@@ -21,8 +21,16 @@
     "healthEcosystem": "Health Ecosystem",
     "personalTracker": "Personal Tracker",
     "healthcarePortal": "Healthcare Portal",
+    "personal": "Personal",
+    "explore": "Explore",
+    "healthcare": "Healthcare",
+    "system": "System",
     "dashboard": "Dashboard",
-    "desktopLabel": "Main navigation"
+    "desktopLabel": "Main navigation",
+    "households": "Households",
+    "cases": "Cases",
+    "referrals": "Referrals",
+    "followUps": "Follow-ups"
   },
   "language": {
     "select": "Language",
@@ -488,10 +496,286 @@
   },
   "healthcare": {
     "badge": "Healthcare Portal",
-    "footerNote": "The healthcare portals are a separate, authenticated system. They do not read the personal tracking data stored on this device.",
-    "ashaDescription": "For ASHA workers: a role-scoped portal for community health follow-up. Not connected in this build.",
-    "doctorDescription": "For doctors: a role-scoped portal for reviewing consented patient summaries. Not connected in this build.",
-    "healthCampsDescription": "For health camps: a role-scoped portal for registering and following up camp sessions. Not connected in this build."
+    "footerNote": "Healthcare access is role-based. Patient information is handled confidentially.",
+    "ashaDescription": "Manage assigned households, members, cases, referrals and follow-ups.",
+    "doctorDescription": "Review referred cases, clinical information, prescriptions and follow-ups.",
+    "healthCampsDescription": "View, manage and participate in community health camps.",
+    "status": {
+      "OPEN": "Open",
+      "REFERRED": "Referred",
+      "UNDER_REVIEW": "Under review",
+      "FOLLOW_UP": "Follow-up",
+      "CLOSED": "Closed",
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "IN_REVIEW": "In review",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "MISSED": "Missed",
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "REGISTERED": "Registered",
+      "ATTENDED": "Attended",
+      "ABSENT": "Absent",
+      "ROUTINE": "Routine",
+      "URGENT": "Urgent",
+      "MILD": "Mild",
+      "MODERATE": "Moderate",
+      "SEVERE": "Severe"
+    },
+    "statusUnknown": "Not recorded",
+    "errors": {
+      "invalid_request": "Invalid request",
+      "unauthenticated": "You must sign in to continue",
+      "forbidden": "You do not have permission to perform this action",
+      "not_found": "The requested information was not found",
+      "conflict": "This action conflicts with the current state",
+      "not_configured": "The healthcare portal is not configured",
+      "upstream_unavailable": "The healthcare service is temporarily unavailable",
+      "rate_limited": "Too many requests. Please try again later",
+      "unknown": "Something went wrong"
+    },
+    "roles": {
+      "ADMIN": "Administrator",
+      "ASHA": "Community health worker",
+      "DOCTOR": "Doctor",
+      "USER": "Member"
+    },
+    "actions": {
+      "back": "Back",
+      "column": "Column",
+      "open": "Open",
+      "save": "Save"
+    },
+    "dashboard": {
+      "ashaTitle": "ASHA Dashboard",
+      "doctorTitle": "Doctor Dashboard",
+      "assignedHouseholds": "Assigned households",
+      "campActivity": "Camp activity",
+      "campsThisMonth": "Camps this month",
+      "casesUnderReview": "Cases under review",
+      "followUpList": "Follow-up list",
+      "followUpsDue": "Follow-ups due",
+      "householdMembers": "Household members",
+      "openCases": "Open cases",
+      "pendingReferralList": "Pending referrals",
+      "pendingReferrals": "Pending referrals",
+      "recentCases": "Recent cases",
+      "upcomingFollowUps": "Upcoming follow-ups",
+      "viewAll": "View all"
+    },
+    "households": {
+      "title": "Households",
+      "code": "Household code",
+      "members": "{count, plural, =1 {1 member} other {# members}}",
+      "openCases": "Open cases",
+      "empty": {
+        "title": "No households found",
+        "body": "There are no households assigned to you yet."
+      }
+    },
+    "household": {
+      "assignedWorker": "Assigned worker",
+      "noWorker": "No worker assigned",
+      "openCases": "Open cases",
+      "emptyMembers": {
+        "title": "No members",
+        "body": "No members have been added to this household yet."
+      }
+    },
+    "members": {
+      "title": "Members",
+      "age": "Age",
+      "ageUnknown": "Age unknown",
+      "relation": "Relation",
+      "relationUnknown": "Relation unknown",
+      "note": "Note",
+      "sex": "Sex",
+      "sexUnknown": "Sex unknown",
+      "years": "years",
+      "countOne": "member",
+      "countMany": "members",
+      "sexValues": {
+        "FEMALE": "Female",
+        "MALE": "Male",
+        "OTHER": "Other"
+      }
+    },
+    "cases": {
+      "title": "Cases",
+      "household": "Household",
+      "member": "Member",
+      "opened": "Opened",
+      "priority": "Priority",
+      "status": "Status",
+      "summary": "Summary",
+      "empty": {
+        "title": "No cases",
+        "body": "There are no cases to display."
+      }
+    },
+    "caseReview": {
+      "title": "Case review",
+      "member": "Member",
+      "referralReason": "Referral reason",
+      "history": "History",
+      "observations": "Observations",
+      "clinicalNotes": "Clinical notes",
+      "prescription": "Prescription",
+      "followUps": "Follow-ups",
+      "emptyObservations": {
+        "title": "No observations"
+      },
+      "emptyNotes": {
+        "title": "No clinical notes"
+      },
+      "emptyPrescriptions": {
+        "title": "No prescriptions"
+      },
+      "emptyFollowUps": {
+        "title": "No follow-ups"
+      },
+      "actions": {
+        "clinicalNote": "Write a clinical note",
+        "prescription": "Write a prescription",
+        "followUp": "Schedule a follow-up",
+        "observation": "Record an observation"
+      }
+    },
+    "observations": {
+      "symptoms": "Symptoms",
+      "severity": "Severity",
+      "duration": "Duration",
+      "durationDays": "Duration in days",
+      "durationUnknown": "Duration unknown",
+      "notes": "Notes",
+      "recordedBy": "Recorded by",
+      "none": "No observations recorded"
+    },
+    "clinicalNotes": {
+      "assessment": "Assessment",
+      "advice": "Advice",
+      "observations": "Observations",
+      "author": "Author",
+      "followUpOn": "Follow-up on"
+    },
+    "prescriptions": {
+      "medicine": "Medicine",
+      "dosage": "Dosage",
+      "frequency": "Frequency",
+      "duration": "Duration",
+      "instructions": "Instructions",
+      "prescriber": "Prescriber"
+    },
+    "referrals": {
+      "title": "Referrals",
+      "referredTo": "Referred to",
+      "raised": "Raised",
+      "reason": "Reason",
+      "priority": "Priority",
+      "status": "Status",
+      "unassigned": "Unassigned",
+      "noDoctors": {
+        "title": "No doctors on the roster",
+        "body": "There are currently no doctors available for referral."
+      },
+      "empty": {
+        "title": "No referrals",
+        "body": "There are no referrals to display."
+      },
+      "action": {
+        "accept": "Accept referral",
+        "startReview": "Start review",
+        "complete": "Mark complete",
+        "cancel": "Cancel referral"
+      }
+    },
+    "followUps": {
+      "title": "Follow-ups",
+      "assignedTo": "Assigned to",
+      "due": "Due",
+      "completedAt": "Completed at",
+      "notes": "Notes",
+      "empty": {
+        "title": "No follow-ups",
+        "body": "There are no follow-ups to display."
+      },
+      "action": {
+        "complete": "Mark done",
+        "markMissed": "Mark missed",
+        "cancel": "Cancel follow-up"
+      }
+    },
+    "camps": {
+      "title": "Health camps",
+      "subtitle": "Community health camps and registrations",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "capacity": "Capacity",
+      "spotsLeft": "{count} places left",
+      "statusChanges": "Status changes",
+      "open": "Open",
+      "full": "This camp is full",
+      "registered": "Registered",
+      "attended": "Attended",
+      "register": "Register",
+      "registered_action": "Registered",
+      "cancelRegistration": "Cancel my registration",
+      "cancelCamp": "Cancel camp",
+      "completeCamp": "Mark camp complete",
+      "publish": "Publish camp",
+      "empty": {
+        "title": "No health camps",
+        "body": "There are no health camps to display."
+      },
+      "roster": {
+        "title": "Camp roster",
+        "attendee": "Attendee",
+        "attendance": "Attendance",
+        "markAttended": "Mark attended",
+        "markAbsent": "Mark absent",
+        "empty": {
+          "title": "Nobody registered yet",
+          "body": "There are no registrations for this camp yet."
+        }
+      },
+      "action": {
+        "publish": "Publish camp",
+        "cancel": "Cancel camp",
+        "complete": "Complete camp"
+      }
+    },
+    "forms": {
+      "name": "Name",
+      "address": "Address",
+      "choose": "Choose",
+      "optional": "Optional",
+      "newHousehold": "Add a household",
+      "editHousehold": "Edit household",
+      "newMember": "Add a household member",
+      "newObservation": "Record an observation",
+      "newNote": "Write a clinical note",
+      "newPrescription": "Write a prescription",
+      "newReferral": " Refer to a doctor",
+      "newFollowUp": "Schedule a follow-up",
+      "symptomsHint": "Describe the symptoms",
+      "invalidSummary": "Please check the entered information."
+    },
+    "confidentialityNote": "Healthcare information is confidential and should only be accessed for authorized care purposes.",
+    "forbidden": {
+      "title": "Access restricted"
+    },
+    "wrongRole": {
+      "title": "Wrong role",
+      "body": "This workspace is not for your role",
+      "action": "Go to my workspace"
+    },
+    "loading": "Loading...",
+    "notConfigured": {
+      "title": "The healthcare portal is not configured",
+      "body": "Healthcare services are not configured for this environment yet."
+    }
   },
   "settings": {
     "title": "Settings",
@@ -854,3 +1138,7 @@
     }
   }
 }
+
+
+
+

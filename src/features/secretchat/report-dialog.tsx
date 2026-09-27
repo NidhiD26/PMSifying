@@ -14,7 +14,7 @@ import { useErrorMessage } from '@/features/secretchat/error-message';
  *
  * The reason list is a radio group, not a select, so a screen reader announces the
  * options as a set and arrow keys move between them. "Other" reveals a free-text
- * field, and that field is required only when "other" is chosen â€” the same rule the
+ * field, and that field is required only when "other" is chosen — the same rule the
  * server enforces, so a member is never told they were wrong about their own form.
  *
  * What the dialog says about anonymity is deliberate and specific: the reported

@@ -1,29 +1,35 @@
 import * as React from 'react';
-import { getTranslations } from 'next-intl/server';
-import { Surface } from '@/components/ui/surface';
-import { Users } from 'lucide-react';
+import { withLocale } from '@/lib/navigation/locale-path';
+import { isValidLocale } from '@/i18n/config';
+import { DEFAULT_LOCALE } from '@/types/i18n';
+import { resolvePageFor } from '@/lib/healthcare/page-guard';
+import { getAshaDashboard } from '@/lib/healthcare/service';
+import { PortalGate } from '@/features/healthcare/portal-gate';
+import { AshaDashboardView } from '@/features/healthcare/dashboard-views';
 
-export default async function ASHAPage() {
-  const tNav = await getTranslations('nav');
-  const t = await getTranslations('healthcare');
-  const tPrivacy = await getTranslations('privacy');
+/**
+ * The community health worker's home.
+ *
+ * A server component, so the session is read from the cookie and the dashboard is
+ * fetched with the caller's own store — RLS applies to the very first read of the
+ * page, not only to the actions taken from it. A member who types this path gets the
+ * "not your workspace" screen and no numbers, because the role check happens before the
+ * fetch rather than after it.
+ */
+export default async function ASHAPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: rawLocale } = await params;
+  const locale = isValidLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
 
-  return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-[#2D1B2D]">{tNav('asha')}</h1>
-        <p className="mt-1 text-sm text-[#5A5A66]">{t('ashaDescription')}</p>
-      </header>
+  const page = await resolvePageFor('ASHA');
+  if (page.status !== 'ok') {
+    return <PortalGate status={page.status} homeHref={withLocale('/', locale)} />;
+  }
 
-      <Surface variant="bordered" className="flex items-start gap-3">
-        <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#2E8B57]/10 text-[#2E8B57]"
-          aria-hidden="true"
-        >
-          <Users className="h-5 w-5" />
-        </span>
-        <p className="text-sm leading-relaxed text-[#5A5A66]">{tPrivacy('comingSoon')}</p>
-      </Surface>
-    </div>
-  );
+  const dashboard = await getAshaDashboard(page.store, { actor: page.actor });
+
+  return <AshaDashboardView dashboard={dashboard} locale={locale} />;
 }

@@ -2,10 +2,27 @@ import * as React from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSelector } from '@/components/navigation/language-selector';
-import { HEALTHCARE_NAV } from '@/lib/navigation/nav-config';
+import { healthcareNavForRole } from '@/lib/navigation/nav-config';
 import { withLocale } from '@/lib/navigation/locale-path';
 import { isValidLocale } from '@/i18n/config';
 import { DEFAULT_LOCALE } from '@/types/i18n';
+import { getPortalContext } from '@/lib/healthcare/portal';
+
+/**
+ * The healthcare portal shell.
+ *
+ * The navigation is built from the role the server resolved, so a worker's header
+ * offers the queues they work and a clinician's offers theirs. The role is read here,
+ * on the server, from the same session the API reads — never from anything the browser
+ * sent — and `healthcareNavForRole` is still only a courtesy list: hiding a link hides
+ * a link, and the service refuses the record either way.
+ *
+ * A signed-out visitor is offered the camp list and nothing else, because a published
+ * camp is the one page that is genuinely open to anyone, and a portal that shows two
+ * staff queues to somebody with no session is a list of doors rather than a workspace.
+ */
+import { getHealthcareDemoSession } from '@/lib/healthcare/demo-session';
+import { HealthcareUserNav } from '@/components/navigation/healthcare-user-nav';
 
 export default async function HealthcarePortalLayout({
   children,
@@ -20,7 +37,11 @@ export default async function HealthcarePortalLayout({
   const { locale: rawLocale } = await params;
   const locale = isValidLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
 
-  const links = HEALTHCARE_NAV.map((item) => ({
+  const demoSession = await getHealthcareDemoSession();
+  const context = await getPortalContext();
+  const role = context.status === 'ok' ? context.actor.role : null;
+
+  const links = healthcareNavForRole(role).map((item) => ({
     href: withLocale(item.href, locale),
     label: t(item.labelKey),
   }));
@@ -38,27 +59,31 @@ export default async function HealthcarePortalLayout({
           <span className="rounded-full bg-[#E8837D]/20 px-2 py-0.5 text-xs font-medium text-[#E8837D]">
             {tHealthcare('badge')}
           </span>
+          <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+            DEMO MODE
+          </span>
         </div>
 
         <div className="flex items-center gap-3 text-sm sm:gap-4">
-          <nav aria-label={tHealthcare('badge')} className="flex items-center gap-3 sm:gap-4">
+          <nav aria-label={tHealthcare('badge')} className="flex flex-wrap items-center gap-3 sm:gap-4">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex min-h-[40px] items-center text-[#FDFBF7]/85 hover:text-[#FDFBF7] hover:underline"
+                className="flex min-h-[40px] items-center rounded text-[#FDFBF7]/85 hover:text-[#FDFBF7] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8837D]"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
+          <HealthcareUserNav session={demoSession} locale={locale} />
           <div className="[&_select]:border-[#4A3350] [&_select]:bg-[#3D283D] [&_select]:text-[#FDFBF7] [&_svg]:text-[#FDFBF7]/70">
             <LanguageSelector />
           </div>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 p-4 sm:p-6">{children}</main>
+      <main className="mx-auto w-full max-w-5xl flex-1 p-4 sm:p-6">{children}</main>
 
       <footer className="border-t border-[#E2D8D0] px-4 py-4 sm:px-6">
         <p className="max-w-3xl text-xs leading-relaxed text-[#5A5A66]">

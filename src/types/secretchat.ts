@@ -1,4 +1,5 @@
 import type { ReportReason, ReportTargetType } from '@/types/supabase-database';
+import type { ApiErrorBody, ApiErrorCode } from '@/lib/api/errors';
 
 /** Re-exported so client code needs one import for a report reason. */
 export type { ReportReason, ReportTargetType };
@@ -118,23 +119,9 @@ export interface BlockedMember {
 }
 
 /** Uniform failure envelope. `code` is a stable machine-readable string. */
-export type SecretChatErrorCode =
-  | 'invalid_request'
-  | 'unauthenticated'
-  | 'forbidden'
-  | 'not_found'
-  | 'conflict'
-  | 'not_configured'
-  | 'upstream_unavailable'
-  | 'rate_limited';
+export type SecretChatErrorCode = ApiErrorCode;
 
-export interface SecretChatErrorBody {
-  ok: false;
-  code: SecretChatErrorCode;
-  /** Field paths for `invalid_request`, so the UI can mark the right input. */
-  fields?: string[];
-  message?: string;
-}
+export type SecretChatErrorBody = ApiErrorBody;
 
 /** Ordered as they are shown in the report dialog. */
 export const REPORT_REASONS: ReportReason[] = [
