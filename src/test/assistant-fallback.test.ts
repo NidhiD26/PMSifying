@@ -98,10 +98,18 @@ describe('every reply is well formed', () => {
     'asdfghjkl',
   ])('answers %j with a renderable message key', (text) => {
     const result = reply(text);
-    expect(result.messageKey).toMatch(/^responses\.[a-zA-Z.]+$/);
+    // Either a composed response, or a knowledge answer's lead sentence. Both are
+    // namespace-relative to `assistant` and neither repeats that prefix.
+    expect(result.messageKey).toMatch(/^(responses|knowledge)\.[a-zA-Z.]+$/);
+    expect(result.messageKey.startsWith('assistant.')).toBe(false);
     expect(result.id).toMatch(/^reply-\d+$/);
     expect(result.source).toBe('offline');
     expect(result.providerText).toBeUndefined();
+
+    // Blocks are described, never written, and are qualified the same way.
+    for (const block of result.blocks) {
+      expect(block.key).toMatch(/^knowledge\.[a-zA-Z.]+$/);
+    }
   });
 
   it('only ever uses params that the message key declares', () => {
@@ -166,19 +174,57 @@ describe('refusals never answer the question', () => {
 });
 
 describe('education answers cite their sources', () => {
-  it('cites every supplied source', () => {
-    const sources = retrieveEducationSources(docs, 'what is PCOS');
-    const result = reply('what is PCOS', richContext(), sources);
+  it('cites every supplied source when the answer comes from the articles', () => {
+    // A question the knowledge base does not own, so the Education branch answers
+    // and every retrieved article is shown. ("what is the fertile window" is *not*
+    // such a question — that reads as a prediction about this reader and is
+    // answered by the cycle engine, which is the point of the precedence test
+    // above.)
+    const sources = retrieveEducationSources(docs, 'what is worth knowing before a doctor visit');
+    const result = reply('what is worth knowing before a doctor visit', richContext(), sources);
+
+    expect(result.messageKey).toBe('responses.education');
     expect(result.citations).toEqual(sources);
     expect(result.params.count).toBe(sources.length);
+    expect(result.provenance).toContain('education');
   });
 
-  it('still answers with no sources at all', () => {
+  it('a knowledge answer cites only the article that entry declares', () => {
+    // The knowledge entry for PCOS names `pcosOverview`. That article is the
+    // source for *that* answer, so it is cited; the other retrieved articles are
+    // not, because nothing in the reply drew on them.
+    const sources = retrieveEducationSources(docs, 'what is PCOS');
+    const result = reply('what is PCOS', richContext(), sources);
+
+    expect(result.messageKey).toBe('knowledge.pcos.answer');
+    expect(result.citations.map((c) => c.articleId)).toContain('pcosOverview');
+    expect(result.provenance).toEqual(expect.arrayContaining(['healthKnowledge', 'education']));
+  });
+
+  it('drops a declared citation that was not actually retrieved', () => {
+    // A source card has to be openable, so a knowledge entry whose article did
+    // not come back from retrieval shows no citation rather than a broken one.
     const result = reply('what is PCOS', richContext(), []);
-    // With nothing to ground it, the honest answer is "no match", not a
-    // confident-sounding summary with an empty citation list.
+
     expect(result.citations).toEqual([]);
+    expect(result.provenance).toEqual(['healthKnowledge']);
+  });
+
+  it('still answers a knowledge question with no sources at all', () => {
+    // This used to be `noMatch`, and correctly so: the assistant could only search
+    // the library. Now the knowledge base answers it from its own corpus, and an
+    // honest answer with no citation beats telling a reader we know nothing about
+    // PCOS. Provenance says `healthKnowledge` and not `education`, which is how a
+    // reader can tell the difference.
+    const result = reply('what is PCOS', richContext(), []);
+    expect(result.messageKey).toBe('knowledge.pcos.answer');
+    expect(result.citations).toEqual([]);
+  });
+
+  it('says noMatch when neither the knowledge base nor the articles can answer', () => {
+    const result = reply('how do I bake sourdough bread', richContext(), []);
     expect(result.messageKey).toBe('responses.noMatch');
+    expect(result.citations).toEqual([]);
   });
 });
 

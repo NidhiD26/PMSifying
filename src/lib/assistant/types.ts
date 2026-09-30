@@ -9,6 +9,10 @@ import type {
   VariabilityCategory,
 } from '@/lib/cycle-engine/types';
 import type { InsightCategory, InsightPriority } from '@/lib/insights';
+// The provenance vocabulary is declared by the knowledge module rather than
+// here. `knowledge/types` depends only on the article topics, so this direction
+// cannot become a cycle.
+import type { KnowledgeProvenance } from './knowledge/types';
 
 /**
  * Assistant domain types.
@@ -64,12 +68,66 @@ export type AssistantIntent =
   | 'outOfScope'
   | 'prediction'
   | 'personalSummary'
+  /** "How do I log my period?" — a question about the app, not about a body. */
+  | 'appHelp'
   | 'education'
   | 'greeting'
   | 'unknown';
 
 /** How a reply was produced. */
 export type AssistantReplySource = 'offline' | 'gateway';
+
+/**
+ * Which of the brief's five areas owns a question.
+ *
+ * Declared here, in the contract file, rather than in `route.ts`, because
+ * `AssistantReply` carries one and the barrel has to be able to name the type
+ * without pulling the routing module (and its knowledge base) into every
+ * consumer that only wants to describe a reply.
+ */
+export type AssistantRoute =
+  | 'app_help'
+  | 'personal_health_data'
+  | 'health_education'
+  | 'safety'
+  | 'unknown';
+
+/**
+ * One section of a substantive answer.
+ *
+ * The old composer could only say one thing per reply, which is why an education
+ * answer had to be one generic sentence. A block is still a *description* rather
+ * than a string — `key` is an i18n key resolved by the view, exactly like
+ * `messageKey` — so this does not weaken the "no layer emits prose" rule that
+ * keeps the assistant translatable and keeps offline and gateway replies
+ * structurally identical.
+ *
+ * `kind` exists so the view can label and order sections without matching on key
+ * text: a `warning` renders as a caution, a `care` renders as "where to go next",
+ * and neither is allowed to be styled as ordinary body copy.
+ */
+export type AssistantBlockKind = 'text' | 'myth' | 'warning' | 'care' | 'related';
+
+export interface AssistantBlock {
+  kind: AssistantBlockKind;
+  /**
+   * The block's text key, relative to the `assistant` namespace — e.g.
+   * `knowledge.cervix.detail`, `knowledge.log.care`.
+   *
+   * The view resolves it with `useTranslations('assistant')`, so the `assistant.`
+   * prefix is supplied by the namespace and must not be repeated. Knowledge keys
+   * must carry their `knowledge.` segment: a knowledge entry's stored key is
+   * `<id>.<slot>`, and `qualifyKnowledgeKey` is the one function that turns it
+   * into the namespace-relative form used here.
+   */
+  key: string;
+  params?: Record<string, string | number>;
+  /**
+   * Education article ids this block draws on, so a source card can be attached
+   * to the section that actually used it rather than to the whole reply.
+   */
+  articleIds?: readonly string[];
+}
 
 /** Guardrail verdicts, ordered by increasing severity. */
 export type GuardrailOutcome = 'allow' | 'refuse' | 'escalate';
@@ -198,9 +256,33 @@ export interface AssistantReply {
   /** Deterministic per conversation turn, e.g. `reply-3`. */
   id: string;
   intent: AssistantIntent;
-  /** Key under `assistant.responses`. */
+  /** Which of the brief's five areas owned this question. */
+  route: AssistantRoute;
+  /**
+   * The lead sentence's key, relative to the `assistant` namespace — either
+   * `responses.<name>` for a composed reply, or `knowledge.<id>.answer` for a
+   * knowledge answer.
+   *
+   * Never repeats the `assistant.` prefix, because the view supplies it.
+   */
   messageKey: string;
   params: Record<string, string | number>;
+  /**
+   * The substantive sections of the answer, in reading order.
+   *
+   * Empty for a greeting, a refusal, a plain personal-data answer and `noMatch`
+   * — the cases where `messageKey` already says everything there is to say.
+   */
+  blocks: AssistantBlock[];
+  /**
+   * Where the information in this reply came from, so the reader is never left
+   * guessing whether they are looking at a fact, an article, their own records,
+   * or a description of the app's interface.
+   *
+   * Set from what the composer actually used, never from what would have been
+   * plausible, which is why app-help answers carry `appHelp` and no `education`.
+   */
+  provenance: KnowledgeProvenance[];
   citations: EducationSource[];
   /** True when a safety rule replaced retrieval and comprehension. */
   isRefusal: boolean;

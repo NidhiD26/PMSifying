@@ -14,6 +14,56 @@ import { cn } from '@/lib/utils/cn';
 
 type TopicFilter = ArticleTopic | 'all';
 
+/**
+ * Query parameter that names the article to open.
+ *
+ * The assistant cites articles, and a citation that only names one is a dead
+ * end — the reader has to go and find it. Deep-linking means the citation can
+ * open the article itself, which is what makes a source checkable rather than
+ * merely asserted.
+ */
+export const ARTICLE_PARAM = 'a';
+
+function isKnownArticleId(id: string): boolean {
+  return ARTICLES.some((article) => article.id === id);
+}
+
+/**
+ * Reads the deep-linked article from the URL.
+ *
+ * Read from `window.location` rather than through `useSearchParams` so the route
+ * stays statically renderable: a client hook would force the whole library
+ * behind a Suspense boundary for one query parameter. The cost is that the
+ * parameter is read on mount, which is when a link navigation lands here anyway.
+ * An unknown id is ignored rather than opened, so a stale or hand-edited link
+ * shows the library instead of an empty reader.
+ */
+function readArticleParam(): string | null {
+  if (typeof window === 'undefined') return null;
+  const requested = new URLSearchParams(window.location.search).get(ARTICLE_PARAM);
+  return requested && isKnownArticleId(requested) ? requested : null;
+}
+
+/**
+ * Keeps the URL in step with the open article.
+ *
+ * `replaceState` rather than `pushState` on purpose: opening an article is a
+ * view change within one page, and a history entry per article would make the
+ * back button walk through the reader's own history instead of leaving the
+ * library. The URL still ends up correct, so the article can be copied and
+ * shared — which is the point of putting it there at all.
+ */
+function syncArticleParam(id: string | null): void {
+  if (typeof window === 'undefined') return;
+
+  const url = new URL(window.location.href);
+  if (id === null) url.searchParams.delete(ARTICLE_PARAM);
+  else url.searchParams.set(ARTICLE_PARAM, id);
+
+  if (url.href === window.location.href) return;
+  window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+}
+
 function isTopic(id: string, value: ArticleTopic): boolean {
   return ARTICLES.find((a) => a.id === id)?.topic === value;
 }
@@ -46,6 +96,20 @@ export const LearnView: React.FC = () => {
     [t]
   );
 
+  // Open whatever the URL names, once, on arrival. `lastOpenedId` is set so that
+  // backing out of a deep-linked article returns focus to its card rather than
+  // to the browser chrome.
+  //
+  // Mount-only by design: later changes to the query string are not expected
+  // here, and reacting to them would fight the reader's own navigation. The empty
+  // dep list is the whole mechanism, not an oversight.
+  React.useEffect(() => {
+    const requested = readArticleParam();
+    if (!requested) return;
+    lastOpenedId.current = requested;
+    setSelectedId(requested);
+  }, []);
+
   const docById = React.useMemo(() => new Map(docs.map((d) => [d.id, d])), [docs]);
 
   // Deterministic ordering, then narrowed by the active topic.
@@ -65,6 +129,7 @@ export const LearnView: React.FC = () => {
 
   function handleOpenArticle(id: string) {
     lastOpenedId.current = id;
+    syncArticleParam(id);
     setSelectedId(id);
   }
 
@@ -72,6 +137,9 @@ export const LearnView: React.FC = () => {
     // The library is unmounted while the reader is open, so the focus can only
     // be handed back once the list is back in the DOM.
     shouldRestoreFocus.current = true;
+    // Dropping the parameter means a refresh lands on the library, not on the
+    // article the reader has just finished with.
+    syncArticleParam(null);
     setSelectedId(null);
   }
 

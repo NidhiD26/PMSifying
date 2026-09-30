@@ -146,13 +146,39 @@ const MEDICATION_TERMS: readonly string[] = [
   'antidepressant', 'hormonal pill', 'birth control', 'iron tablet',
   'iron supplement', 'supplement', 'which medicine', 'stop taking',
   'start taking', 'increase dose', 'reduce dose', 'ayurvedic',
-  'herbal remedy', 'home remedy',
+  'herbal remedy', 'home remedy', 'supplement', 'supplements',
+  /*
+   * Herbal preparations are the most common thing a reader names when they want
+   * dosing advice, and they are usually named by their own name rather than as a
+   * category. Missing them meant "should I try ashwagandha for PMS" reached the
+   * retrieval layer and came back with an article about PMS — which is dosing
+   * advice about a preparation, arrived at by a different route.
+   */
+  'ashwagandha', 'shatavari', 'gulab', 'jeera water', 'fenugreek', 'methi',
+  'aloevera', 'aloe vera', 'multani mitti', 'clove', 'honey', 'आयुर्वेदिक दवा',
+  'अश्वगंधा', 'शतावरी', 'एलोवेरा', 'लौंग', 'शहद', 'जीरा', 'अजवाइन',
+  'ಅಶ್ವಗಂಧಾ', 'ಅಲೋವೇರಾ', 'ದಾಲ್ಚಿನಿ', 'ಜೀರೆ ನೀರು', 'ಅರಿಸಿನ್',
+  /*
+   * Named products matter as much as the generic nouns, and more: "I want to take
+   * crocin for cramps" contains no word in the vocabulary above, and crocin is
+   * the brand an Indian reader is most likely to type about period pain. A
+   * medication rule that only understands the class name misses exactly the
+   * message it exists to catch, so the common over-the-counter analgesics are
+   * listed by name. The rule still refuses; naming a brand is how the request
+   * arrives, not a licence to answer it.
+   */
+  'crocin', 'crocin pain', 'paracetamol', 'disprin', 'ibuprofen', 'aspirin',
+  'combiflam', 'nimol', 'cyclopam', 'meftal', 'meftal p', 'dolo', 'dolo 650',
+  'vicks', 'calpol', 'tylenol', 'panadol', 'moxicip', 'flexon', 'diclonac',
+  'naproxen', 'tramadol', 'amitriptyline', 'mefenamic', 'methyl salicylate',
+  'crocin 650', 'sugar free',
   // Hindi
+  'क्रोसिन', 'पैरासिटामोल', 'डिस्प्रिन', 'आइबूप्रोफेन', 'एस्पिरिन', 'कॉम्बीफ्लेम',
   'दवा', 'दवाई', 'गोली', 'खुराक', 'नसीला', 'दवाइयों', 'प्रिस्क्रिप्शन',
   'एंटीबायोटिक', 'आयुर्वेदिक', 'घरेलू उपाय', 'कौन सी दवा', 'दवा लेनी चाहिए',
   'दवा बंद', 'मात्रा',
   // Kannada
-  'ಔಷಧಿ', 'ಔಷಧ', 'ಮದ್ದು', 'ಗುಳ್ಳೆ', 'ಅಂಶ', 'ಪ್ರಿಸ್ಕ್ರಿಪ್ಶನ್', 'ನಿರೋಧಕ',
+  'ಕ್ರೋಸಿನ್', 'ಪ್ಯಾರಾಸಿಟಮಾಲ್', 'ಔಷಧಿ', 'ಔಷಧ', 'ಮದ್ದು', 'ಗುಳ್ಳೆ', 'ಅಂಶ', 'ಪ್ರಿಸ್ಕ್ರಿಪ್ಶನ್', 'ನಿರೋಧಕ',
   'ಆಯುರ್ವೇದಿಕ', 'ಮನೆ ಪರಿಹಾರ', 'ಯಾವ ಔಷಧಿ', 'ಔಷಧಿ ತೆಗೆದುಕೊಳ್ಳಬೇಕೆ',
 ];
 
@@ -219,26 +245,109 @@ const PREDICTION_TERMS: readonly string[] = [
   'next period', 'period due', 'missed period', 'late period', 'am i late',
   'period late', 'delay', 'delayed', 'ovulation', 'fertile window', 'fertile',
   'when will my period', 'cycle length', 'irregular', 'spotting between',
+  /*
+   * "am i going to get my period soon" is the single most common way a reader
+   * asks for a prediction, and it names no prediction word at all — the whole
+   * question is a date question wearing ordinary words. `soon`, `coming` and
+   * `due` are what make it one, so they are listed here rather than left to the
+   * reader to phrase the question the way the classifier wants.
+   */
+  'soon', 'coming up', 'due when', 'am i going to get', 'get my period',
+  'period soon', 'when will it come', 'when does it start',
   'अगली पीरियड', 'पीरियड कब', 'पीरियड देर', 'ओव्यूलेशन', 'सहायक गर्भाधान',
-  'अनियमित', 'चक्र',
+  'अनियमित', 'चक्र', 'कब आएगी', 'जल्दी',
   'ಮುಂದಿನ ಮುಟ್ಟು', 'ಮುಟ್ಟು ಯಾವಾಗ', 'ಅಂಡೋತ್ಪತ್ತಿ', 'ಸಹಜ ಗರ್ಭಾಧಾನ',
-  'ಅಸಮಂಗತ', 'ಚಕ್ರ',
+  'ಅಸಮಂಗತ', 'ಚಕ್ರ', 'ಯಾವಾಗ ಬರುತ್ತದೆ',
 ];
 
 /* -------------------------------------------------------------------------- */
-/* Personal summary — explicit self-reference, so "why do i cramp" is education */
+/* Personal summary — a request for a recap, not a possessive                    */
 /* -------------------------------------------------------------------------- */
 
-const PERSONAL_SUMMARY_TERMS: readonly string[] = [
-  'my data', 'my records', 'my record', 'my logs', 'my log', 'my history',
-  'my symptoms', 'my moods', 'my cycle', 'my cycles', 'my period', 'my periods',
-  'my average', 'my trend', 'my trends', 'my pain', 'my sleep',
-  'my hydration', 'summarise my', 'summarize my', 'summarise', 'summarize',
-  'how am i doing', 'tell me about my', 'what does my data', 'my progress',
-  'मेरा डेटा', 'मेरा रिकॉर्ड', 'मेरे लक्षण', 'मेरा सारांश', 'मेरी औसत',
-  'मैं कैसा', 'मेरा चक्र',
-  'ನನ್ನ ಡೇಟಾ', 'ನನ್ನ ದಾಖಲೆ', 'ನನ್ನ ಲಕ್ಷಣ', 'ನನ್ನ ಸಾರಾಂಶ',
-  'ನನ್ನ ಸರಾಸರಿ', 'ನಾನು ಹೇಗಿದ್ದೇನೆ', 'ನನ್ನ ಚಕ್ರ',
+/**
+ * Grammar that asks the assistant to summarise what has already been recorded.
+ *
+ * An earlier version of this list held bare possessives — `my period`, `my
+ * symptoms`, `my cycle` — on the reasoning that a possessive marks a
+ * self-reference. That is what it does, and it is why "why do my periods hurt so
+ * much" was answered with a personal-data summary: the reader mentioned their
+ * own period, and a question about *why periods hurt* is the single most
+ * important educational question in the product.
+ *
+ * So the rule is now the frame, not the noun. A recap is something being
+ * requested — "summarise", "how am I doing", "what does my data show" — and a
+ * possessive on its own is a symptom, not a request for one. That distinction
+ * holds for the awkward cases too: "tell me about my symptoms" is a recap
+ * because of `tell me about my`, while "why do my symptoms get worse" is not,
+ * because nothing there asks for a summary.
+ */
+const SUMMARY_FRAME_TERMS: readonly string[] = [
+  // English
+  'summarise', 'summarize', 'summarise my', 'summarize my', 'summary of my',
+  'how am i doing', 'how have i been', 'what does my data', 'tell me about my',
+  'show me my', 'my progress', 'my stats', 'my numbers', 'overall picture',
+  'in short', 'briefly', 'recap', 'overview of my',
+  // Hindi
+  'सारांश', 'सारांश बताइए', 'मेरा सारांश', 'मेरा डेटा', 'मेरी औसत', 'मैं कैसा',
+  'कुल मिलाकर', 'संक्षेप में',
+  // Kannada
+  'ಸಾರಾಂಶ', 'ಸಾರಾಂಶ ತಿಳಿಸಿ', 'ನನ್ನ ಸಾರಾಂಶ', 'ನನ್ನ ಡೇಟಾ', 'ನನ್ನ ಸರಾಸರಿ',
+  'ನಾನು ಹೇಗಿದ್ದೇನೆ', 'ಸಾರಾಂಶದಲ್ಲಿ',
+];
+
+/* -------------------------------------------------------------------------- */
+/* App help — how to use this app, not how the body works                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Questions about the software.
+ *
+ * These are not health questions and they used to be answered as if they were:
+ * "how do I log my period" matched the `my period` possessive, and a reader
+ * trying to find the button that records a period was told the assistant had
+ * looked at their data and could not find any. The answer is a place in the
+ * interface, so it gets its own intent and its own response keys.
+ */
+const APP_HELP_TERMS: readonly string[] = [
+  // English
+  'how do i log', 'how to log', 'how do i record', 'how to record', 'how do i track',
+  'how to track', 'where do i', 'how do i use', 'how do i change', 'how do i set',
+  'how do i edit', 'how do i delete', 'how do i export', 'how do i find',
+  'how do i explain', 'how do i update', 'how do i add', 'how do i save',
+  'log in', 'sign in', 'sign out', 'log out', 'my account', 'settings',
+  'notifications', 'reminder', 'reminders', 'this app', 'the app',
+  // Hindi
+  'कैसे दर्ज', 'कैसे लॉग', 'कहाँ', 'ऐप में', 'सेटिंग', 'भाषा बदलें', 'साइन इन',
+  'साइन आउट', 'नोटिफिकेशन', 'रिमाइंडर', 'यह ऐप',
+  // Kannada
+  'ಹೇಗೆ ದಾಖಲಿಸುವುದು', 'ಎಲ್ಲಿ', 'ಆ್ಯಪ್', 'ಸೆಟ್ಟಿಂಗ್', 'ಭಾಷೆ ಬದಲಿಸು', 'ಸೈನ್ ಇನ್',
+  'ಸೈನ್ ಔಟ್', 'ಅಧಿಸೂಚನೆ',
+];
+
+/**
+ * Nouns that name a part of this application rather than a part of a body.
+ *
+ * "How do I …" is the most common shape of a question in the product and it is
+ * genuinely ambiguous, because the verb phrase alone cannot tell the two apart:
+ * "how do I log my period" wants a button and "how do I know if my period is
+ * irregular" wants an answer. Listing every verb phrase that could follow would
+ * be endless and would still miss one, so the discriminator is the object.
+ * A navigational question is about the interface; everything else is health.
+ */
+const APP_OBJECT_TERMS: readonly string[] = [
+  'button', 'screen', 'page', 'tab', 'menu', 'icon', 'app', 'application',
+  'dates', 'predictions', 'prediction', 'calendar', 'entries', 'entry',
+  'history', 'records', 'settings', 'profile', 'account', 'notification',
+  'notifications', 'reminder', 'reminders', 'language', 'languages', 'pin',
+  'chart', 'charts', 'report', 'reports', 'insight', 'insights',
+  'बटन', 'स्क्रीन', 'पेज', 'ऐप', 'तारीख', 'तारीखें', 'अनुमान', 'कैलेंडर', 'रिकॉर्ड', 'इतिहास',
+  'ಸೆಟ್ಟಿಂಗ್', 'ದಿನಾಂಕ', 'ಅಂಡೋತ್ಪತ್ತಿ', 'ದಾಖಲೆ', 'ಇತಿಹಾಸ', 'ವರದಿ', 'ಆ್ಯಪ್',
+];
+
+/** Question openings that ask where something is or how to do it in the app. */
+const NAVIGATION_OPENINGS: readonly string[] = [
+  'how do i', 'how to', 'where do i', 'how can i', 'can i', 'where can i',
+  'कैसे', 'कहाँ', 'कहां', 'ಹೇಗೆ', 'ಎಲ್ಲಿ',
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -247,10 +356,16 @@ const PERSONAL_SUMMARY_TERMS: readonly string[] = [
 
 const EDUCATION_TERMS: readonly string[] = [
   'what is', 'what are', 'whats', 'explain', 'tell me about', 'how does',
-  'how do i', 'why do i', 'why does', 'learn about', 'guide', 'in simple words',
-  'difference between', 'signs of', 'meaning of',
+  'how do i', 'how do', 'how can i', 'how to', 'how come', 'how much',
+  'how many', 'how long', 'why do i', 'why do', 'why does', 'why is', 'why are',
+  'why am', 'why are my', 'why does my', 'what can i do', 'what should',
+  'what happens', 'what are the', 'what makes', 'learn about', 'guide',
+  'in simple words', 'difference between', 'signs of', 'meaning of',
+  'tell me', 'i want to know', 'i would like to know', 'anything about',
+  'is it', 'are they', 'can i', 'should i', 'is there', 'are there',
   'क्या है', 'क्या हैं', 'क्या होता', 'बताइए', 'समझाइए', 'कैसे', 'क्यों',
-  'ಏನು', 'ಏನಾಗುತ್ತದೆ', 'ತಿಳಿಸಿ', 'ವಿವರಿಸಿ', 'ಹೇಗೆ', 'ಏಕೆ',
+  'क्यों मेरा', 'मुझे क्या', 'बताओ', 'क्या करूं', 'क्या करें', 'कितना', 'कितनी',
+  'ಏನು', 'ಏನಾಗುತ್ತದೆ', 'ತಿಳಿಸಿ', 'ವಿವರಿಸಿ', 'ಹೇಗೆ', 'ಏಕೆ', 'ಎಷ್ಟು', 'ಏನು ಮಾಡಬೇಕು',
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -307,11 +422,33 @@ export function detectOutOfScope(text: string): boolean {
 }
 
 /**
+ * True when the reader is asking how to use the app rather than about a body.
+ *
+ * Two routes, both narrow. An explicit verb phrase ("how do I log") is
+ * unambiguous. Otherwise the question has to be a navigational one *and* name
+ * something in the interface — see `APP_OBJECT_TERMS` for why the object carries
+ * the meaning and the verb phrase cannot.
+ */
+export function detectAppHelpRequest(text: string): boolean {
+  const haystack = pad(normalize(text));
+  if (anyTerm(haystack, APP_HELP_TERMS)) return true;
+
+  return anyTerm(haystack, NAVIGATION_OPENINGS) && anyTerm(haystack, APP_OBJECT_TERMS);
+}
+
+/** True when the reader is asking for a recap of their own records. */
+export function detectSummaryRequest(text: string): boolean {
+  return anyTerm(pad(normalize(text)), SUMMARY_FRAME_TERMS);
+}
+
+/**
  * Classifies a message.
  *
  * Precedence is deliberate and one-way. Crisis is checked first so that a
  * message that also reads as a medication or diagnosis question still
- * escalates. Greeting is checked near-last so that "hi, what is PCOS" is
+ * escalates. App help sits above education so that "how do I log my period" is
+ * answered with a place in the interface rather than with an article about
+ * menstruation. Greeting is checked near-last so that "hi, what is PCOS" is
  * education rather than a bare greeting.
  */
 export function classifyIntent(text: string): AssistantIntent {
@@ -323,7 +460,8 @@ export function classifyIntent(text: string): AssistantIntent {
   if (anyTerm(haystack, OUT_OF_SCOPE_TERMS)) return 'outOfScope';
   if (detectPersonalDiagnosisClaim(text)) return 'diagnosis';
   if (anyTerm(haystack, PREDICTION_TERMS)) return 'prediction';
-  if (anyTerm(haystack, PERSONAL_SUMMARY_TERMS)) return 'personalSummary';
+  if (detectSummaryRequest(text)) return 'personalSummary';
+  if (detectAppHelpRequest(text)) return 'appHelp';
   if (anyTerm(haystack, EDUCATION_TERMS)) return 'education';
   if (anyTerm(haystack, GREETING_TERMS)) return 'greeting';
 

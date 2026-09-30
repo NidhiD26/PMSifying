@@ -13,6 +13,22 @@ const en = JSON.parse(readFileSync('public/locales/en.json', 'utf8')) as Record<
   unknown
 >;
 
+/**
+ * Reads a string out of the locale file by path, so a test can assert against
+ * the copy a reader actually sees rather than a copy of it pasted here.
+ */
+const msg = (path: string): string => {
+  let value: unknown = en;
+  for (const part of path.split('.')) {
+    if (value && typeof value === 'object' && part in (value as object)) {
+      value = (value as Record<string, unknown>)[part];
+    } else {
+      return `MISSING:${path}`;
+    }
+  }
+  return typeof value === 'string' ? value : `MISSING:${path}`;
+};
+
 vi.mock('next-intl', () => {
   const cache = new Map<string, (key: string, params?: Record<string, unknown>) => string>();
 
@@ -125,7 +141,12 @@ describe('the assistant view', () => {
     await ask('what is PCOS');
 
     await waitFor(() => {
-      expect(screen.getByText(/education library says/i)).toBeInTheDocument();
+      // The deterministic reply is the knowledge answer for PCOS. (This used to
+      // be the Education-fallback sentence "…our education library says…"; PCOS is
+      // now answered from the structured knowledge base, so the fallback no longer
+      // renders. What these tests care about is that *the local reply survives* a
+      // gateway outcome, and the knowledge answer is that local reply.)
+      expect(screen.getByText(/common hormonal condition/i)).toBeInTheDocument();
     });
     // The client cannot read PMSIFY_ASSISTANT_GATEWAY, so it always asks. The
     // server decides, and the local reply is already on screen either way.
@@ -187,7 +208,7 @@ describe('the assistant view', () => {
     await ask('what is PCOS');
 
     await waitFor(() => {
-      expect(screen.getByText(/education library says/i)).toBeInTheDocument();
+      expect(screen.getByText(/common hormonal condition/i)).toBeInTheDocument();
     });
   });
 
@@ -202,7 +223,7 @@ describe('the assistant view', () => {
     await settle();
 
     await waitFor(() => {
-      expect(screen.getByText(/education library says/i)).toBeInTheDocument();
+      expect(screen.getByText(/common hormonal condition/i)).toBeInTheDocument();
     });
     // A network failure must not blank the conversation.
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -236,11 +257,71 @@ describe('the assistant view', () => {
     );
     render(<AssistantView />);
     await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
+
+    // A question that exercises every key the composer can emit: the lead
+    // sentence, a detail block, a citation, and provenance. A key that resolves to
+    // nothing renders as "MISSING:<key>" rather than failing the build, so this is
+    // the only place that notice — and it is exactly what a mis-qualified
+    // knowledge key (assistant.assistant.… or a bare entry id) would produce.
+    for (const question of [
+      'what is PCOS',
+      'how do I log my period',
+      'my period pain is so bad I cannot move',
+      'when will my next period be',
+      'summarise my data',
+      'asdfghjkl',
+    ]) {
+      await ask(question);
+
+      await waitFor(() => {
+        expect(document.body.textContent).not.toContain('MISSING:');
+      });
+
+      // Not merely "not MISSING" — the bubble must have real prose in it.
+      expect(document.body.textContent?.trim().length ?? 0).toBeGreaterThan(0);
+    }
+    await settle();
+  });
+
+  it('lets a reader check a citation instead of only being told its title', async () => {
+    // A citation that is a bare title asks the reader to trust that the right
+    // article was found while showing nothing they could check.
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ ok: true, mode: 'offline' }), { status: 200 })
+    );
+    render(<AssistantView />);
+    await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
     await ask('what is PCOS');
-    await waitFor(() => {
-      expect(screen.getByText(/education library says/i)).toBeInTheDocument();
-    });
+
+    const link = await screen.findByRole('link', { name: /read the full article/i });
+    expect(link).toHaveAttribute('href', '/learn?a=pcosOverview');
+    // The article's own words, not just its name.
+    expect(
+      screen.getByText(msg('learn.articles.pcosOverview.summary'))
+    ).toBeInTheDocument();
     expect(document.body.textContent).not.toContain('MISSING:');
     await settle();
+  });
+
+  it('points an app question at the screen that answers it', async () => {
+    render(<AssistantView />);
+    await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
+    await ask('how do I log my period');
+
+    const link = await screen.findByRole('link', { name: /open that screen/i });
+    expect(link).toHaveAttribute('href', '/health');
+    expect(screen.getByText(/Log period/i)).toBeInTheDocument();
+    // No article can explain where a button is.
+    expect(screen.queryByRole('link', { name: /read the full article/i })).toBeNull();
+    expect(document.body.textContent).not.toContain('MISSING:');
+    await settle();
+  });
+
+  it('offers the app-help question as a suggestion', async () => {
+    render(<AssistantView />);
+    await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
+    expect(
+      screen.getByRole('button', { name: /how do i log my period/i })
+    ).toBeInTheDocument();
   });
 });

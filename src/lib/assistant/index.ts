@@ -9,9 +9,12 @@
  */
 
 export type {
+  AssistantBlock,
+  AssistantBlockKind,
   AssistantIntent,
   AssistantReply,
   AssistantReplySource,
+  AssistantRoute,
   AssistantTurn,
   EducationSource,
   GuardrailOutcome,
@@ -28,14 +31,18 @@ export { REDACTED_CONTEXT_SCHEMA_VERSION } from './types';
 
 export {
   classifyIntent,
+  detectAppHelpRequest,
   detectCrisis,
   detectMedicationRequest,
   detectOutOfScope,
   detectPersonalDiagnosisClaim,
+  detectSummaryRequest,
 } from './intent';
 
 export {
   buildExcerpt,
+  curatedArticleMatches,
+  inferTopicHints,
   knownArticleIds,
   retrieveEducationSources,
   type EducationDoc,
@@ -61,4 +68,35 @@ export {
   type ContextDailyLogInput,
 } from './context';
 
-export { composeOfflineReply, type ComposeReplyInput } from './respond';
+export {
+  appHelpTopicFor,
+  composeOfflineReply,
+  type AppHelpTopic,
+  type ComposeReplyInput,
+} from './respond';
+
+export {
+  classifyAppTopic,
+  routeQuestion,
+  type RouteDecision,
+} from './route';
+
+export {
+  APP_HELP_ENTRIES,
+  APP_HELP_PATHS,
+  KNOWLEDGE_ENTRIES,
+  KNOWLEDGE_KEY_PREFIX,
+  UNRESOLVED_ARTICLE_REFS,
+  knowledgeEntriesForDomain,
+  knowledgeEntryById,
+  knowledgeKey,
+  matchKnowledge,
+  matchKnowledgeWithRelated,
+  qualifyKnowledgeKey,
+  rankKnowledge,
+  type KnowledgeDomain,
+  type KnowledgeEntry,
+  type KnowledgeMatch,
+  type KnowledgeProvenance,
+  type KnowledgeSlot,
+} from './knowledge';

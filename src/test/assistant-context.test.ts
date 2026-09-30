@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import {
   RedactedContextViolation,
   assertRedactedContextIsSafe,
@@ -346,17 +346,53 @@ describe('the provider credential cannot reach a client bundle', () => {
         (match) => match[1]
       )
     );
+    // Enumerated, not asserted loosely: the point of this test is that the list
+    // is deliberate. `knowledge` and `route` were added with the structured
+    // knowledge base — both are pure data and pure decision logic, so both are
+    // safe in the client graph and both are needed there, because the view and the
+    // composer run in the browser.
     expect([...reExported].sort()).toEqual([
       './context',
       './guardrails',
       './intent',
+      './knowledge',
       './respond',
       './retrieval',
+      './route',
       './types',
     ]);
     // gateway.ts holds the credential; handler.ts imports it.
     expect(reExported.has('./gateway')).toBe(false);
     expect(reExported.has('./handler')).toBe(false);
+  });
+
+  it('keeps nothing server-only reachable from any re-exported module', () => {
+    // The list above is only trustworthy if each entry really is client-safe, so
+    // this walks them rather than trusting the barrel's own shape.
+    const barrel = readFileSync('src/lib/assistant/index.ts', 'utf8');
+    const modules = [...new Set([...barrel.matchAll(/from\s+'(\.\/[a-z-]+)'/g)].map((m) => m[1]))];
+
+    const filesOf = (specifier: string): string[] => {
+      const base = `src/lib/assistant/${specifier.slice(2)}`;
+      if (existsSync(`${base}.ts`)) return [`${base}.ts`];
+      return readdirSync(base, { withFileTypes: true })
+        .filter((entry) => entry.isFile() && entry.name.endsWith('.ts'))
+        .map((entry) => `${base}/${entry.name}`);
+    };
+
+    for (const specifier of modules) {
+      for (const file of filesOf(specifier)) {
+        const source = readFileSync(file, 'utf8');
+        const imports = [...source.matchAll(/^import[\s\S]*?from\s+'([^']+)'/gm)].map((m) => m[1]);
+
+        for (const imported of imports) {
+          expect(imported, `${file} imports ${imported}`).not.toMatch(/gateway|handler/);
+        }
+        expect(source, `${file} references the provider settings`).not.toMatch(
+          /PMSIFY_GEMMA|PMSIFY_ASSISTANT_GATEWAY/
+        );
+      }
+    }
   });
 
   it('keeps the handler and the credential out of the client barrel', () => {

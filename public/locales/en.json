@@ -255,7 +255,11 @@
     "intensityModerate": "Moderate",
     "intensityHigh": "High",
     "intensityVeryHigh": "Very high",
-    "isTodayLabel": "Today"
+    "isTodayLabel": "Today",
+    "flowSpotting": "Spotting",
+    "flowLight": "Light",
+    "flowMedium": "Medium",
+    "flowHeavy": "Heavy"
   },
   "health": {
     "sectionPeriod": "Period Records",
@@ -485,7 +489,8 @@
     "exportPdf": "Export PDF",
     "exportCsv": "Export CSV",
     "exportJson": "Export JSON",
-    "privacyNote": "This report was generated locally on this device. No data was transmitted."
+    "privacyNote": "This report was generated locally on this device. No data was transmitted.",
+    "insufficient": "Not enough data yet"
   },
   "navMore": {
     "barLabel": "Primary navigation",
@@ -514,6 +519,7 @@
       "MISSED": "Missed",
       "DRAFT": "Draft",
       "PUBLISHED": "Published",
+      "RECOMMENDED": "Recommended",
       "REGISTERED": "Registered",
       "ATTENDED": "Attended",
       "ABSENT": "Absent",
@@ -533,7 +539,8 @@
       "not_configured": "The healthcare portal is not configured",
       "upstream_unavailable": "The healthcare service is temporarily unavailable",
       "rate_limited": "Too many requests. Please try again later",
-      "unknown": "Something went wrong"
+      "unknown": "Something went wrong",
+      "invalid_credentials": "That Healthcare ID and password do not match."
     },
     "roles": {
       "ADMIN": "Administrator",
@@ -562,7 +569,9 @@
       "pendingReferrals": "Pending referrals",
       "recentCases": "Recent cases",
       "upcomingFollowUps": "Upcoming follow-ups",
-      "viewAll": "View all"
+      "viewAll": "View all",
+      "ashaSubtitle": "Your households, the women in them, your open cases, and your follow-ups.",
+      "doctorSubtitle": "Referrals waiting on you, the cases you have taken on, and your follow-ups."
     },
     "households": {
       "title": "Households",
@@ -572,7 +581,8 @@
       "empty": {
         "title": "No households found",
         "body": "There are no households assigned to you yet."
-      }
+      },
+      "subtitle": "The households assigned to you, and the women in each of them."
     },
     "household": {
       "assignedWorker": "Assigned worker",
@@ -612,7 +622,8 @@
       "empty": {
         "title": "No cases",
         "body": "There are no cases to display."
-      }
+      },
+      "subtitle": "Every case you are allowed to open, newest first."
     },
     "caseReview": {
       "title": "Case review",
@@ -621,33 +632,37 @@
       "history": "History",
       "observations": "Observations",
       "clinicalNotes": "Clinical notes",
-      "prescription": "Prescription",
       "followUps": "Follow-ups",
       "emptyObservations": {
-        "title": "No observations"
+        "title": "No observations",
+        "body": "Nobody has recorded an observation on this case yet. The ASHA worker who raised it will add one when she next visits."
       },
       "emptyNotes": {
-        "title": "No clinical notes"
+        "title": "No clinical notes",
+        "body": "No clinical note has been written for this case yet."
       },
       "emptyPrescriptions": {
-        "title": "No prescriptions"
+        "title": "No prescriptions",
+        "body": "No prescription has been issued for this case yet."
       },
       "emptyFollowUps": {
-        "title": "No follow-ups"
+        "title": "No follow-ups",
+        "body": "No follow-up has been scheduled for this case yet."
       },
       "actions": {
         "clinicalNote": "Write a clinical note",
         "prescription": "Write a prescription",
         "followUp": "Schedule a follow-up",
         "observation": "Record an observation"
-      }
+      },
+      "prescriptions": "Prescriptions"
     },
     "observations": {
       "symptoms": "Symptoms",
       "severity": "Severity",
       "duration": "Duration",
-      "durationDays": "Duration in days",
-      "durationUnknown": "Duration unknown",
+      "durationDays": "{count, plural, =1 {1 day} other {# days}}",
+      "durationUnknown": "Leave this empty if you are not sure",
       "notes": "Notes",
       "recordedBy": "Recorded by",
       "none": "No observations recorded"
@@ -688,7 +703,8 @@
         "startReview": "Start review",
         "complete": "Mark complete",
         "cancel": "Cancel referral"
-      }
+      },
+      "subtitle": "Cases referred to you, and what you have decided about each one."
     },
     "followUps": {
       "title": "Follow-ups",
@@ -704,7 +720,8 @@
         "complete": "Mark done",
         "markMissed": "Mark missed",
         "cancel": "Cancel follow-up"
-      }
+      },
+      "subtitle": "Follow-ups assigned to you — due, overdue, and coming up."
     },
     "camps": {
       "title": "Health camps",
@@ -771,10 +788,45 @@
       "body": "This workspace is not for your role",
       "action": "Go to my workspace"
     },
+    "signIn": {
+      "title": "Sign in required",
+      "body": "You must sign in with a healthcare account to access clinical records.",
+      "action": "Sign in to portal"
+    },
     "loading": "Loading...",
     "notConfigured": {
       "title": "The healthcare portal is not configured",
       "body": "Healthcare services are not configured for this environment yet."
+    },
+    "login": {
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "demoBadge": "DEMO MODE ACTIVE",
+      "doctor": {
+        "title": "Doctor Portal Sign In",
+        "subtitle": "Clinical Specialist Workspace Authentication",
+        "idLabel": "Doctor / Clinician ID",
+        "idPlaceholder": "DOC1001",
+        "demoIntro": "Sign in as Dr. Ananya Rao, MD, using the demo credentials below.",
+        "quickFill": "Quick Fill: DOC1001 / doctor123",
+        "submit": "Sign In as Doctor",
+        "pending": "Authenticating…",
+        "otherRole": "Are you an ASHA Worker?",
+        "otherRoleLink": "Sign In to ASHA Portal"
+      },
+      "asha": {
+        "title": "ASHA Portal Sign In",
+        "subtitle": "Community Health Worker Workspace Authentication",
+        "idLabel": "ASHA Worker ID",
+        "idPlaceholder": "ASHA1001",
+        "demoIntro": "Sign in as Sunita Devi, ASHA Worker, using the demo credentials below.",
+        "quickFill": "Quick Fill: ASHA1001 / asha123",
+        "submit": "Sign In as ASHA Worker",
+        "pending": "Authenticating…",
+        "otherRole": "Are you a Doctor?",
+        "otherRoleLink": "Sign In to Doctor Portal"
+      },
+      "networkError": "Network error during authentication."
     }
   },
   "settings": {
@@ -992,7 +1044,6 @@
     "assistantLabel": "Assistant",
     "enhancedBadge": "Written by the online assistant",
     "sourcesHeading": "From the education library",
-    "sourceFrom": "From:",
     "refusalNote": "A clinician is the right person for this question.",
     "crisisTitle": "Please talk to someone now",
     "thinkingLabel": "Preparing an answer",
@@ -1005,7 +1056,8 @@
       "cycle": "When is my next period likely?",
       "symptoms": "What are common PMS symptoms?",
       "records": "Summarise what I have recorded.",
-      "articles": "What is worth knowing before a doctor visit?"
+      "articles": "What is worth knowing before a doctor visit?",
+      "app": "How do I log my period?"
     },
     "resources": {
       "emergency": "Emergency services",
@@ -1018,7 +1070,7 @@
       "diagnosisRefusal": "I cannot tell you whether you have a condition, and a guess from me could do real harm. What your records can show is a pattern worth taking to a doctor, who can give you a proper answer. Please book a consultation.",
       "medicationRefusal": "I cannot advise on medicines, doses or supplements, because getting that wrong is genuinely dangerous. Please take that question to a doctor or a pharmacist.",
       "outOfScopeRefusal": "I only answer questions about women's health, so that is not something I can help with.",
-      "noMatch": "I could not find anything about that in the education library. Try different words, or browse the library yourself.",
+      "noMatch": "I can help with how PMSify works, with the cycle and health information you have recorded here, with women’s health questions in general, and with knowing when a symptom is worth seeing a doctor about. I could not answer that particular question from what I know, so try different words, or browse the education library yourself.",
       "predictionReady": "From the cycles you have recorded, your next period is estimated to start around {estimatedDate}. This is calculated from your own records, so please treat it as an estimate rather than a certainty.",
       "predictionWithWindow": "From the cycles you have recorded, your next period is estimated to start around {estimatedDate}, and your estimated fertile window is {windowStart} to {windowEnd}. Both are calculated from your records, so please treat them as estimates.",
       "predictionInsufficient": "I cannot estimate that yet. It takes at least two completed cycles, and you currently have {recordedCycles}. Log one more cycle and the estimate will appear here and on your calendar.",
@@ -1027,6 +1079,357 @@
       "summaryWithCycle": "You have recorded {recordedCycles} cycles and {recordedDays} daily entries. Your average cycle is {averageCycle} days and your average period is {averagePeriod} days.",
       "summaryNoCycle": "You have recorded {recordedCycles} cycles and {recordedDays} daily entries. There is not yet enough recorded to calculate an average cycle length.",
       "education": "Here is what our education library says, from {count, plural, =1 {# article} other {# articles}}."
+    },
+    "readArticleAction": "Read the full article",
+    "openAppAction": "Open that screen",
+    "knowledge": {
+      "log": {
+        "answer": "Tap \"Log period\" on the Daily & Period screen and enter the start date of your period.",
+        "detail": "You can also add the end date and how heavy the flow was. A period you have already logged can be edited or removed from the same screen, and the rest of the app is built from these entries, so logging them even roughly makes the rest of it more useful."
+      },
+      "daily": {
+        "answer": "The daily check-in is on the same Daily & Period screen, above the period section.",
+        "detail": "Each day you can record sleep, water, mood, symptoms, pain and a private note. Your insights and predictions are calculated from these entries, so a day you skip is simply a day the app cannot learn from."
+      },
+      "predictions": {
+        "answer": "Your estimated period dates, your fertile window and your estimated ovulation day are on the Home screen.",
+        "detail": "PMSify works them out from the cycles you have recorded, so they appear once there are enough completed cycles. The Calendar deliberately shows recorded facts only, which is why the estimates are not on it."
+      },
+      "cycleDay": {
+        "answer": "Cycle day is the count of days since the first day of your last period, with that first day counted as day 1. It resets each time a new period starts, and PMSify uses it to describe which part of your cycle you are in."
+      },
+      "calendar": {
+        "answer": "The Calendar shows the days you have actually recorded, with the cycle day for each of them. It does not show predicted dates, so it fills in only as you log."
+      },
+      "insights": {
+        "answer": "Patterns across everything you have recorded are on the Insights screen."
+      },
+      "reports": {
+        "answer": "Reports gather what you have logged into one place for a date range you choose, ready to show a doctor."
+      },
+      "exportData": {
+        "answer": "You can export your data from the Reports screen, which produces a file you can save or send on.",
+        "detail": "A report can be exported as PDF, CSV or JSON, and Settings has a separate option to export everything the app holds. Both work offline, and the file goes wherever you choose to put it."
+      },
+      "eraseData": {
+        "answer": "Settings has an option to erase all local data. It removes your cycles, your daily logs and your PIN from this device, and it cannot be undone."
+      },
+      "privacy": {
+        "answer": "Your cycle records, your daily entries and your PIN are stored on this device only. The tracker has no account, and nothing in it is uploaded unless you deliberately switch on the optional online assistant.",
+        "detail": "Your PIN is stored as a salted hash rather than as text, so it cannot be read back. The tracker, SecretChat and the healthcare portals are three separate systems: posting in SecretChat does not give anyone access to your health log, and the healthcare portals ask for their own sign-in."
+      },
+      "secretChat": {
+        "answer": "SecretChat is a separate community space. Posts there are anonymous, and it cannot read your health log or show your name.",
+        "detail": "It needs its own sign-in, and because it is a separate system it only works once it is connected to a server. It is not connected in this build, so posting is unavailable."
+      },
+      "reminders": {
+        "answer": "Reminders are set on the Reminders screen, where you can choose a period expectation reminder and a daily check-in reminder.",
+        "detail": "They are local notifications, so they appear only while PMSify is open in a browser tab. A closed app, or a phone with the browser closed, will not remind you."
+      },
+      "settings": {
+        "answer": "Settings holds your PIN, your data export and erase options, and an explanation of how the app calculates things. The language selector is in the app header at the top, not in Settings."
+      },
+      "healthcare": {
+        "answer": "PMSify also has separate signed-in portals for ASHA health workers, doctors and health camps. They are a different system from the tracker and ask you to sign in again.",
+        "detail": "Signing in to a portal does not connect it to your personal cycle records and does not change anything in the tracker. Health camps can be browsed without signing in."
+      },
+      "education": {
+        "answer": "The Education section is a library of short articles on menstrual health, symptoms and when to see a doctor. When an answer comes from one of those articles, it tells you which one was used."
+      },
+      "assistantScope": {
+        "answer": "PMSify can tell you what it has worked out from your own records: your cycle day and the phase you are in, your average cycle and period length, your estimated dates, your most common symptoms and moods, and the insights drawn from them.",
+        "detail": "It cannot see the notes you write, it cannot diagnose anything, and it cannot advise you on medicines. It also cannot invent a number: if an estimate would need more cycles than you have recorded, it says so instead of guessing."
+      },
+      "menstruation": {
+        "answer": "A period, or menstruation, is the shedding of the uterine lining when a pregnancy has not happened. It is one stage of the menstrual cycle, which runs from the first day of a period to the day before the next one starts.",
+        "detail": "The cycle moves through phases across the month, and understanding those phases is what explains why your symptoms, energy and mood change at different points in it."
+      },
+      "cycleLength": {
+        "answer": "A cycle is counted from the first day of one period to the day before the next, so its length includes the days of bleeding. Not everybody has a 28-day cycle, and the same person can have different lengths from cycle to cycle.",
+        "detail": "Cycle length normally shortens and varies through life, so a change in your own pattern is worth more attention than any number printed on a chart."
+      },
+      "periodDuration": {
+        "answer": "How many days a period lasts varies between people and from month to month. It does not have to be the same length every time."
+      },
+      "spotting": {
+        "answer": "Spotting is a small amount of bleeding or staining between periods, or after a period has finished. It is often dark brown or pink, because old blood has had time to change colour.",
+        "detail": "It can also appear as ovulation happens, and light staining is common during the first few cycles. Hormonal contraception is another frequent reason for it.",
+        "warning": "Spotting is worth checking if it keeps happening, if it is new, if it comes after sex, or if it comes with pain or a fever."
+      },
+      "heavyBleeding": {
+        "answer": "Heavy bleeding is when you soak a pad or a tampon every hour for more than an hour at a time, pass clots larger than a coin, or have to get up more than once in a night to change.",
+        "detail": "Over time it can cause anaemia, which shows up as tiredness, breathlessness and feeling light-headed. That is worth treating rather than living with.",
+        "warning": "Soaking through protection every hour, or bleeding along with dizziness, weakness or fainting, needs medical attention the same day.",
+        "care": "A doctor can check for anaemia with a blood test and look into why the bleeding is heavy. There are treatments that reduce it, and this is not something to manage on your own."
+      },
+      "irregularPeriods": {
+        "answer": "Periods are called irregular when the time between them keeps changing, or when bleeding comes more often or less often than your own usual pattern. It is a description of a pattern, not a diagnosis.",
+        "detail": "Common reasons include stress, illness, a change in routine, a change in body weight, a lot of exercise, and menopause. Cycles are often irregular to begin with in the first few years after periods start.",
+        "warning": "Periods that are very far apart, that stop for months, or that become irregular alongside very heavy bleeding or severe pain should be checked by a doctor."
+      },
+      "missedPeriod": {
+        "answer": "A period can be delayed by many ordinary things: stress, illness, travel, a change in routine, or a change in body weight. The cycle is sensitive to how much energy you use and how you sleep.",
+        "detail": "Pregnancy is the first thing to check if a period is late and pregnancy is possible, and a home pregnancy test can answer that quickly. If you are not pregnant and your cycles stay irregular, that is worth mentioning to a doctor.",
+        "warning": "Seek care if a period is several months late, if you have missed three or more in a row, or if you feel unwell alongside the delay."
+      },
+      "cramps": {
+        "answer": "Period cramps come from the uterus contracting to shed its lining, and from reduced blood flow to it during the first day or two. Prostaglandins, the hormones that trigger those contractions, are what make the pain feel intense.",
+        "detail": "Cramps that build up over months can have a cause other than ordinary cramps, including endometriosis, fibroids and adenomyosis. Being told that severe pain is simply something to endure is not the only option.",
+        "warning": "Cramps with a fever, cramps with vomiting, one-sided pain, fainting, or pain so severe you cannot move or work need medical attention."
+      },
+      "pms": {
+        "answer": "PMS, premenstrual syndrome, is the set of symptoms that arrive in the days before a period and settle once it starts. It is driven by the hormone changes of the cycle rather than by the bleeding itself.",
+        "detail": "Common symptoms include tiredness, bloating, breast tenderness, mood swings, irritability and food cravings. They usually ease once the bleeding begins."
+      },
+      "pmdd": {
+        "answer": "PMDD, premenstrual dysphoric disorder, is a severe form of premenstrual symptoms that disrupts daily life. It is a recognised condition, not an exaggeration.",
+        "detail": "It is diagnosed by tracking symptoms across several cycles, because what matters is not how you feel once but how consistently it happens before periods and clears afterwards.",
+        "care": "Severe premenstrual symptoms are treatable, with hormonal, non-hormonal and psychological options. A doctor or a mental health professional can help you work out which fits."
+      },
+      "menstrualHygiene": {
+        "answer": "Menstrual hygiene is staying comfortable and healthy while bleeding: changing pads, tampons or cups regularly, washing with water rather than douching, and keeping whatever you use dry between changes.",
+        "detail": "Change protection on the schedule your own flow needs rather than by a fixed rule for everyone, and wash your hands before and after. Tampons are not risk-free if left in far longer than their time limit, so follow the pack."
+      },
+      "menstrualFatigue": {
+        "answer": "Feeling tired before or during a period is common and usually has more than one reason: broken sleep from cramps, a dip in iron before a period, the hormone changes themselves, or less sleep and less activity than usual.",
+        "detail": "If it is new, if it is getting worse, or if it is there even between periods, it is worth thinking about the other common causes rather than assuming it is only your cycle.",
+        "care": "Iron deficiency is the first thing worth ruling out, and a simple blood test can do that. If the tiredness does not lift after resting, or it comes with breathlessness or dizziness, a doctor can look into it."
+      },
+      "vulva": {
+        "answer": "The vulva is the outside of the genitals: the outer and inner lips, the clitoris, the openings of the urethra and the vagina, and the surrounding skin.",
+        "detail": "Vulva and vagina are different parts, and the two words get mixed up constantly. The vulva is outside; the vagina is inside."
+      },
+      "vagina": {
+        "answer": "The vagina is the muscular canal inside the body that connects the outer opening to the cervix. Its walls rest against each other rather than being held open.",
+        "detail": "It expands for birth, and it cleans itself, so it does not need cleaning inside with soap or antiseptics, which tend to irritate it.",
+        "warning": "Discharge that is new, smells strong, comes with itching or soreness, or comes with pain when you pass urine is worth having checked rather than treated at home."
+      },
+      "vaginaOpening": {
+        "answer": "The vaginal opening is the entrance at the inner end of the vulva, the part the labia surround. It stretches, so it can change shape and size."
+      },
+      "cervix": {
+        "answer": "The cervix is the lower, narrow part of the uterus, opening into the vagina. It produces cervical mucus, which changes through the cycle and helps sperm reach the egg when a pregnancy is possible.",
+        "detail": "That mucus becomes thinner and slippery around ovulation and thicker at other times, which is part of how the fertile window is worked out. The cervix itself also opens slightly and sits a little higher around ovulation, which some people track."
+      },
+      "uterus": {
+        "answer": "The uterus, or womb, is the muscular organ a baby develops in. It has an inner lining called the endometrium, which thickens each cycle and is shed as a period when a pregnancy does not happen.",
+        "detail": "The uterine muscle is what makes period cramps feel strong, because it contracts to shed that lining. It also opens and contracts during labour."
+      },
+      "fallopianTubes": {
+        "answer": "The fallopian tubes connect the ovaries to the uterus. One of them carries the egg along after ovulation, and that is where fertilisation usually happens."
+      },
+      "ovaries": {
+        "answer": "The ovaries are two small organs that store and release eggs and produce hormones, including oestrogen, progesterone and testosterone. Usually one egg is released in a cycle.",
+        "detail": "They sit on either side of the uterus, and the number of eggs they hold is set before birth and declines over the years."
+      },
+      "puberty": {
+        "answer": "Puberty is the stage of development when the body changes from a child's into an adult's. It brings growth in height, changes in body shape, breast development, periods, and new hair in certain areas.",
+        "detail": "It happens over several years rather than all at once, and everybody's timing is different. Some changes arrive earlier in puberty and others later, which is why people the same age can look quite different from each other."
+      },
+      "firstPeriod": {
+        "answer": "Your first period is called menarche. It is a normal part of growing up, and for most people it happens somewhere between about 8 and 15.",
+        "detail": "The first few cycles are often irregular, and can be lighter, heavier or more painful than they settle into later. Period pain is common at first and often improves with age.",
+        "warning": "Get advice if the bleeding is heavy enough to soak protection every hour for hours, if it lasts longer than about a week, if periods have not started by around 15, or if there is severe pain."
+      },
+      "irregularFirstCycles": {
+        "answer": "Periods are often irregular for the first few years after they start, and it is common to have long gaps between them or cycles that change from month to month.",
+        "detail": "It happens because the cycle is still settling, and it often settles down on its own without any treatment.",
+        "care": "It is worth talking to a doctor if periods have not started by around 15, if they stop for more than three months at a time, if they are extremely heavy or painful, or if it is causing distress. Keeping a record of your cycle length helps a doctor a lot."
+      },
+      "consent": {
+        "answer": "Consent means that both people freely agree to something, and that either of them can say no or change their mind at any time, including after saying yes at the start.",
+        "detail": "It has to be agreement in the moment, and it has to be a real choice. Not saying no is not the same as saying yes, and pressure, fear, being drunk, or being someone older all take away a genuine yes. It applies to everything from touching to sex, and it can be given again for each new thing.",
+        "care": "The legal age differs from place to place, so that answer has to come from a local source rather than from me. If something happened without your consent, that is not your fault, and there is support available through this app's healthcare portals and from a helpline."
+      },
+      "contraception": {
+        "answer": "Contraception is anything used to prevent a pregnancy. It is not the same as protection from sexually transmitted infections, and methods differ in how well they do each.",
+        "detail": "Some methods are used every time sex happens, such as condoms, and others are used once and then work for weeks or years, such as an implant or an IUD. Effectiveness varies a lot between methods, and between perfect use and real life, so it is worth asking about the numbers rather than guessing them.",
+        "care": "The right method depends on whether pregnancy is the concern, whether infection protection is wanted, your health history, and whether you plan to have children later. A doctor or a family planning clinic can go through the options with you."
+      },
+      "condoms": {
+        "answer": "A condom is a thin sheath put on before sex. It is the only method that both reduces the chance of pregnancy and greatly reduces the chance of passing on an STI.",
+        "detail": "Condoms are used from the start of sex to the end, because sperm can be present before ejaculation. They are single use, and oil-based lubricant can weaken latex, which is worth checking on the pack."
+      },
+      "sti": {
+        "answer": "STIs are infections that are passed through sexual contact. There are several of them, and they are not all passed the same way or at the same rates.",
+        "detail": "Many have no symptoms at all, particularly early on, so the absence of symptoms is not a reason to think you are in the clear. They are common, and they are treatable.",
+        "warning": "If you have had unprotected sex and there is any chance of an infection, get tested rather than waiting to see whether something appears.",
+        "care": "Testing is usually a swab or a blood sample, and results often come back within days. Most STIs are curable, and the earlier they are treated the simpler that treatment is."
+      },
+      "painDuringSex": {
+        "answer": "Pain during sex is common, and it is never something to simply put up with. It has a number of possible causes, and it is often treatable.",
+        "detail": "Causes include dryness, an infection such as a UTI or thrush, endometriosis or fibroids, a condition affecting the skin of the vulva, and tension during penetration. Pain can also follow a previous difficult experience, and that is a real cause rather than a reason it is imagined.",
+        "warning": "Pain with bleeding after sex, pain with a fever, pain that is getting worse, or deep pain during or after sex should be seen by a doctor.",
+        "care": "A doctor or a gynaecologist can find the cause and treat it, including treating an infection, managing a condition, or helping with dryness and pain at penetration. Pelvic floor physiotherapy is a real option for some people, and so is reviewing contraception if that is involved."
+      },
+      "lubrication": {
+        "answer": "The vagina produces moisture, and arousal increases it, but the amount varies a lot between people and from moment to moment. Less moisture than usual is common with stress, hormonal contraception, some medicines, and as menopause approaches."
+      },
+      "pregnancyDuringPeriod": {
+        "answer": "Yes, you can get pregnant during a period, but it is not the most likely time to. Ovulation usually happens about two weeks before the next period starts, so the bleeding usually comes well after ovulation.",
+        "detail": "Cycle length differs between people, and ovulation does not always land in the same place within a cycle, particularly in shorter or irregular cycles. Sperm can also survive for several days, so a pregnancy can follow sex that happened days earlier. So the honest answer is that it is unlikely but not impossible.",
+        "care": "If avoiding pregnancy matters, do not rely on timing it around a period. If your cycles are irregular or short, a clinician can help you choose a reliable method."
+      },
+      "pregnancyTest": {
+        "answer": "A home pregnancy test detects a hormone that appears once a pregnancy has started and builds up gradually. Testing too early is the most common reason for a negative result when a pregnancy is in fact present.",
+        "detail": "A test taken on the first day of a missed period is more likely to be accurate than one taken earlier, and repeating a test after a few days can settle the question. Instructions matter too, so read how long to hold it and when to read the result window."
+      },
+      "implantation": {
+        "answer": "Implantation is when a fertilised egg attaches to the uterine lining and settles into it. It happens about a week or two after fertilisation, roughly when a period would have been due."
+      },
+      "miscarriage": {
+        "answer": "A miscarriage is the loss of a pregnancy before it is far enough along to survive outside the body. It is unfortunately very common in early pregnancy, and it usually happens for reasons that are nobody's fault.",
+        "detail": "Most early miscarriages are caused by a chromosome problem in the fertilised egg, which is a chance event. Stress, activity and food do not usually cause it, which matters, because a lot of people believe they caused theirs.",
+        "warning": "Heavy bleeding, severe pain on one side, or pain with shoulder-tip pain and dizziness need urgent care, because those can mean something other than a straightforward miscarriage.",
+        "care": "After a miscarriage you should be offered both physical aftercare and emotional support, and most people do better with both. When to try again is better decided once you feel ready, with a clinician's advice."
+      },
+      "ectopicPregnancy": {
+        "answer": "An ectopic pregnancy is one that has started developing outside the uterus, usually in a fallopian tube. It cannot continue safely, and it has to be treated.",
+        "warning": "One-sided pain with any bleeding in early pregnancy, especially with shoulder-tip pain, faintness or dizziness, needs emergency care rather than waiting.",
+        "care": "A positive early pregnancy test alongside one-sided pain is treated urgently, usually with surgery or an injection depending on the situation. Acting quickly is what protects the other tube, and future pregnancies with it."
+      },
+      "postpartum": {
+        "answer": "The postpartum period is the time after a birth, and it lasts about six weeks. Periods usually return somewhere between two and six months after the birth, and later than that if you are breastfeeding.",
+        "detail": "Breastfeeding can delay a period for longer, but it is still possible to conceive before your first period comes back, so contraception is worth discussing before that point.",
+        "care": "Bleeding or pain that continues past the early weeks, or anything that worries you, should be raised with a clinician at the postnatal visit rather than waited out."
+      },
+      "pcos": {
+        "answer": "PCOS, polycystic ovary syndrome, is a common hormonal condition in which the ovaries release eggs irregularly and produce more androgens than usual.",
+        "detail": "It is diagnosed from a combination of signs rather than one test: irregular or infrequent periods, signs of higher androgens such as acne or excess hair, and the appearance of the ovaries on an ultrasound. Body weight is often involved because the condition is linked to how the body handles insulin, but it says nothing about anybody's character, and it can happen at any body size.",
+        "warning": "Periods that stop for months, heavy or prolonged bleeding, and difficulty conceiving are all reasons to be assessed rather than waited out.",
+        "care": "Treatment follows the symptom rather than the name: irregular periods are often managed with the combined pill, fertility treatment when conception is wanted, and help with insulin resistance where it is present. Lifestyle changes help, and they are not a judgement on how anyone lives."
+      },
+      "endometriosis": {
+        "answer": "Endometriosis is a condition where tissue similar to the uterine lining grows elsewhere in the body, most often on the ovaries, the fallopian tubes and the tissue lining the pelvis. It is a real, recognised condition, not a psychological complaint.",
+        "detail": "It often causes period pain that gets worse over time, pain during sex, pain on passing urine or opening your bowels around periods, and difficulty conceiving. It takes a long time to diagnose because the symptoms overlap with many other conditions, so being told for years that the pain is normal is a recognised problem.",
+        "warning": "Pain that is getting worse month on month, pain that stops you working, or heavy bleeding with a feeling of fullness should be taken seriously rather than adapted to.",
+        "care": "There are treatments that reduce the pain, including hormonal ones, anti-inflammatory medicines, and surgery for some people. A gynaecologist who deals with endometriosis regularly makes a real difference to how quickly it is found."
+      },
+      "fibroids": {
+        "answer": "Fibroids are growths in the muscle of the uterus. They are extremely common and are not cancerous, and many cause no symptoms at all.",
+        "detail": "When they do cause symptoms, the usual ones are heavy or prolonged periods, a feeling of pressure low in the abdomen, and needing to pass urine more often. They are found on an ultrasound.",
+        "warning": "Sudden one-sided pain, feeling faint alongside heavy bleeding, or periods that become suddenly and noticeably heavier are not things to wait out.",
+        "care": "Most fibroids need nothing beyond monitoring. When they cause trouble, treatment ranges from medicine that reduces bleeding to procedures that shrink or remove them, and the choice depends on age, symptoms and whether children are planned."
+      },
+      "ovarianCysts": {
+        "answer": "An ovarian cyst is a fluid-filled pocket in or on an ovary. The majority are common, harmless and cause no symptoms, and many disappear on their own.",
+        "detail": "They are often found incidentally, on an ultrasound done for something else. A cyst that looks unusual on a scan, is large, or comes with pain is followed up rather than simply watched.",
+        "warning": "Sudden severe one-sided pain, pain with vomiting or a fever, or pain with fainting needs urgent assessment rather than a routine appointment.",
+        "care": "A doctor will usually repeat an ultrasound after a short interval, and check for pregnancy where that could explain it. Most need no treatment at all, some are monitored, and a small number need surgery."
+      },
+      "thyroid": {
+        "answer": "A thyroid problem means the thyroid gland in the neck is making too much or too little hormone. It is common, it is easily missed, and it is treatable.",
+        "detail": "An underactive thyroid often brings heavy and irregular periods, tiredness, weight gain, dry skin and feeling cold. An overactive thyroid brings lighter periods, feeling hot, tremor, weight loss and anxiety. A simple blood test checks for it.",
+        "warning": "Periods that become very heavy or stop for months, alongside tiredness, unexplained weight change, or feeling unusually cold or hot, should be tested.",
+        "care": "A blood test for thyroid function, plus a thyroid-specific antibody test where it is relevant, is the starting point. Treatment is a daily tablet in both directions and it is usually lifelong, so a clinician should go through it with you."
+      },
+      "anaemia": {
+        "answer": "Anaemia is a shortage of haemoglobin, the part of red blood cells that carries oxygen. It makes most people tired and low on energy, and it is very common in women with heavy periods.",
+        "detail": "Heavy bleeding can cause it over time, and so can too little iron in the diet, pregnancy, illness and some conditions. It is found with a simple blood test rather than by how you feel, which is why testing matters.",
+        "care": "Iron is the usual treatment when iron is low, and the type matters, because the tablets people often buy for themselves are poorly absorbed. It is worth having the cause checked too, particularly if periods are heavy, and re-testing after a course."
+      },
+      "pelvicPain": {
+        "answer": "Pelvic pain is pain in the lower abdomen, below the navel, usually between the hips. It has many causes, including period cramps, infections, endometriosis, fibroids, ovarian cysts, constipation, urinary problems and strain.",
+        "detail": "What matters most is whether the pain is new, whether it is getting worse, whether it is one-sided, and whether it comes with a fever, bleeding or vomiting, because those narrow the causes down quickly.",
+        "warning": "Severe one-sided pain, pelvic pain with a fever, pain with vomiting, or pain with fainting or bleeding needs same-day care rather than a routine appointment.",
+        "care": "A doctor will usually examine you and may arrange tests depending on what they find. Pelvic floor physiotherapy is genuinely effective for a large share of chronic pelvic pain, and it is often the part people do not know exists."
+      },
+      "uti": {
+        "answer": "A UTI is a urinary tract infection, most commonly a bacterial infection of the bladder. It is much more common in women, and it usually causes burning when you pass urine and a frequent urge to go.",
+        "detail": "It is not the same as a vaginal infection, even though the symptoms can feel similar, and the two need different treatment. Antibiotics usually work well, which is why a proper assessment matters.",
+        "warning": "A fever, pain in your back or side, vomiting, or symptoms that keep returning need medical attention, because a UTI that has reached the kidneys is more serious.",
+        "care": "A urine sample is usually the test. Drinking enough water and not holding urine for long can help prevent repeats, and women who get frequent UTIs sometimes need a different approach agreed with a doctor."
+      },
+      "yeastInfection": {
+        "answer": "A yeast infection, or thrush, is an overgrowth of candida that most often affects the vagina. It causes itching, soreness and a thick discharge, and it is common.",
+        "detail": "It is not the same as bacterial vaginosis, which has a different smell and a different treatment, and confusing the two is why a lot of people end up treating an infection that has not gone away. Antibiotics, diabetes, pregnancy, and damp or tight clothing can all encourage it.",
+        "warning": "Itching that keeps coming back, or itching and discharge that do not settle with treatment, needs an examination rather than more over-the-counter creams.",
+        "care": "An antifungal cream or pessary usually works, and a doctor can confirm the cause if it keeps recurring. Avoid douching and fragranced washes, which irritate the skin and make it worse."
+      },
+      "pid": {
+        "answer": "PID, pelvic inflammatory disease, is an infection of the uterus, fallopian tubes and ovaries, most often following an untreated STI such as chlamydia or gonorrhoea.",
+        "detail": "It often causes pain low in the abdomen, pain during sex, unusual or heavy bleeding, and sometimes a fever, though it can be nearly silent. It is one of the main causes of tubal damage and later difficulty conceiving, which is why it is treated seriously.",
+        "warning": "Pelvic pain with a fever, pain with vomiting, or feeling unwell alongside abnormal bleeding needs same-day medical attention.",
+        "care": "Antibiotics treat it, and both partners are generally treated at the same time so that it is not passed back and forth. Being tested after unprotected sex with a new partner is the surest way to prevent it."
+      },
+      "menopauseStages": {
+        "answer": "Menopause is the point at which a full year has passed without a period. It is a stage of life rather than an illness, and the years leading up to it are called perimenopause. Periods usually stop gradually, and bleeding for longer than a year afterwards should be checked."
+      },
+      "perimenopause": {
+        "answer": "Perimenopause is the stage before menopause, when the body is changing and periods become less predictable. It usually begins in your forties and can last several years.",
+        "detail": "Cycles often shorten, lengthen or become irregular, and symptoms such as hot flushes, night sweats, disrupted sleep, mood changes and brain fog can appear. It is still possible to conceive in this stage, because ovulation does not stop all at once.",
+        "warning": "Bleeding that is heavy across several cycles, bleeding between periods, or bleeding long after a full year without any, should be checked rather than assumed to be menopause.",
+        "care": "None of these symptoms has to be endured unasked. Treatments for hot flushes, sleep problems and low mood are available, and HRT is one option among others that a clinician can weigh up with you, against your own health history."
+      },
+      "hormonalContraceptives": {
+        "answer": "Some hormonal methods make periods much lighter, irregular, or stop them altogether. That is often what they do, and it is not a sign that something is wrong.",
+        "detail": "It also means a stretch without any bleeding is no longer a reliable sign that you are not pregnant, which is worth knowing before assuming it. The pill, the implant, the injection and the hormonal IUD can all do this, in different ways.",
+        "care": "A doctor can help work out whether a change in bleeding is a side effect to expect, a side effect to report, or a reason to change method. A new pattern that appears on a method you have used for years is worth mentioning rather than putting up with."
+      },
+      "periodBlood": {
+        "answer": "Period blood is not dirty and not toxic. It is ordinary blood and uterine tissue, and the old idea that it carries waste is wrong.",
+        "detail": "It can be darker brown, almost black, or thick, which happens when blood has been exposed to air and has had time to oxidise. The colour changes with the flow and is not a sign of illness. It may smell a little different, and any change that persists alongside itching, pain or a strong smell is worth having checked."
+      },
+      "tamponMyths": {
+        "answer": "Tampons do not contain toxins, and they were never banned for being unhygienic. They are regulated and sold legally in most places.",
+        "detail": "The real caution is about how long one is left in. Staying in place much longer than its time limit very rarely lets bacteria grow and cause toxic shock syndrome, so the risk is low and it is about time, not about tampons being toxic."
+      },
+      "virginityMyth": {
+        "answer": "There is no reliable way to tell whether somebody has had sex, and virginity is not something a body can prove. The hymen is a shape that varies from person to person and can change for reasons that have nothing to do with sex, such as exercise or stretching.",
+        "detail": "Nobody can tell from a single physical sign, and anyone who claims otherwise is guessing. Being believed about your own body is what matters."
+      },
+      "sharkMyth": {
+        "answer": "Period blood does not attract sharks, and there is no reliable evidence that swimming while you are on a period is dangerous."
+      },
+      "exerciseMyth": {
+        "answer": "Exercise does not stop your period by itself. Periods change when your energy intake, your stress or your routine changes, and very hard training combined with eating little can affect them.",
+        "detail": "So the link is usually not exercise as such, but what the training does to your intake and your routine. Moderate exercise during a period is not a problem for most people; you may prefer a lighter session, and that is a preference rather than a medical rule."
+      },
+      "firstTimeMyth": {
+        "answer": "Sex is not supposed to hurt the first time, and pain that does not settle afterwards is not something to expect or accept. Some people feel no discomfort at all, and many feel a small amount.",
+        "detail": "Pain that is sharp, severe, or that leaves you sore afterwards usually means something specific is happening: not enough arousal or moisture, a tight muscle, an infection, or a condition such as endometriosis. Those are all treatable. Bleeding is not a reliable marker of what happened before, so it is not evidence of anything."
+      },
+      "emergencyQuestion": {
+        "answer": "You do not need me to tell you whether it is an emergency. A rule you can trust is this: if it is sudden, severe, getting worse, or it frightens you, get it seen today rather than waiting to see whether it settles.",
+        "detail": "Call emergency services straight away for chest pain, trouble breathing, fainting, severe bleeding, a possible fracture or a bad injury. Go to urgent care the same day for pain that is severe and new, a fever alongside pelvic pain, or anything that is not improving."
+      },
+      "redFlagPeriodPain": {
+        "answer": "Period pain that is severe enough to stop you moving, working or sleeping, or that is much worse than it has been before, is not ordinary cramps and should be assessed.",
+        "warning": "Period pain with a fever, with vomiting, with fainting, or that is severe on one side only needs medical attention the same day.",
+        "care": "A doctor can look for the causes that are treatable, such as endometriosis, fibroids, adenomyosis, an infection, or an IUD in place. Pain that is worsening cycle after cycle deserves an answer rather than a stronger painkiller."
+      },
+      "redFlagHeavyBleeding": {
+        "answer": "Bleeding that soaks a pad or a tampon every hour for more than an hour, or that leaves you dizzy, weak or faint, needs medical attention.",
+        "warning": "Bleeding that heavy alongside dizziness, palpitations, breathlessness or fainting is an emergency, and clots larger than a coin together with fainting need emergency care too.",
+        "care": "A doctor can check for anaemia and for the cause of the bleeding, and there are treatments that reduce it. Do not plan to manage heavy bleeding on your own while it is going on."
+      },
+      "redFlagFainting": {
+        "answer": "Fainting, chest pain with breathlessness, a racing heart with dizziness, or weakness down one side of your body are not period symptoms, and they need emergency care.",
+        "warning": "Call emergency services for chest pain, trouble breathing, fainting, or sudden weakness or slurred speech. If it is new and there is no chest pain, get it seen the same day.",
+        "care": "Anaemia caused by heavy bleeding is a common and treatable explanation for light-headedness, and it is worth ruling out. Anything involving the chest, breathing or one-sided weakness is an emergency rather than something to wait out."
+      },
+      "redFlagPregnancy": {
+        "answer": "Bleeding or pain during a pregnancy needs checking. Pain on one side of the lower belly, bleeding, shoulder-tip pain, or a severe headache with changes in vision all need urgent assessment.",
+        "warning": "One-sided pain with bleeding in early pregnancy is a medical emergency, because it can be an ectopic pregnancy. A severe headache, blurred vision or sudden swelling in pregnancy needs the same day care.",
+        "care": "Contact a doctor or a maternity unit the same day for bleeding or pain in pregnancy. Where an ectopic pregnancy is possible, early review matters, because waiting can cost the other fallopian tube as well as the pregnancy."
+      },
+      "redFlagAllergicReaction": {
+        "answer": "A severe allergic reaction is an emergency. Swelling of the face or throat, difficulty breathing, widespread hives alongside breathing trouble, or feeling faint after an exposure should all be treated as anaphylaxis.",
+        "warning": "Call emergency services for a throat that is closing, trouble breathing, or a reaction involving swelling or dizziness. Do not wait to see whether it passes.",
+        "care": "If you have had a severe reaction before, ask a doctor whether you should carry an adrenaline auto-injector, and make sure anyone you live with knows where it is and how to use it."
+      }
+    },
+    "provenanceLabel": "Based on",
+    "provenance": {
+      "education": "Education library",
+      "appHelp": "How PMSify works",
+      "personalData": "Your PMSify records",
+      "healthKnowledge": "Health knowledge base"
+    },
+    "blocks": {
+      "warningHeading": "Warning signs",
+      "careHeading": "When to get help",
+      "relatedHeading": "Also worth knowing"
     }
   },
   "secretChat": {
@@ -1123,7 +1526,11 @@
     "setup": {
       "title": "SecretChat is not connected yet",
       "body": "A person who installs this app has to connect it to their own Supabase project first. Until then nothing here is sent or stored anywhere.",
-      "noLocalStorage": "Nothing from this page is saved on this device, and nothing from your health log can reach it."
+      "noLocalStorage": "Nothing from this page is saved on this device, and nothing from your health log can reach it.",
+      "identity": {
+        "title": "You are anonymous here, and so is everyone else",
+        "body": "Your feed shows a random alias and nothing that identifies you. You cannot be searched, and nothing from your health log can reach this page. Signing out ends this alias for good — a new one is issued the next time you return."
+      }
     },
     "errors": {
       "invalid_request": "That request was not valid. Check the form and try again.",
@@ -1135,10 +1542,8 @@
       "upstream_unavailable": "We could not reach the community right now. Try again in a moment.",
       "rate_limited": "Too many actions at once. Wait a moment and try again.",
       "unknown": "Something went wrong. Try again."
-    }
+    },
+    "deletedPost": "This post was deleted.",
+    "deletedComment": "This comment was deleted."
   }
 }
-
-
-
-
