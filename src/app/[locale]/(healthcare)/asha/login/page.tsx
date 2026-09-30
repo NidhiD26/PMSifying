@@ -1,15 +1,27 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ShieldCheck, UserCheck, Lock, AlertCircle, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Surface } from '@/components/ui/surface';
+import { splitLocalePath, withLocale } from '@/lib/navigation/locale-path';
+import { callHealthcareApi, errorMessageKey, HealthcareRequestError } from '@/features/healthcare/api-client';
+import { DEFAULT_LOCALE } from '@/types/i18n';
 
 export default function ASHALoginPage() {
-  const t = useTranslations('healthcare');
   const router = useRouter();
+  const pathname = usePathname();
+  const t = useTranslations('healthcare');
+  const tLogin = useTranslations('healthcare.login');
+  const tAsha = useTranslations('healthcare.login.asha');
+
+  // The login endpoint is locale-agnostic, so the language comes from the URL the
+  // reader is already on rather than from a cookie the router would have to guess at.
+  const locale = splitLocalePath(pathname).locale ?? DEFAULT_LOCALE;
+
   const [id, setId] = React.useState('ASHA1001');
   const [password, setPassword] = React.useState('asha123');
   const [isPending, startTransition] = React.useTransition();
@@ -26,20 +38,18 @@ export default function ASHALoginPage() {
     setError(null);
     startTransition(async () => {
       try {
-        const res = await fetch('/api/healthcare/auth/login', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ id, password }),
-        });
-        const data = await res.json();
-        if (res.ok && data.ok) {
-          router.push(data.data.redirectUrl || '/asha');
-          router.refresh();
-        } else {
-          setError(data.message || 'Invalid Healthcare ID or Password.');
-        }
-      } catch {
-        setError('Network error during authentication.');
+        const data = await callHealthcareApi<{ role: string; redirectUrl: string }>(
+          '/auth/login',
+          { method: 'POST', body: { id, password } }
+        );
+        router.push(withLocale(data.redirectUrl || '/asha', locale));
+        router.refresh();
+      } catch (failure) {
+        setError(
+          failure instanceof HealthcareRequestError
+            ? t(errorMessageKey(failure.code))
+            : tLogin('networkError')
+        );
       }
     });
   };
@@ -51,28 +61,24 @@ export default function ASHALoginPage() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8837D]/15 text-[#2D1B2D]">
             <UserCheck className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold text-[#2D1B2D]">ASHA Portal Sign In</h1>
-          <p className="text-xs text-[#5A5A66]">
-            Community Health Worker Workspace Authentication
-          </p>
+          <h1 className="text-2xl font-bold text-[#2D1B2D]">{tAsha('title')}</h1>
+          <p className="text-xs text-[#5A5A66]">{tAsha('subtitle')}</p>
         </div>
 
         {/* DEMO MODE NOTICE */}
         <div className="rounded-xl border border-[#E8837D]/40 bg-[#F9EBEA] p-3 text-xs text-[#2D1B2D]">
           <div className="flex items-center gap-2 font-semibold">
             <ShieldCheck className="h-4 w-4 text-[#E8837D]" />
-            <span>DEMO MODE ACTIVE</span>
+            <span>{tLogin('demoBadge')}</span>
           </div>
-          <p className="mt-1 text-[#5A5A66]">
-            Use centralized demo credentials to authenticate as Sunita Devi (ASHA Worker).
-          </p>
+          <p className="mt-1 text-[#5A5A66]">{tAsha('demoIntro')}</p>
           <button
             type="button"
             onClick={fillCredentials}
             className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[#E8837D] bg-white px-2.5 py-1 text-xs font-semibold text-[#2D1B2D] hover:bg-[#F9EBEA]"
           >
             <KeyRound className="h-3.5 w-3.5 text-[#E8837D]" />
-            Quick Fill: ASHA1001 / asha123
+            {tAsha('quickFill')}
           </button>
         </div>
 
@@ -86,7 +92,7 @@ export default function ASHALoginPage() {
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1">
             <label htmlFor="asha-id" className="block text-xs font-semibold text-[#2D1B2D]">
-              ASHA Worker ID
+              {tAsha('idLabel')}
             </label>
             <div className="relative">
               <UserCheck className="absolute left-3 top-2.5 h-4 w-4 text-[#5A5A66]" />
@@ -97,14 +103,14 @@ export default function ASHALoginPage() {
                 onChange={(e) => setId(e.target.value)}
                 required
                 className="w-full rounded-xl border border-[#D8CCC2] bg-[#FFFFFF] py-2 pl-9 pr-3 text-sm text-[#1E1E24] focus:outline-none focus:ring-2 focus:ring-[#E8837D]"
-                placeholder="ASHA1001"
+                placeholder={tAsha('idPlaceholder')}
               />
             </div>
           </div>
 
           <div className="space-y-1">
             <label htmlFor="asha-password" className="block text-xs font-semibold text-[#2D1B2D]">
-              Password
+              {tLogin('passwordLabel')}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-2.5 h-4 w-4 text-[#5A5A66]" />
@@ -115,21 +121,21 @@ export default function ASHALoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full rounded-xl border border-[#D8CCC2] bg-[#FFFFFF] py-2 pl-9 pr-3 text-sm text-[#1E1E24] focus:outline-none focus:ring-2 focus:ring-[#E8837D]"
-                placeholder="••••••••"
+                placeholder={tLogin('passwordPlaceholder')}
               />
             </div>
           </div>
 
           <Button type="submit" variant="secondary" className="w-full" disabled={isPending}>
-            {isPending ? 'Authenticating...' : 'Sign In as ASHA Worker'}
+            {isPending ? tAsha('pending') : tAsha('submit')}
           </Button>
         </form>
 
         <div className="border-t border-[#E2D8D0] pt-3 text-center text-xs text-[#5A5A66]">
-          Are you a Doctor?{' '}
-          <a href="/en/doctor/login" className="font-semibold text-[#2D1B2D] underline">
-            Sign In to Doctor Portal
-          </a>
+          {tAsha('otherRole')}{' '}
+          <Link href={withLocale('/doctor/login', locale)} className="font-semibold text-[#2D1B2D] underline">
+            {tAsha('otherRoleLink')}
+          </Link>
         </div>
       </Surface>
     </div>

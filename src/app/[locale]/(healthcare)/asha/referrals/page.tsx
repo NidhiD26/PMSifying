@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { withLocale } from '@/lib/navigation/locale-path';
 import { isValidLocale } from '@/i18n/config';
 import { DEFAULT_LOCALE } from '@/types/i18n';
 import { resolvePageFor } from '@/lib/healthcare/page-guard';
 import { listReferrals } from '@/lib/healthcare/service';
-import { PortalGate } from '@/features/healthcare/portal-gate';
+import { HealthcarePageGate } from '@/features/healthcare/healthcare-page-gate';
 import { ReferralListView } from '@/features/healthcare/queue-views';
 
 /**
@@ -26,10 +25,10 @@ export default async function ASHAReferralsPage({
 
   const page = await resolvePageFor('ASHA');
   if (page.status !== 'ok') {
-    return <PortalGate status={page.status} homeHref={withLocale('/', locale)} />;
+    return <HealthcarePageGate status={page.status} portal="ASHA" locale={locale} />;
   }
 
   const referrals = await listReferrals(page.store, { actor: page.actor, query: {} });
 
-  return <ReferralListView referrals={referrals} role="ASHA" />;
+  return <ReferralListView referrals={referrals} role="ASHA" locale={locale} />;
 }

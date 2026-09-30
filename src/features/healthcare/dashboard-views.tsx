@@ -6,7 +6,7 @@ import type { AshaDashboardDto, DoctorDashboardDto } from '@/types/healthcare';
 import type { Locale } from '@/types/i18n';
 import { EmptyState } from '@/components/ui/state';
 import { CalendarCheck, FileText, Stethoscope, Users, UserPlus } from 'lucide-react';
-import { RecordDate, Section, StatusBadge, TableHead, TableShell } from './record-parts';
+import { RecordDate, RecordLink, Section, StatusBadge, TableHead, TableShell } from './record-parts';
 import { StatList, type Stat } from './stat-list';
 import { ConfidentialityNote, PageHeader } from './portal-gate';
 
@@ -78,7 +78,7 @@ const AshaDashboardView: React.FC<{ dashboard: AshaDashboardDto; locale: Locale 
               {dashboard.recentCases.map((row) => (
                 <tr key={row.id}>
                   <th scope="row" className="px-4 py-3 text-left font-medium text-[#1E1E24]">
-                    {row.memberName}
+                    <RecordLink href={`/asha/cases/${row.id}`} locale={locale}>{row.memberName}</RecordLink>
                     <span className="block font-mono text-xs font-normal text-[#5A5A66]">
                       {row.caseNumber}
                     </span>
@@ -111,7 +111,7 @@ const AshaDashboardView: React.FC<{ dashboard: AshaDashboardDto; locale: Locale 
               {dashboard.pendingReferralList.map((referral) => (
                 <tr key={referral.id}>
                   <th scope="row" className="px-4 py-3 text-left font-medium text-[#1E1E24]">
-                    {referral.memberName}
+                  <RecordLink href={`/doctor/cases/${referral.caseId}`} locale={locale}>{referral.memberName}</RecordLink>
                   </th>
                   <td className="px-4 py-3 text-[#5A5A66]">{referral.reason}</td>
                   <td className="px-4 py-3">
@@ -270,7 +270,7 @@ const DoctorDashboardView: React.FC<{ dashboard: DoctorDashboardDto; locale: Loc
               {dashboard.recentCases.map((row) => (
                 <tr key={row.id}>
                   <th scope="row" className="px-4 py-3 text-left font-medium text-[#1E1E24]">
-                    {row.memberName}
+                  <RecordLink href={`/doctor/cases/${row.id}`} locale={locale}>{row.memberName}</RecordLink>
                     <span className="block font-mono text-xs font-normal text-[#5A5A66]">
                       {row.caseNumber}
                     </span>

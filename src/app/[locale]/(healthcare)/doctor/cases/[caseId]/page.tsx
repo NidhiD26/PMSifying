@@ -6,7 +6,7 @@ import { DEFAULT_LOCALE } from '@/types/i18n';
 import { resolvePageFor } from '@/lib/healthcare/page-guard';
 import { getCaseReview, listCamps } from '@/lib/healthcare/service';
 import { isApiError } from '@/lib/api/errors';
-import { PortalGate } from '@/features/healthcare/portal-gate';
+import { HealthcarePageGate } from '@/features/healthcare/healthcare-page-gate';
 import { UnavailablePanel } from '@/features/healthcare/unavailable-panel';
 import { CaseReviewView } from '@/features/healthcare/case-views';
 
@@ -21,7 +21,7 @@ export default async function DoctorCaseDetailPage({
 
   const page = await resolvePageFor('DOCTOR');
   if (page.status !== 'ok') {
-    return <PortalGate status={page.status} homeHref={withLocale('/doctor/login', locale)} />;
+    return <HealthcarePageGate status={page.status} portal="DOCTOR" locale={locale} />;
   }
 
   let review;
@@ -43,7 +43,7 @@ export default async function DoctorCaseDetailPage({
   }
 
   const campOptions = camps
-    .filter((c) => c.status === 'PUBLISHED')
+    .filter((c) => c.status === 'PUBLISHED' && c.campDate >= new Date().toISOString().slice(0, 10))
     .map((c) => ({
       value: c.id,
       label: `${c.title} (${c.campDate} · ${c.location})`,

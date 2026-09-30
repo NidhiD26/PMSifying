@@ -6,7 +6,7 @@ import { DEFAULT_LOCALE } from '@/types/i18n';
 import { resolvePageFor } from '@/lib/healthcare/page-guard';
 import { getCaseReview, listDoctors } from '@/lib/healthcare/service';
 import { isApiError } from '@/lib/api/errors';
-import { PortalGate } from '@/features/healthcare/portal-gate';
+import { HealthcarePageGate } from '@/features/healthcare/healthcare-page-gate';
 import { UnavailablePanel } from '@/features/healthcare/unavailable-panel';
 import { CaseReviewView } from '@/features/healthcare/case-views';
 
@@ -31,7 +31,7 @@ export default async function ASHACaseDetailPage({
 
   const page = await resolvePageFor('ASHA');
   if (page.status !== 'ok') {
-    return <PortalGate status={page.status} homeHref={withLocale('/', locale)} />;
+    return <HealthcarePageGate status={page.status} portal="ASHA" locale={locale} />;
   }
 
   let review;

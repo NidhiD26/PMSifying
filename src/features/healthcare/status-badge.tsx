@@ -31,6 +31,7 @@ export type HealthcareStatus =
   | 'DRAFT'
   | 'PUBLISHED'
   | 'REGISTERED'
+  | 'RECOMMENDED'
   | 'ATTENDED'
   | 'ABSENT'
   | 'ROUTINE'
@@ -62,6 +63,7 @@ const TONE_BY_STATUS: Record<HealthcareStatus, 'neutral' | 'ovulation' | 'fertil
   REFERRED: 'neutral',
   DRAFT: 'neutral',
   REGISTERED: 'neutral',
+  RECOMMENDED: 'fertile',
   CLOSED: 'neutral',
   ROUTINE: 'neutral',
   MILD: 'neutral',

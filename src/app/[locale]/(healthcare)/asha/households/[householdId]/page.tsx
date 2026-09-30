@@ -6,7 +6,7 @@ import { DEFAULT_LOCALE } from '@/types/i18n';
 import { resolvePageFor } from '@/lib/healthcare/page-guard';
 import { getHouseholdDetail } from '@/lib/healthcare/service';
 import { isApiError } from '@/lib/api/errors';
-import { PortalGate } from '@/features/healthcare/portal-gate';
+import { HealthcarePageGate } from '@/features/healthcare/healthcare-page-gate';
 import { HouseholdDetailView } from '@/features/healthcare/household-views';
 import { UnavailablePanel } from '@/features/healthcare/unavailable-panel';
 
@@ -31,7 +31,7 @@ export default async function ASHAHouseholdDetailPage({
 
   const page = await resolvePageFor('ASHA');
   if (page.status !== 'ok') {
-    return <PortalGate status={page.status} homeHref={withLocale('/', locale)} />;
+    return <HealthcarePageGate status={page.status} portal="ASHA" locale={locale} />;
   }
 
   let detail;

@@ -1,6 +1,7 @@
 import {
   cancelCampRegistration,
   listCampRegistrations,
+  registerRecommendedPatient,
   registerForCamp,
 } from '@/lib/healthcare/service';
 import { handleRequest } from '@/lib/healthcare/route';
@@ -51,6 +52,13 @@ export async function POST(request: Request, context: { params: Promise<{ campId
 
   return handleRequest(request, async ({ store, actor }) => {
     if (!parsed.success) throw invalidRequest(['campId']);
+    const rawBody = await request.clone().text();
+    if (rawBody.trim()) {
+      let body: { registrationId?: string };
+      try { body = JSON.parse(rawBody) as { registrationId?: string }; } catch { throw invalidRequest(); }
+      if (!body.registrationId) throw invalidRequest(['registrationId']);
+      return registerRecommendedPatient(store, { actor, campId: parsed.data, registrationId: body.registrationId });
+    }
     return registerForCamp(store, { actor, campId: parsed.data });
   });
 }

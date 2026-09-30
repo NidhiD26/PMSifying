@@ -7,7 +7,7 @@ import { getPortalContext } from '@/lib/healthcare/portal';
 import { listCampRegistrations, listCamps } from '@/lib/healthcare/service';
 import type { HealthcareStore } from '@/lib/healthcare/store';
 import type { HealthcareActor } from '@/lib/healthcare/session';
-import { PortalGate } from '@/features/healthcare/portal-gate';
+import { HealthcarePageGate } from '@/features/healthcare/healthcare-page-gate';
 import { UnavailablePanel } from '@/features/healthcare/unavailable-panel';
 import { CampDetailView } from '@/features/healthcare/camp-views';
 
@@ -37,10 +37,13 @@ export default async function HealthCampDetailPage({
 
   const context = await getPortalContext();
   if (context.status === 'not_configured') {
-    return <PortalGate status="not_configured" homeHref={withLocale('/', locale)} />;
+    return <HealthcarePageGate status="not_configured" portal="MEMBER" locale={locale} />;
   }
   if (context.status !== 'ok') {
-    return <PortalGate status="unauthenticated" homeHref={withLocale('/health-camps', locale)} />;
+    // A healthcare sign-in page, not the camp list this reader came from: pointing the
+    // gate back at `/health-camps` sends a signed-out visitor to a screen that renders
+    // this same gate, which is a link that goes nowhere.
+    return <HealthcarePageGate status="unauthenticated" portal="MEMBER" locale={locale} />;
   }
 
   const camp = await findVisibleCamp(context.store, context.actor, campId);

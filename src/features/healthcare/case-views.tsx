@@ -145,6 +145,7 @@ export const CaseReviewView: React.FC<{
       <ConfidentialityNote />
 
       <Section title={t('caseReview.member')}>
+        {isDoctor ? <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[#5A5A66]">Patient information · recorded by ASHA</p> : null}
         <dl className="divide-y divide-[#E2D8D0] rounded-2xl border border-[#E2D8D0] bg-[#FFFFFF]">
           <div className="flex items-baseline justify-between gap-4 px-4 py-3">
             <dt className="text-sm text-[#5A5A66]">{t('cases.member')}</dt>
@@ -162,6 +163,8 @@ export const CaseReviewView: React.FC<{
             <dt className="text-sm text-[#5A5A66]">{t('cases.household')}</dt>
             <dd className="font-mono text-xs text-[#5A5A66]">{review.householdCode}</dd>
           </div>
+          {isDoctor && review.householdAddress ? <div className="flex items-baseline justify-between gap-4 px-4 py-3"><dt className="text-sm text-[#5A5A66]">Address</dt><dd className="text-sm text-[#1E1E24]">{review.householdAddress}</dd></div> : null}
+          {isDoctor && member.note ? <div className="flex items-baseline justify-between gap-4 px-4 py-3"><dt className="text-sm text-[#5A5A66]">ASHA-entered contact / member note</dt><dd className="text-sm text-[#1E1E24]">{member.note}</dd></div> : null}
           <div className="flex items-baseline justify-between gap-4 px-4 py-3">
             <dt className="text-sm text-[#5A5A66]">{t('cases.status')}</dt>
             <dd>
@@ -244,6 +247,7 @@ export const CaseReviewView: React.FC<{
       ) : null}
 
       <Section title={t('caseReview.history')}>
+        {isDoctor ? <p className="text-xs text-[#5A5A66]">Source history · read-only observations and symptoms from the field record.</p> : null}
         {observations.length === 0 ? (
           <EmptyNote title={t('caseReview.emptyObservations.title')} body={t('caseReview.emptyObservations.body')} />
         ) : (
@@ -288,6 +292,11 @@ export const CaseReviewView: React.FC<{
         ) : null}
       </Section>
 
+      {isDoctor ? <Section title="Doctor review">
+        <p className="text-sm text-[#5A5A66]">Record clinical assessment, notes, and advice for this case.</p>
+        <div className="rounded-xl bg-white p-4"><ClinicalNoteForm caseId={record.id} /></div>
+      </Section> : null}
+
       <Section title={t('caseReview.clinicalNotes')}>
         {clinicalNotes.length === 0 ? (
           <EmptyNote title={t('caseReview.emptyNotes.title')} body={t('caseReview.emptyNotes.body')} />
@@ -314,11 +323,6 @@ export const CaseReviewView: React.FC<{
             ))}
           </ul>
         )}
-        {isDoctor ? (
-          <div className="rounded-2xl border border-[#E2D8D0] bg-[#FFFFFF] p-4">
-            <ClinicalNoteForm caseId={record.id} />
-          </div>
-        ) : null}
       </Section>
 
       <Section title={t('caseReview.prescriptions')}>

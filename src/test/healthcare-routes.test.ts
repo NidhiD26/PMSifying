@@ -18,6 +18,7 @@ import { createInMemoryHealthcareFixture, type InMemoryHealthcareFixture } from 
  */
 
 const ASHA = '22222222-2222-4222-8222-222222222222';
+const DOCTOR = '44444444-4444-4444-8444-444444444444';
 const MEMBER = '11111111-1111-4111-8111-111111111111';
 
 const authState = { configured: true, userId: MEMBER as string | null };
@@ -46,6 +47,7 @@ vi.mock('@/lib/healthcare/supabase-store', () => ({
 const { GET: campsRoute, POST: createCampRoute } = await import('@/app/api/healthcare/camps/route');const { POST: createHouseholdRoute } = await import('@/app/api/healthcare/households/route');
 const { GET: ashaDashboardRoute } = await import('@/app/api/healthcare/asha/dashboard/route');
 const { GET: doctorDashboardRoute } = await import('@/app/api/healthcare/doctor/dashboard/route');
+const { POST: registerWomanRoute } = await import('@/app/api/healthcare/asha/register-woman/route');
 const { POST: prescriptionsRoute } = await import(
   '@/app/api/healthcare/cases/[caseId]/prescriptions/route'
 );
@@ -92,6 +94,12 @@ beforeEach(() => {
     fullName: 'Asha Worker',
     registrationNumber: 'ASHA-1',
     area: 'Block 1',
+  });
+  void fixture.store.createDoctorProfile({
+    userId: DOCTOR,
+    fullName: 'Doctor One',
+    registrationNumber: 'DOC-1',
+    speciality: 'General',
   });
   authState.configured = true;
   authState.userId = ASHA;
@@ -182,6 +190,24 @@ describe('the session is the only source of authority', () => {
       new Request('https://app.test/api/healthcare/doctor/dashboard')
     );
     expect(response.status).toBe(403);
+  });
+
+  it('keeps ASHA and Doctor portals separated', async () => {
+    authState.userId = ASHA;
+    const ashaToDoctor = await doctorDashboardRoute(
+      new Request('https://app.test/api/healthcare/doctor/dashboard')
+    );
+    expect(ashaToDoctor.status).toBe(403);
+
+    authState.userId = DOCTOR;
+    const doctorToAsha = await registerWomanRoute(
+      jsonRequest('https://app.test/api/healthcare/asha/register-woman', {
+        name: 'Not allowed',
+        primaryConcern: 'Test',
+      })
+    );
+    expect(doctorToAsha.status).toBe(403);
+    expect((await body(doctorToAsha)).code).toBe('forbidden');
   });
 
   it('refuses a member a prescription before it looks at the case', async () => {

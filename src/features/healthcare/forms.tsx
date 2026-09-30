@@ -192,6 +192,7 @@ export const RecordForm: React.FC<{
   const [values, setValues] = React.useState<FieldValues>({});
   const [invalidFields, setInvalidFields] = React.useState<string[]>([]);
   const [failure, setFailure] = React.useState<string | null>(null);
+  const [saved, setSaved] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
 
   const setValue = (name: string, value: string) =>
@@ -200,6 +201,7 @@ export const RecordForm: React.FC<{
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFailure(null);
+    setSaved(false);
     setInvalidFields([]);
 
     const request = build(values);
@@ -210,6 +212,7 @@ export const RecordForm: React.FC<{
           body: request.method === 'DELETE' ? undefined : request.toBody(values),
         });
         setValues({});
+        setSaved(true);
         router.refresh();
       } catch (error) {
         if (error instanceof HealthcareRequestError) {
@@ -238,6 +241,7 @@ export const RecordForm: React.FC<{
           {summary}
         </p>
       ) : null}
+      {saved ? <p role="status" className="text-sm font-medium text-[#2E8B57]">Saved successfully.</p> : null}
 
       {children({ values, setValue, invalid: invalidFields })}
 

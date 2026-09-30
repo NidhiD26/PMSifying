@@ -355,6 +355,17 @@ describe('the camp roster', () => {
   const entry = (patch: Partial<CampRosterEntryDto>): CampRosterEntryDto => ({
     registrationId: 'reg-1',
     userId: '11111111-1111-4111-8111-111111111111',
+    caseId: null,
+    caseNumber: null,
+    memberId: null,
+    memberName: null,
+    ageYears: null,
+    concern: null,
+    priority: null,
+    recommendationSource: null,
+    recommendationReason: null,
+    registrationStatus: 'REGISTERED',
+    recommendedAt: null,
     registeredAt: '2030-01-02T09:00:00.000Z',
     attendanceStatus: 'REGISTERED',
     markedAt: null,
@@ -372,7 +383,7 @@ describe('the camp roster', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Mark attended' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Mark attendance' }));
 
     // The attendance write is addressed by camp *and* registration. The registration id
     // is what the roster read just made available, and the service re-checks that the
@@ -393,7 +404,7 @@ describe('the camp roster', () => {
         locale="en"
         roster={[
           entry({ registrationId: 'reg-1', userId: 'user-1' }),
-          entry({ registrationId: 'reg-2', userId: 'user-2', attendanceStatus: 'ATTENDED' }),
+          entry({ registrationId: 'reg-2', userId: 'user-2' }),
         ]}
         canMarkAttendance
         canChangeStatus={false}

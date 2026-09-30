@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { withLocale } from '@/lib/navigation/locale-path';
 import { isValidLocale } from '@/i18n/config';
 import { DEFAULT_LOCALE } from '@/types/i18n';
 import { getPortalContext } from '@/lib/healthcare/portal';
 import { listCamps } from '@/lib/healthcare/service';
-import { PortalGate } from '@/features/healthcare/portal-gate';
+import { HealthcarePageGate } from '@/features/healthcare/healthcare-page-gate';
 import { CampListView } from '@/features/healthcare/camp-views';
 
 /**
@@ -36,14 +35,16 @@ export default async function HealthCampsPage({
 
   const context = await getPortalContext();
   if (context.status === 'not_configured') {
-    return <PortalGate status="not_configured" homeHref={withLocale('/', locale)} />;
+    return <HealthcarePageGate status="not_configured" portal="MEMBER" locale={locale} />;
   }
 
   // A signed-out visitor has no actor, so there is no store to read camps with. The
   // page is reachable, and the list is the one thing it needs a session for, so it says
-  // so rather than rendering an empty list that would read as "no camps are on".
+  // so rather than rendering an empty list that would read as "no camps are on". The
+  // sign-in it offers is a healthcare one: a camp is read inside the healthcare system,
+  // and a personal PMSify session is not a substitute for it.
   if (context.status !== 'ok') {
-    return <PortalGate status="unauthenticated" homeHref={withLocale('/', locale)} />;
+    return <HealthcarePageGate status="unauthenticated" portal="MEMBER" locale={locale} />;
   }
 
   const camps = await listCamps(context.store, { actor: context.actor, query: {} });

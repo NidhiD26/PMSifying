@@ -73,6 +73,7 @@ import {
   type CampListQuery,
   type FollowUpListQuery,
   type ReferralListQuery,
+  uuidSchema,
 } from '@/lib/healthcare/validation';
 
 /**
@@ -766,7 +767,7 @@ export async function updateCase(
   if (!updated) throw notVisible();
 
   await audit(store, {
-    action: 'CASE_UPDATED',
+    action: 'CAMP_REGISTRATION_CREATED',
     entity: 'health_case',
     entityId: updated.id,
     actorId: args.actor.userId,
@@ -805,7 +806,7 @@ export async function getCaseReview(
   store: HealthcareStore,
   args: { actor: HealthcareActor; caseId: string }
 ): Promise<CaseReviewDto> {
-  const { row } = await loadVisibleCase(store, args.actor, args.caseId);
+  const { row, household } = await loadVisibleCase(store, args.actor, args.caseId);
   const member = await store.getMember(row.household_member_id);
   if (!member) throw notVisible();
 
@@ -856,6 +857,7 @@ export async function getCaseReview(
     followUps: await Promise.all(followUps.map((item) => toFollowUpDto(store, item, caseNames))),
     member: toMemberDto(member),
     householdCode: summary.householdCode,
+    householdAddress: household?.address_line ?? null,
     ashaName: ashaProfile?.full_name ?? null,
   };
 }
@@ -1074,15 +1076,32 @@ export async function progressReferral(
   const updated = await store.updateReferral(referral.id, patch);
   if (!updated) throw notVisible();
 
-  if (args.action === 'complete') {
-    // Completing the referral is what closes the case, and a case with an open
-    // referral is a case that will not be worked. This is the one place a case
-    // reaches CLOSED from the referral chain.
-    const caseRow = await store.getCase(referral.case_id);
-    if (caseRow) {
-      const caseMove = nextCaseStatus(caseRow.status, 'close');
-      if (caseMove.ok) {
-        await store.updateCase(caseRow.id, { status: caseMove.to, closed_at: new Date().toISOString() });
+  const caseRow = await store.getCase(referral.case_id);
+  if (caseRow) {
+    // Starting the review moves the case as well as the referral.
+    //
+    // The referral and the case are two records of one piece of work, and this
+    // function already keeps them in step when a referral completes. Without the
+    // same step here, nothing in the API ever put a case into `UNDER_REVIEW`:
+    // accepting stopped at `REFERRED`, and starting the review only moved the
+    // referral. So the doctor's "cases under review" counter - which counts the
+    // case status, not the referral status - stayed at zero through the entire
+    // review, and a doctor with three cases open saw an empty queue.
+    const caseMove = nextCaseStatus(caseRow.status, 'startReview');
+    if (caseMove.ok) {
+      await store.updateCase(caseRow.id, { status: caseMove.to });
+    }
+
+    if (args.action === 'complete') {
+      // Completing the referral is what closes the case, and a case with an open
+      // referral is a case that will not be worked. This is the one place a case
+      // reaches CLOSED from the referral chain.
+      const closeMove = nextCaseStatus(caseMove.ok ? caseMove.to : caseRow.status, 'close');
+      if (closeMove.ok) {
+        await store.updateCase(caseRow.id, {
+          status: closeMove.to,
+          closed_at: new Date().toISOString(),
+        });
       }
     }
   }
@@ -1284,6 +1303,56 @@ export async function createFollowUp(
   return toFollowUpDto(store, followUp, new Map());
 }
 
+/** Link an assigned clinical case to a published camp recommendation. */
+export async function recommendCaseForCamp(
+  store: HealthcareStore,
+  args: { actor: HealthcareActor; caseId: string; campId: string }
+): Promise<CampRosterEntryDto> {
+  const campId = parse(uuidSchema, args.campId);
+  const doctor = requireDoctor(args.actor);
+  const { row } = await loadVisibleCase(store, args.actor, args.caseId);
+  if (row.assigned_doctor_id !== doctor.user_id) throw notVisible();
+  const camp = await store.getCamp(campId);
+  if (!camp || camp.status !== 'PUBLISHED') throw notVisible();
+  const existingRows = await store.listRegistrationsByCamp(camp.id);
+  const existing = existingRows.find((registration) => registration.case_id === row.id);
+  const registration = existing ?? await store.recommendPatientForCamp({
+    campId: camp.id,
+    caseId: row.id,
+    householdMemberId: row.household_member_id,
+    recommendedByDoctorId: doctor.user_id,
+    recommendationReason: row.summary,
+  });
+  await audit(store, {
+    action: 'CAMP_REGISTRATION_CREATED',
+    entity: 'camp_registration',
+    entityId: registration.id,
+    actorId: args.actor.userId,
+    actorRole: args.actor.role,
+    metadata: { campId: camp.id, caseId: row.id },
+  });
+  const member = await store.getMember(row.household_member_id);
+  if (!member) throw notVisible();
+  return {
+    registrationId: registration.id,
+    userId: null,
+    caseId: row.id,
+    caseNumber: row.case_number,
+    memberId: member.id,
+    memberName: member.full_name,
+    ageYears: member.age_years,
+    concern: row.summary,
+    priority: row.priority,
+    recommendationSource: registration.recommendation_source,
+    recommendationReason: registration.recommendation_reason,
+    registrationStatus: registration.registration_status,
+    recommendedAt: registration.recommended_at,
+    registeredAt: registration.registered_at,
+    attendanceStatus: 'REGISTERED',
+    markedAt: null,
+  };
+}
+
 /**
  * Settles a follow-up: done, missed, or cancelled.
  *
@@ -1397,12 +1466,19 @@ async function toCampDto(
     canManage: isStaff && (row.organizer_user_id === actor.userId || actor.role === 'ADMIN'),
   };
 
-  // How many cases came out of this camp is an operational fact about a camp, and it
-  // is only an operational fact to somebody who runs camps. It is left off the wire
-  // for a plain member rather than nulled, so its absence is a statement about the
-  // viewer rather than a field that is sometimes missing.
+  // How many cases were referred to this camp is an operational fact about a camp,
+  // and it is only an operational fact to somebody who runs camps. It is left off the
+  // wire for a plain member rather than nulled, so its absence is a statement about
+  // the viewer rather than a field that is sometimes missing.
+  //
+  // Counted from the case-linked camp registrations, which is where a doctor's
+  // recommendation is actually recorded. It is a different number from
+  // `registeredCount`: a case can be referred to a camp months before the woman is
+  // registered for it, and a registration made without a case behind it is not a
+  // referral. Collapsing the two would make the camp look like it had converted
+  // every referral it was ever sent.
   if (isStaff) {
-    dto.referredCaseCount = (await store.listCasesByCamp(row.id, 100)).length;
+    dto.referredCaseCount = await store.countReferredCasesByCamp(row.id);
   }
   return dto;
 }
@@ -1479,21 +1555,75 @@ export async function listCampRegistrations(
   // own name for "has not been marked".
   const byRegistration = new Map(attendance.map((row) => [row.registration_id, row]));
 
-  return registrations
-    .map((row) => {
+  return Promise.all(registrations.map(async (row) => {
       const marked = byRegistration.get(row.id);
+      const [caseRow, member] = row.case_id && row.household_member_id
+        ? await Promise.all([store.getCase(row.case_id), store.getMember(row.household_member_id)])
+        : [null, null];
       const entry: CampRosterEntryDto = {
         registrationId: row.id,
         userId: row.user_id,
         registeredAt: row.registered_at,
         attendanceStatus: marked?.status ?? 'REGISTERED',
         markedAt: marked?.marked_at ?? null,
+        ...(row.case_id ? {
+          caseId: row.case_id,
+          caseNumber: caseRow?.case_number ?? null,
+          memberId: row.household_member_id,
+          memberName: member?.full_name ?? null,
+          ageYears: member?.age_years ?? null,
+          concern: caseRow?.summary ?? null,
+          priority: caseRow?.priority ?? null,
+          recommendationSource: row.recommendation_source,
+          recommendationReason: row.recommendation_reason,
+          registrationStatus: row.registration_status,
+          recommendedAt: row.recommended_at,
+        } : {}),
       };
       return entry;
-    })
+    }))
     // Registration order, so the roster is read the same way every time and the person
     // who signed up first is first on the list.
-    .sort((a, b) => a.registeredAt.localeCompare(b.registeredAt));
+    .then((entries) => entries.sort((a, b) => (a.recommendedAt ?? a.registeredAt ?? '').localeCompare(b.recommendedAt ?? b.registeredAt ?? '')));
+}
+
+/** The camp organiser registers a doctor's existing case recommendation. */
+export async function registerRecommendedPatient(
+  store: HealthcareStore,
+  args: { actor: HealthcareActor; campId: string; registrationId: string }
+): Promise<CampRosterEntryDto> {
+  const registrationId = parse(uuidSchema, args.registrationId);
+  const actor = requireStaff(args.actor);
+  const camp = await store.getCamp(args.campId);
+  if (!camp || (camp.organizer_user_id !== actor.userId && actor.role !== 'ADMIN')) throw notVisible();
+  const existing = await store.getRegistration(registrationId);
+  if (!existing || existing.camp_id !== camp.id || existing.registration_status !== 'RECOMMENDED' || !existing.case_id || !existing.household_member_id) throw notVisible();
+  const registered = await store.registerRecommendedPatient(existing.id, actor.userId);
+  if (!registered) throw notVisible();
+  const [caseRow, member, attendance] = await Promise.all([
+    store.getCase(registered.case_id!),
+    store.getMember(registered.household_member_id!),
+    store.listAttendanceByCamp(camp.id),
+  ]);
+  const marked = attendance.find((entry) => entry.registration_id === registered.id);
+  if (!caseRow || !member || !marked) throw notVisible();
+  await audit(store, {
+    action: 'CAMP_REGISTRATION_CREATED',
+    entity: 'camp_registration',
+    entityId: registered.id,
+    actorId: actor.userId,
+    actorRole: actor.role,
+    metadata: { campId: camp.id, caseId: caseRow.id },
+  });
+  return {
+    registrationId: registered.id, userId: null, caseId: caseRow.id,
+    caseNumber: caseRow.case_number, memberId: member.id, memberName: member.full_name,
+    ageYears: member.age_years, concern: caseRow.summary, priority: caseRow.priority,
+    recommendationSource: registered.recommendation_source,
+    recommendationReason: registered.recommendation_reason,
+    registrationStatus: registered.registration_status, recommendedAt: registered.recommended_at,
+    registeredAt: registered.registered_at, attendanceStatus: marked.status, markedAt: marked.marked_at,
+  };
 }
 
 export async function createCamp(
@@ -1657,7 +1787,7 @@ export async function markCampAttendance(
   // identifier that a person running a camp has in front of them, so it is not a secret
   // and it must not be usable outside the camp it came from.
   const registration = await store.getRegistration(args.registrationId);
-  if (!registration || registration.camp_id !== args.campId) throw notVisible();
+  if (!registration || registration.camp_id !== args.campId || registration.registration_status !== 'REGISTERED') throw notVisible();
 
   // Attendance is a claim about a person, so it is a claim that only somebody entitled
   // to the camp's roster may make.

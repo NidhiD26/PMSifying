@@ -5,7 +5,8 @@ import { useTranslations } from 'next-intl';
 import type { FollowUpDto, ReferralDto } from '@/types/healthcare';
 import { EmptyState } from '@/components/ui/state';
 import { CalendarCheck, Stethoscope } from 'lucide-react';
-import { RecordDate, RoleLabel, Section, StatusBadge, TableHead, TableShell } from './record-parts';
+import { RecordDate, RecordLink, RoleLabel, Section, StatusBadge, TableHead, TableShell } from './record-parts';
+import type { Locale } from '@/types/i18n';
 import { ConfidentialityNote, PageHeader } from './portal-gate';
 import { HealthcareAction } from './healthcare-action';
 
@@ -27,7 +28,8 @@ const ReferralListView: React.FC<{
   referrals: ReferralDto[];
   /** A doctor accepts, starts and completes. An ASHA can only cancel. */
   role: 'ASHA' | 'DOCTOR';
-}> = ({ referrals, role }) => {
+  locale?: Locale;
+}> = ({ referrals, role, locale = 'en' }) => {
   const t = useTranslations('healthcare');
 
   if (referrals.length === 0) {
@@ -63,7 +65,7 @@ const ReferralListView: React.FC<{
           {referrals.map((referral) => (
             <tr key={referral.id}>
               <th scope="row" className="px-4 py-3 text-left font-medium text-[#1E1E24]">
-                {referral.memberName}
+                <RecordLink href={`/${role.toLowerCase()}/cases/${referral.caseId}`} locale={locale}>{referral.memberName}</RecordLink>
                 <span className="block font-mono text-xs font-normal text-[#5A5A66]">
                   {referral.caseNumber}
                 </span>

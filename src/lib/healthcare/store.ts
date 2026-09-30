@@ -149,6 +149,14 @@ export interface CreateCampInput {
   organizerUserId: string;
 }
 
+export interface RecommendPatientForCampInput {
+  campId: string;
+  caseId: string;
+  householdMemberId: string;
+  recommendedByDoctorId: string;
+  recommendationReason: string;
+}
+
 export interface CampInput {
   title: string;
   description: string | null;
@@ -284,7 +292,19 @@ export interface HealthcareStore {
 
   listCasesByDoctor(doctorId: string, filter: CaseFilter): Promise<HealthCaseRow[]>;
 
-  listCasesByCamp(campId: string, limit: number): Promise<HealthCaseRow[]>;
+  /**
+   * How many distinct healthcare cases have been referred to a camp.
+   *
+   * A camp case is reached through `camp_registrations.case_id`, which is what
+   * `recommendCaseForCamp` writes. It is deliberately not read from
+   * `health_cases.camp_id`: that column is only populated for a case *created at* a
+   * camp, and no flow creates one, so counting it reported zero for every camp
+   * including the ones a doctor had referred cases into.
+   *
+   * Cancelled referrals are excluded, so a withdrawn recommendation stops
+   * counting, matching how the roster and the case-to-camp lookup treat them.
+   */
+  countReferredCasesByCamp(campId: string): Promise<number>;
 
   countOpenCasesForAsha(ashaId: string): Promise<number>;
 
@@ -390,6 +410,10 @@ export interface HealthcareStore {
   countRegistrations(campId: string): Promise<number>;
 
   countAttendance(campId: string, status: CampAttendanceStatus): Promise<number>;
+
+  recommendPatientForCamp(input: RecommendPatientForCampInput): Promise<CampRegistrationRow>;
+
+  registerRecommendedPatient(registrationId: string, registeredByUserId: string): Promise<CampRegistrationRow | null>;
 
   /**
    * Takes a seat, and opens the attendance row for it.
@@ -759,11 +783,17 @@ export function createInMemoryHealthcareFixture(): InMemoryHealthcareFixture {
       );
     },
 
-    async listCasesByCamp(campId, limit) {
-      return [...cases.values()]
-        .filter((row) => row.camp_id === campId)
-        .sort((a, b) => b.updated_at.localeCompare(a.updated_at))
-        .slice(0, limit);
+    async countReferredCasesByCamp(campId) {
+      // A Set rather than a count, so the number cannot drift from the roster's
+      // view of which cases are linked even if the unique index that currently
+      // guarantees one row per (camp, case) is ever dropped.
+      const referred = new Set<string>();
+      for (const row of registrations.values()) {
+        if (row.camp_id !== campId) continue;
+        if (row.registration_status === 'CANCELLED') continue;
+        if (row.case_id) referred.add(row.case_id);
+      }
+      return referred.size;
     },
 
     async countOpenCasesForAsha(ashaId) {
@@ -1034,13 +1064,47 @@ export function createInMemoryHealthcareFixture(): InMemoryHealthcareFixture {
     },
 
     async countRegistrations(campId) {
-      return [...registrations.values()].filter((row) => row.camp_id === campId).length;
+      return [...registrations.values()].filter((row) => row.camp_id === campId && row.registration_status === 'REGISTERED').length;
     },
 
     async countAttendance(campId, status) {
       return [...attendance.values()].filter(
         (row) => row.camp_id === campId && row.status === status
       ).length;
+    },
+
+    async recommendPatientForCamp(input) {
+      const camp = camps.get(input.campId);
+      const caseRow = cases.get(input.caseId);
+      if (!camp || !caseRow || caseRow.household_member_id !== input.householdMemberId) throw notFound();
+      if (camp.status !== 'PUBLISHED' || camp.camp_date < today()) throw conflict(['campId']);
+      const existing = [...registrations.values()].find((row) => row.camp_id === input.campId && row.case_id === input.caseId);
+      if (existing) return existing;
+      const timestamp = now();
+      const row: CampRegistrationRow = {
+        id: nextId(), camp_id: input.campId, user_id: null, case_id: input.caseId,
+        household_member_id: input.householdMemberId, registration_status: 'RECOMMENDED',
+        recommendation_source: 'DOCTOR', recommendation_reason: input.recommendationReason,
+        recommended_by_doctor_id: input.recommendedByDoctorId, recommended_at: timestamp,
+        registered_by_user_id: null, registered_at: null, created_at: timestamp, updated_at: timestamp,
+      };
+      registrations.set(row.id, row);
+      return row;
+    },
+
+    async registerRecommendedPatient(registrationId, registeredByUserId) {
+      const existing = registrations.get(registrationId);
+      if (!existing || existing.registration_status !== 'RECOMMENDED' || !existing.case_id || !existing.household_member_id) return null;
+      const camp = camps.get(existing.camp_id);
+      if (!camp || camp.status !== 'PUBLISHED' || camp.camp_date < today()) throw conflict(['campId']);
+      const taken = [...registrations.values()].filter((row) => row.camp_id === camp.id && row.registration_status === 'REGISTERED').length;
+      if (taken >= camp.capacity) throw conflict(['capacity']);
+      const timestamp = now();
+      const updated = { ...existing, registration_status: 'REGISTERED' as const, registered_by_user_id: registeredByUserId, registered_at: timestamp, updated_at: timestamp };
+      registrations.set(registrationId, updated);
+      const attendanceRow: CampAttendanceRow = { id: nextId(), camp_id: camp.id, registration_id: registrationId, status: 'REGISTERED', marked_by_user_id: null, marked_at: null, created_at: timestamp, updated_at: timestamp };
+      attendance.set(attendanceRow.id, attendanceRow);
+      return updated;
     },
 
     async registerForCamp(campId, userId) {
@@ -1061,7 +1125,7 @@ export function createInMemoryHealthcareFixture(): InMemoryHealthcareFixture {
       // The capacity rule, enforced atomically in SQL by
       // `camp_registrations_within_capacity`. This check exists to produce a better
       // message before a form is filled in; it is not the guarantee.
-      const taken = [...registrations.values()].filter((row) => row.camp_id === campId).length;
+      const taken = [...registrations.values()].filter((row) => row.camp_id === campId && row.registration_status === 'REGISTERED').length;
       if (taken >= camp.capacity) throw conflict(['campId']);
 
       const timestamp = now();
@@ -1069,6 +1133,14 @@ export function createInMemoryHealthcareFixture(): InMemoryHealthcareFixture {
         id: nextId(),
         camp_id: campId,
         user_id: userId,
+        case_id: null,
+        household_member_id: null,
+        registration_status: 'REGISTERED',
+        recommendation_source: null,
+        recommendation_reason: null,
+        recommended_by_doctor_id: null,
+        recommended_at: null,
+        registered_by_user_id: userId,
         registered_at: timestamp,
         created_at: timestamp,
         updated_at: timestamp,
@@ -1108,13 +1180,13 @@ export function createInMemoryHealthcareFixture(): InMemoryHealthcareFixture {
     async listRegistrationsByUser(userId) {
       return [...registrations.values()]
         .filter((row) => row.user_id === userId)
-        .sort((a, b) => b.registered_at.localeCompare(a.registered_at));
+        .sort((a, b) => (b.registered_at ?? '').localeCompare(a.registered_at ?? ''));
     },
 
     async listRegistrationsByCamp(campId) {
       return [...registrations.values()]
         .filter((row) => row.camp_id === campId)
-        .sort((a, b) => a.registered_at.localeCompare(b.registered_at));
+        .sort((a, b) => (a.recommended_at ?? a.registered_at ?? '').localeCompare(b.recommended_at ?? b.registered_at ?? ''));
     },
 
     async listAttendanceByCamp(campId) {

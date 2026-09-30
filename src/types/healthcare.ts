@@ -122,6 +122,9 @@ export const HEALTH_CAMP_TRANSITIONS: Readonly<
 
 export type CampAttendanceStatus = 'REGISTERED' | 'ATTENDED' | 'ABSENT';
 
+/** Lifecycle of a patient entry on a camp roster. */
+export type CampRegistrationStatus = 'RECOMMENDED' | 'REGISTERED' | 'CANCELLED';
+
 export const CAMP_ATTENDANCE_STATUSES: CampAttendanceStatus[] = [
   'REGISTERED',
   'ATTENDED',
@@ -314,8 +317,14 @@ export interface HealthCamp {
 export interface CampRegistration {
   id: string;
   campId: string;
-  userId: string;
-  registeredAt: string;
+  userId: string | null;
+  caseId: string | null;
+  householdMemberId: string | null;
+  status: CampRegistrationStatus;
+  recommendationSource: 'DOCTOR' | null;
+  recommendationReason: string | null;
+  recommendedAt: string | null;
+  registeredAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -606,7 +615,17 @@ export interface HealthCampDto {
    * a fact about the camp that some viewers are not entitled to.
    */
   canManage: boolean;
-  /** Only present for staff roles; a plain USER never receives it. */
+  /**
+   * Distinct healthcare cases referred to this camp, counted from the case-linked
+   * camp registrations.
+   *
+   * Not the same as `registeredCount`: a referral exists from the moment a doctor
+   * sends a case, which can be well before the woman is registered, and a
+   * registration made without a case behind it is not a referral. Attendance is
+   * counted separately again, and marking it does not change this number.
+   *
+   * Only present for staff roles; a plain USER never receives it.
+   */
   referredCaseCount?: number;
 }
 
@@ -623,8 +642,19 @@ export interface CampRegistrationDto {
 
 export interface CampRosterEntryDto {
   registrationId: string;
-  userId: string;
-  registeredAt: string;
+  userId: string | null;
+  caseId?: string | null;
+  caseNumber?: string | null;
+  memberId?: string | null;
+  memberName?: string | null;
+  ageYears?: number | null;
+  concern?: string | null;
+  priority?: CasePriority | null;
+  recommendationSource?: 'DOCTOR' | null;
+  recommendationReason?: string | null;
+  registrationStatus?: CampRegistrationStatus;
+  recommendedAt?: string | null;
+  registeredAt: string | null;
   attendanceStatus: CampAttendanceStatus;
   markedAt: string | null;
 }
@@ -638,6 +668,7 @@ export interface CaseReviewDto {
   followUps: FollowUpDto[];
   member: MemberDto;
   householdCode: string;
+  householdAddress?: string | null;
   ashaName: string | null;
 }
 

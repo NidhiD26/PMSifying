@@ -201,8 +201,16 @@ export type HealthCampRow = {
 export type CampRegistrationRow = {
   id: string;
   camp_id: string;
-  user_id: string;
-  registered_at: string;
+  user_id: string | null;
+  case_id: string | null;
+  household_member_id: string | null;
+  registration_status: 'RECOMMENDED' | 'REGISTERED' | 'CANCELLED';
+  recommendation_source: 'DOCTOR' | null;
+  recommendation_reason: string | null;
+  recommended_by_doctor_id: string | null;
+  recommended_at: string | null;
+  registered_by_user_id: string | null;
+  registered_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -449,10 +457,17 @@ export type HealthcareTables = {
   };
   camp_registrations: {
     Row: CampRegistrationRow;
-    /** `registered_at` is stamped by the database when a person signs themselves up. */
-    Insert: Omit<CampRegistrationRow, 'id' | 'registered_at' | 'created_at' | 'updated_at'> & {
+    Insert: Omit<CampRegistrationRow, 'id' | 'user_id' | 'case_id' | 'household_member_id' | 'recommendation_source' | 'recommendation_reason' | 'recommended_by_doctor_id' | 'registered_by_user_id' | 'registered_at' | 'recommended_at' | 'created_at' | 'updated_at'> & {
       id?: string;
-      registered_at?: string;
+      user_id?: string | null;
+      case_id?: string | null;
+      household_member_id?: string | null;
+      recommendation_source?: 'DOCTOR' | null;
+      recommendation_reason?: string | null;
+      recommended_by_doctor_id?: string | null;
+      registered_by_user_id?: string | null;
+      registered_at?: string | null;
+      recommended_at?: string | null;
       created_at?: string;
       updated_at?: string;
     };
@@ -498,6 +513,10 @@ export type HealthcareFunctions = {
   healthcare_record_audit_event: {
     Args: { p_action: string; p_entity: string; p_entity_id: string | null; p_metadata?: Json };
     Returns: undefined;
+  };
+  healthcare_register_recommended_patient: {
+    Args: { p_registration_id: string; p_registered_by_user_id: string };
+    Returns: CampRegistrationRow;
   };
 };
 

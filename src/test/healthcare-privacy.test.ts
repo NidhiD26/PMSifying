@@ -359,6 +359,7 @@ describe('a DTO carries only what the workflow needs', () => {
       'case',
       'clinicalNotes',
       'followUps',
+      'householdAddress',
       'householdCode',
       'member',
       'observations',
@@ -765,13 +766,30 @@ describe('the healthcare translations', () => {
   });
 
   it('translates every string rather than leaving English in place', () => {
-    const allowedIdentical = new Set(['healthcare.badge']);
+    /**
+     * Not every value is prose, and prose is the only thing that can be
+     * untranslated.
+     *
+     * A password mask, an ID format example and a role acronym are the same
+     * glyphs in every language, because they show the reader the *shape* of what
+     * to type rather than saying something to them. Demanding a translation of
+     * "••••••••" would push a translator to invent a different mask, and the
+     * placeholder would stop matching the field. Left in a hand-kept list, they
+     * would each need re-adding every time a new form is added, which is exactly
+     * the kind of exception list that quietly grows to cover real English.
+     *
+     * So the test asks what the value is instead of what its key is. Anything
+     * containing a real lowercase word is prose and must differ; anything with no
+     * lowercase alphabetic run is a format hint and must not. A leftover "Settings"
+     * still fails, which is the case this test exists for.
+     */
+    const isProse = (value: string) => /[a-z]{2,}/.test(value);
 
     for (const locale of locales.filter((l) => l !== defaultLocale)) {
       const english = healthcare(defaultLocale);
       const current = healthcare(locale);
       const untranslated = [...current]
-        .filter(([key, value]) => value === english.get(key) && !allowedIdentical.has(key))
+        .filter(([key, value]) => value === english.get(key) && isProse(value))
         .map(([key]) => key);
 
       expect({ locale, untranslated }).toEqual({ locale, untranslated: [] });
@@ -784,7 +802,7 @@ describe('the healthcare translations', () => {
     const statuses = [
       'OPEN', 'REFERRED', 'UNDER_REVIEW', 'FOLLOW_UP', 'CLOSED',
       'PENDING', 'ACCEPTED', 'IN_REVIEW', 'COMPLETED', 'CANCELLED',
-      'MISSED', 'DRAFT', 'PUBLISHED', 'REGISTERED', 'ATTENDED', 'ABSENT',
+      'MISSED', 'DRAFT', 'PUBLISHED', 'RECOMMENDED', 'REGISTERED', 'ATTENDED', 'ABSENT',
       'ROUTINE', 'URGENT', 'MILD', 'MODERATE', 'SEVERE',
     ];
     for (const locale of locales) {

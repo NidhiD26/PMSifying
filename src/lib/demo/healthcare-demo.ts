@@ -21,9 +21,40 @@ export const DEMO_ASHA_USER_ID = 'asha-demo-user-id';
 export const DEMO_DOCTOR_USER_ID = 'doctor-demo-user-id';
 export const DEMO_MEMBER_USER_ID = 'member-demo-user-id';
 
-let cachedFixture: InMemoryHealthcareFixture | null = null;
-let seedPromise: Promise<void> | null = null;
-let hydrationPromise: Promise<void> | null = null;
+/**
+ * The demo store lives on `globalThis`, not in a module variable.
+ *
+ * Next.js does not give a server component and a route handler the same module
+ * registry: each of its server-side layers imports this file independently, and a
+ * module-level `let` is therefore instantiated once per layer. The symptom is
+ * spectacular and very hard to read, because seeded ids are deterministic and so
+ * both copies agree on *which* rows exist:
+ *
+ *   - the page renders a case the API layer has never heard of, and every write
+ *     against that case answers `not_found`;
+ *   - a referral the doctor accepted is still `PENDING` when the API is asked;
+ *   - each layer re-hydrates the temp registration file, so one saved ASHA
+ *     registration becomes two member records and two cases.
+ *
+ * `globalThis` is per-process, which is the scope a database connection pool
+ * already has, and is exactly the scope the demo store needs in order to behave
+ * like the thing it stands in for. Anything that needs more than one process —
+ * a real deployment — is the case the Supabase adapter exists for, and this
+ * module is never reached when it is configured.
+ */
+interface DemoHealthcareGlobal {
+  fixture: InMemoryHealthcareFixture | null;
+  seedPromise: Promise<void> | null;
+  hydrationPromise: Promise<void> | null;
+}
+
+const DEMO_STORE_KEY = '__pmsifyDemoHealthcareStore';
+
+function sharedDemoState(): DemoHealthcareGlobal {
+  const scope = globalThis as unknown as Record<string, DemoHealthcareGlobal | undefined>;
+  scope[DEMO_STORE_KEY] ??= { fixture: null, seedPromise: null, hydrationPromise: null };
+  return scope[DEMO_STORE_KEY];
+}
 
 export interface DemoRegistrationRecord {
   householdName: string;
@@ -83,7 +114,8 @@ export async function persistDemoReferralAcceptance(
 }
 
 export function getDemoHealthcareFixture(): InMemoryHealthcareFixture {
-  if (cachedFixture) return cachedFixture;
+  const shared = sharedDemoState();
+  if (shared.fixture) return shared.fixture;
 
   const fixture = createInMemoryHealthcareFixture();
   const { store, seedProfile } = fixture;
@@ -94,7 +126,7 @@ export function getDemoHealthcareFixture(): InMemoryHealthcareFixture {
   seedProfile(DEMO_MEMBER_USER_ID, 'USER');
 
   // Synchronous initialization helper
-  seedPromise = (async () => {
+  shared.seedPromise = (async () => {
     await store.createAshaProfile({
       userId: DEMO_ASHA_USER_ID,
       fullName: 'Sunita Devi (ASHA Worker)',
@@ -260,17 +292,18 @@ export function getDemoHealthcareFixture(): InMemoryHealthcareFixture {
     await store.registerForCamp(camp1.id, DEMO_MEMBER_USER_ID);
   })();
 
-  cachedFixture = fixture;
+  shared.fixture = fixture;
   return fixture;
 }
 
 import type { HealthcareRole } from '@/types/healthcare';
 
 export async function getDemoHealthcareStore(): Promise<HealthcareStore> {
+  const shared = sharedDemoState();
   const fixture = getDemoHealthcareFixture();
-  await seedPromise;
-  if (!hydrationPromise) {
-    hydrationPromise = (async () => {
+  await shared.seedPromise;
+  if (!shared.hydrationPromise) {
+    shared.hydrationPromise = (async () => {
       const records = await readDemoRegistrations();
       let acceptances: Record<string, string> = {};
       try {
@@ -336,9 +369,22 @@ export async function getDemoHealthcareStore(): Promise<HealthcareStore> {
       }
     })();
   }
-  await hydrationPromise;
+  await shared.hydrationPromise;
   return fixture.store;
 }
+
+/**
+ * Fixed timestamp for the seeded demo profiles.
+ *
+ * These describe people who already exist — the registration numbers say 2024 —
+ * so "now" is the wrong answer twice over. It made `getDemoActor` return a
+ * different object on every call, which meant two reads of the same identity
+ * compared unequal whenever they straddled a millisecond, and it made demo
+ * output differ run to run for no reason. Real records carry the timestamp the
+ * store assigned them; this helper is a snapshot of a fixed record and is held
+ * to the same standard.
+ */
+const DEMO_PROFILE_TIMESTAMP = '2024-06-01T00:00:00.000Z';
 
 export function getDemoActor(role: HealthcareRole | 'MEMBER'): HealthcareActor {
   if (role === 'ASHA') {
@@ -352,8 +398,8 @@ export function getDemoActor(role: HealthcareRole | 'MEMBER'): HealthcareActor {
         full_name: 'Sunita Devi (ASHA Worker)',
         registration_number: 'ASHA-KA-2024-8841',
         area: 'Sector 4, Bengaluru South',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: DEMO_PROFILE_TIMESTAMP,
+        updated_at: DEMO_PROFILE_TIMESTAMP,
       },
       doctorProfile: null,
     };
@@ -370,8 +416,8 @@ export function getDemoActor(role: HealthcareRole | 'MEMBER'): HealthcareActor {
         full_name: 'Dr. Ananya Rao, MD',
         registration_number: 'KMC-2018-49201',
         speciality: 'Obstetrics & Gynecology',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: DEMO_PROFILE_TIMESTAMP,
+        updated_at: DEMO_PROFILE_TIMESTAMP,
       },
     };
   }

@@ -49,12 +49,30 @@ const MESSAGE: Record<PortalStatus, { title: string; body: string; action: strin
   forbidden: { title: 'wrongRole.title', body: 'wrongRole.body', action: 'wrongRole.action' },
 };
 
-export const PortalGate: React.FC<{ status: PortalStatus; homeHref: string }> = ({
-  status,
-  homeHref,
-}) => {
+/**
+ * The two ways out of a blocked portal, which are not the same place.
+ *
+ * `homeHref` is where somebody with **no session** goes to get one, and it has to be a
+ * healthcare sign-in page. `workspaceHref` is where somebody who is **already signed in
+ * with the wrong role** goes instead, and it has to be the workspace their own role is —
+ * sending a doctor who typed `/asha` to the ASHA sign-in form would ask a signed-in
+ * clinician to authenticate again in order to be told, again, that she is not an ASHA.
+ *
+ * This is the distinction the gate used to collapse into one prop, and the reason
+ * "Sign in to portal" on the ASHA and doctor portals walked readers to the personal PMSify
+ * dashboard: one link, filled in with `/` by every page, for two questions that have two
+ * different answers. `HealthcarePageGate` supplies both.
+ */
+export const PortalGate: React.FC<{
+  status: PortalStatus;
+  /** The healthcare sign-in page for the portal this page belongs to. */
+  homeHref: string;
+  /** Where a signed-in reader with the wrong role goes. Falls back to `homeHref`. */
+  workspaceHref?: string;
+}> = ({ status, homeHref, workspaceHref }) => {
   const t = useTranslations('healthcare');
   const message = MESSAGE[status];
+  const actionHref = status === 'forbidden' ? (workspaceHref ?? homeHref) : homeHref;
 
   return (
     <Surface variant="bordered" className="mx-auto max-w-2xl">
@@ -70,7 +88,7 @@ export const PortalGate: React.FC<{ status: PortalStatus; homeHref: string }> = 
           <p className="text-sm leading-relaxed text-[#5A5A66]">{t(message.body)}</p>
           {message.action ? (
             <a
-              href={homeHref}
+              href={actionHref}
               className="inline-flex min-h-[40px] items-center rounded-xl px-1 text-sm font-medium text-[#2D1B2D] underline decoration-[#E8837D] underline-offset-4 hover:bg-[#F9EBEA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8837D]"
             >
               {t(message.action)}

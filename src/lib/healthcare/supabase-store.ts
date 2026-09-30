@@ -16,6 +16,7 @@ import type {
   HouseholdInput,
   MemberInput,
   PrescriptionInput,
+  RecommendPatientForCampInput,
   RecordAuditEventInput,
   ReferralFilter,
 } from '@/lib/healthcare/store';
@@ -446,14 +447,18 @@ export function createSupabaseHealthcareStore(client: SupabaseClient<Database>):
         .slice(0, filter.limit);
     },
 
-    async listCasesByCamp(campId, limit) {
-      return rowsOf(
+    async countReferredCasesByCamp(campId) {
+      // The unique index `camp_registrations_one_case_per_camp_idx` allows one row
+      // per (camp_id, case_id), so counting the rows that carry a case counts
+      // distinct cases. Cancelled referrals are excluded, as in the in-memory
+      // store, so both implementations answer the same question.
+      return countOf(
         await client
-          .from('health_cases')
-          .select('*')
+          .from('camp_registrations')
+          .select('*', { count: 'exact', head: true })
           .eq('camp_id', campId)
-          .order('updated_at', { ascending: false })
-          .limit(limit)
+          .not('case_id', 'is', null)
+          .neq('registration_status', 'CANCELLED')
       );
     },
 
@@ -800,6 +805,7 @@ export function createSupabaseHealthcareStore(client: SupabaseClient<Database>):
           .from('camp_registrations')
           .select('*', { count: 'exact', head: true })
           .eq('camp_id', campId)
+          .eq('registration_status', 'REGISTERED')
       );
     },
 
@@ -813,6 +819,30 @@ export function createSupabaseHealthcareStore(client: SupabaseClient<Database>):
       );
     },
 
+    async recommendPatientForCamp(input: RecommendPatientForCampInput) {
+      return oneOf(await client.from('camp_registrations').insert({
+        camp_id: input.campId,
+        case_id: input.caseId,
+        household_member_id: input.householdMemberId,
+        user_id: null,
+        registration_status: 'RECOMMENDED',
+        recommendation_source: 'DOCTOR',
+        recommendation_reason: input.recommendationReason,
+        recommended_by_doctor_id: input.recommendedByDoctorId,
+        registered_by_user_id: null,
+        registered_at: null,
+      }).select('*').single());
+    },
+
+    async registerRecommendedPatient(registrationId, registeredByUserId) {
+      const result = await client.rpc('healthcare_register_recommended_patient', {
+        p_registration_id: registrationId,
+        p_registered_by_user_id: registeredByUserId,
+      });
+      if (result.error) throw upstreamUnavailable();
+      return result.data;
+    },
+
     async registerForCamp(campId, userId) {
       // The seat and the register line are two inserts with no transaction in this
       // file. The capacity guarantee itself is not here: it is
@@ -823,7 +853,7 @@ export function createSupabaseHealthcareStore(client: SupabaseClient<Database>):
       const registration = await oneOf(
         await client
           .from('camp_registrations')
-          .insert({ camp_id: campId, user_id: userId })
+          .insert({ camp_id: campId, user_id: userId, registration_status: 'REGISTERED', registered_by_user_id: userId })
           .select('*')
           .single()
       );

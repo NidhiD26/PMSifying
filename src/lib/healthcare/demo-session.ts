@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
 import { DEMO_ASHA_USER_ID, DEMO_DOCTOR_USER_ID } from '@/lib/demo/healthcare-demo';
-import type { HealthcareRole } from '@/types/healthcare';
+import { DEMO_HEALTHCARE_COOKIE, isDemoHealthcareRole } from '@/lib/healthcare/cookies';
 
-export const DEMO_HEALTHCARE_COOKIE = 'pmsify_demo_healthcare_session';
+export { DEMO_HEALTHCARE_COOKIE } from '@/lib/healthcare/cookies';
 
 export interface DemoSession {
   role: 'ASHA' | 'DOCTOR';
@@ -32,6 +32,9 @@ export async function getHealthcareDemoSession(): Promise<DemoSession | null> {
   try {
     const cookieStore = await cookies();
     const roleValue = cookieStore.get(DEMO_HEALTHCARE_COOKIE)?.value;
+    if (!isDemoHealthcareRole(roleValue)) {
+      return null;
+    }
     if (roleValue === 'ASHA') {
       return {
         role: 'ASHA',
@@ -40,15 +43,12 @@ export async function getHealthcareDemoSession(): Promise<DemoSession | null> {
         name: DEMO_CREDENTIALS.ASHA.name,
       };
     }
-    if (roleValue === 'DOCTOR') {
-      return {
-        role: 'DOCTOR',
-        userId: DEMO_CREDENTIALS.DOCTOR.userId,
-        loginId: DEMO_CREDENTIALS.DOCTOR.id,
-        name: DEMO_CREDENTIALS.DOCTOR.name,
-      };
-    }
-    return null;
+    return {
+      role: 'DOCTOR',
+      userId: DEMO_CREDENTIALS.DOCTOR.userId,
+      loginId: DEMO_CREDENTIALS.DOCTOR.id,
+      name: DEMO_CREDENTIALS.DOCTOR.name,
+    };
   } catch {
     return null;
   }

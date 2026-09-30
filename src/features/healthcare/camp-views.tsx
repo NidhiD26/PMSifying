@@ -203,7 +203,7 @@ const CampDetailView: React.FC<{
       ) : null}
 
       {roster ? (
-        <Section title={t('camps.roster.title')}>
+        <Section title="Recommended and registered patients">
           {roster.length === 0 ? (
             <EmptyState
               icon={<HeartPulse className="h-6 w-6" />}
@@ -214,39 +214,59 @@ const CampDetailView: React.FC<{
             <TableShell caption={t('camps.roster.title')}>
               <TableHead
                 columns={[
-                  t('camps.roster.attendee'),
+                  'Patient / case',
+                  'Concern / priority',
+                  'Recommendation source',
+                  'Registration',
                   t('camps.roster.attendance'),
-                  ...(canMarkAttendance ? [t('actions.open')] : []),
+                  ...(canMarkAttendance ? ['Actions'] : []),
                 ]}
               />
               <tbody className="divide-y divide-[#E2D8D0]">
                 {roster.map((entry) => (
                   <tr key={entry.registrationId}>
                     <th scope="row" className="px-4 py-3 text-left font-medium text-[#1E1E24]">
-                      {entry.userId}
+                      {entry.memberName ?? 'Portal registrant'}
+                      {entry.ageYears !== null ? <span className="block text-xs text-[#5A5A66]">Age {entry.ageYears}</span> : null}
+                      {entry.caseNumber ? <span className="block font-mono text-xs text-[#5A5A66]">{entry.caseNumber}</span> : null}
                     </th>
+                    <td className="px-4 py-3 text-[#5A5A66]">
+                      {entry.concern ?? '—'}
+                      {entry.priority ? <span className="ml-2"><StatusBadge status={entry.priority} /></span> : null}
+                    </td>
+                    <td className="px-4 py-3 text-[#5A5A66]">
+                      {entry.recommendationSource === 'DOCTOR' ? 'Doctor recommendation' : 'Self registration'}
+                      {entry.recommendationReason ? <span className="block text-xs">{entry.recommendationReason}</span> : null}
+                    </td>
+                    <td className="px-4 py-3"><StatusBadge status={entry.registrationStatus ?? 'REGISTERED'} /></td>
                     <td className="px-4 py-3">
-                      <StatusBadge status={entry.attendanceStatus} />
+                      {entry.registrationStatus === 'RECOMMENDED' ? <span className="text-[#5A5A66]">Not yet registered</span> : <StatusBadge status={entry.attendanceStatus} />}
                     </td>
                     {canMarkAttendance ? (
                       <td className="px-4 py-3">
                         <span className="flex flex-wrap gap-2">
-                          <HealthcareAction
+                          {entry.caseId && entry.registrationStatus === 'RECOMMENDED' ? <HealthcareAction
+                            path={`/camps/${camp.id}/registrations`}
+                            body={{ registrationId: entry.registrationId }}
+                            size="sm"
+                            variant="secondary"
+                          >Register patient</HealthcareAction> : null}
+                          {entry.registrationStatus === 'REGISTERED' && entry.attendanceStatus === 'REGISTERED' ? <HealthcareAction
                             path={`/camps/${camp.id}/registrations/${entry.registrationId}/attendance`}
                             body={{ status: 'ATTENDED' }}
                             size="sm"
                             variant="secondary"
                           >
-                            {t('camps.roster.markAttended')}
-                          </HealthcareAction>
-                          <HealthcareAction
+                            Mark attendance
+                          </HealthcareAction> : null}
+                          {entry.registrationStatus === 'REGISTERED' && entry.attendanceStatus === 'REGISTERED' ? <HealthcareAction
                             path={`/camps/${camp.id}/registrations/${entry.registrationId}/attendance`}
                             body={{ status: 'ABSENT' }}
                             size="sm"
                             variant="outline"
                           >
-                            {t('camps.roster.markAbsent')}
-                          </HealthcareAction>
+                            Mark absent
+                          </HealthcareAction> : null}
                         </span>
                       </td>
                     ) : null}

@@ -26,6 +26,7 @@ import type { HealthcareStore } from '@/lib/healthcare/store';
  */
 import { getHealthcareDemoSession } from '@/lib/healthcare/demo-session';
 import { getDemoHealthcareStore, getDemoActor } from '@/lib/demo/healthcare-demo';
+import { portalForRole, type HealthcarePortal } from '@/lib/healthcare/portal-routes';
 import type { HealthcareRole } from '@/types/healthcare';
 
 export type PortalContext =
@@ -97,4 +98,21 @@ export async function getPortalContext(
     const actor = getDemoActor(session.role);
     return { status: 'ok', store, actor };
   }
+}
+
+/**
+ * Which healthcare portal the signed-in reader actually belongs to.
+ *
+ * Asked only by the blocked-portal gate, and only to answer one question: a doctor who
+ * typed a worker's path is told "this is not your workspace" — so the way out of that
+ * screen has to be the workspace they *do* have, not the one they asked for. Resolved
+ * from the same `getPortalContext` the page used, with no role filter, so it is the same
+ * session and the same answer the records behind the page would get.
+ *
+ * `null` means nobody is signed in, which is the `unauthenticated` case: there is no
+ * workspace to go back to, and the gate offers the sign-in page instead.
+ */
+export async function getSignedInPortal(): Promise<HealthcarePortal | null> {
+  const context = await getPortalContext();
+  return context.status === 'ok' ? portalForRole(context.actor.role) : null;
 }

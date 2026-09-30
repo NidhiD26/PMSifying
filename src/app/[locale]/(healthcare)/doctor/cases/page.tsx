@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { withLocale } from '@/lib/navigation/locale-path';
 import { isValidLocale } from '@/i18n/config';
 import { DEFAULT_LOCALE } from '@/types/i18n';
 import { resolvePageFor } from '@/lib/healthcare/page-guard';
 import { listCases } from '@/lib/healthcare/service';
-import { PortalGate } from '@/features/healthcare/portal-gate';
+import { HealthcarePageGate } from '@/features/healthcare/healthcare-page-gate';
 import { CaseListView } from '@/features/healthcare/case-views';
 
 /**
@@ -24,7 +23,7 @@ export default async function DoctorCasesPage({
 
   const page = await resolvePageFor('DOCTOR');
   if (page.status !== 'ok') {
-    return <PortalGate status={page.status} homeHref={withLocale('/', locale)} />;
+    return <HealthcarePageGate status={page.status} portal="DOCTOR" locale={locale} />;
   }
 
   const cases = await listCases(page.store, { actor: page.actor, query: {} });

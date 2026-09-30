@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { UserPlus, Sparkles, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Surface } from '@/components/ui/surface';
@@ -17,7 +16,6 @@ export interface RegisterWomanResult {
 }
 
 export const RegisterWomanForm: React.FC<{ locale: string }> = ({ locale }) => {
-  const t = useTranslations('healthcare');
   const router = useRouter();
 
   const [name, setName] = React.useState('');

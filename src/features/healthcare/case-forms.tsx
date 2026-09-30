@@ -2,6 +2,9 @@
 
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { callHealthcareApi, errorMessageKey, HealthcareRequestError } from './api-client';
 import {
   lines,
   optionalInteger,
@@ -387,35 +390,43 @@ export const RecommendCampForm: React.FC<{
   camps: { value: string; label: string }[];
 }> = ({ caseId, camps }) => {
   const t = useTranslations('healthcare');
+  const router = useRouter();
+  const [campId, setCampId] = React.useState('');
+  const [isPending, startTransition] = React.useTransition();
+  const [error, setError] = React.useState<string | null>(null);
+  const [recommendedCamp, setRecommendedCamp] = React.useState<string | null>(null);
+
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const campName = camps.find((camp) => camp.value === campId)?.label ?? '';
+    setError(null);
+    setRecommendedCamp(null);
+    startTransition(async () => {
+      try {
+        await callHealthcareApi(`/cases/${caseId}/recommend-camp`, { method: 'POST', body: { campId } });
+        setRecommendedCamp(campName);
+        router.refresh();
+      } catch (caught) {
+        setError(errorMessageKey(caught instanceof HealthcareRequestError ? caught.code : 'unknown'));
+      }
+    });
+  };
 
   return (
-    <RecordForm
-      title="Recommend Patient for Health Camp"
-      description="Associate this case and patient with a community health screening camp."
-      submitLabel="Recommend & Register for Camp"
-      build={() => ({
-        path: `/cases/${caseId}/recommend-camp`,
-        method: 'POST',
-        toBody: (form) => ({
-          campId: form['campId'],
-        }),
-      })}
-    >
-      {({ values, setValue, invalid }: FormRenderProps) => (
-        <>
-          <SelectField
-            label="Select Health Camp"
-            name="campId"
-            value={values['campId'] ?? ''}
-            onChange={(value) => setValue('campId', value)}
-            required
-            invalid={invalid.includes('campId')}
-            emptyLabel="Choose a Health Camp..."
-            options={camps}
-          />
-        </>
-      )}
-    </RecordForm>
+    <form onSubmit={submit} className="space-y-4">
+      <div className="space-y-1"><h3 className="text-sm font-semibold text-[#2D1B2D]">Recommend Patient for Health Camp</h3><p className="text-xs text-[#5A5A66]">Link this same case and member to a published community health camp.</p></div>
+      {error ? <p role="alert" className="text-sm text-[#C94A46]">{t(error)}</p> : null}
+      {recommendedCamp ? <p role="status" className="text-sm font-medium text-[#2E8B57]">Recommended for {recommendedCamp}</p> : null}
+      <label className="block space-y-1 text-xs font-semibold text-[#2D1B2D]" htmlFor={`camp-${caseId}`}>
+        Select Health Camp
+        <select id={`camp-${caseId}`} required value={campId} onChange={(event) => setCampId(event.target.value)} className="block w-full rounded-xl border border-[#D8CCC2] bg-white px-3 py-2 text-sm font-normal text-[#1E1E24]">
+          <option value="">Choose a Health Camp...</option>
+          {camps.map((camp) => <option key={camp.value} value={camp.value}>{camp.label}</option>)}
+        </select>
+      </label>
+      <Button type="submit" variant="secondary" disabled={isPending || !campId} aria-busy={isPending || undefined}>
+        {isPending ? t('loading') : 'Recommend for camp'}
+      </Button>
+    </form>
   );
 };
-

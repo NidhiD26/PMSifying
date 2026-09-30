@@ -60,6 +60,8 @@ export default async function SecretChatPage() {
       ) : (
         <ToastProvider>
           <div className="space-y-5">
+            {!configured && <SetupNotice />}
+
             <Surface variant="bordered" className="flex items-start gap-3 p-4">
               <ShieldCheck
                 className="mt-0.5 h-5 w-5 shrink-0 text-[#2E8B57]"
@@ -95,11 +97,14 @@ async function SetupNotice() {
   const t = await getTranslations('secretChat.setup');
 
   return (
-    <Surface variant="bordered" className="space-y-3">
+    <Surface variant="bordered" className="space-y-3 bg-[#FDFBF7]/80">
       <div className="flex items-start gap-3">
         <Terminal className="mt-0.5 h-5 w-5 shrink-0 text-[#2D1B2D]" aria-hidden="true" />
         <div className="space-y-1">
-          <h2 className="text-sm font-semibold text-[#2D1B2D]">{t('title')}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-[#2D1B2D]">{t('title')}</h2>
+            <span className="text-xs bg-[#E8837D]/20 text-[#2D1B2D] px-2 py-0.5 rounded font-medium">Demo Mode Active</span>
+          </div>
           <p className="text-sm leading-relaxed text-[#5A5A66]">{t('body')}</p>
         </div>
       </div>

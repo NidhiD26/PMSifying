@@ -178,6 +178,36 @@ describe('workflow 1: a worker refers a case to a doctor', () => {
     expect(dashboard.pendingReferrals).toBe(0);
   });
 
+  it('counts a case as under review once the doctor starts working on it', async () => {
+    // The dashboard's queue is counted from the *case* status, not the referral
+    // status, and the two are separate records. Starting a review used to move
+    // only the referral, which left the case at REFERRED for the whole of the
+    // review and the counter stuck at zero — so a doctor sitting on three cases
+    // saw an empty "under review" queue while holding all three. Accepting is
+    // deliberately not enough either: assigning a case is not the same as having
+    // started on it, and the counter should say which one has happened.
+    const referral = await service.createReferral(store(), {
+      actor: asha,
+      caseId,
+      input: { doctorId: DOCTOR, reason: 'Fever for five days' },
+    });
+    await service.acceptReferral(store(), { actor: doctor, referralId: referral.id });
+
+    const accepted = await service.getDoctorDashboard(store(), { actor: doctor });
+    expect(accepted.casesUnderReview).toBe(0);
+
+    await service.progressReferral(store(), { actor: doctor, referralId: referral.id, action: 'startReview' });
+
+    const reviewing = await service.getDoctorDashboard(store(), { actor: doctor });
+    expect(reviewing.casesUnderReview).toBe(1);
+
+    // And completing the review closes the case, so the count returns to zero
+    // rather than sticking at one.
+    await service.progressReferral(store(), { actor: doctor, referralId: referral.id, action: 'complete' });
+    const closed = await service.getDoctorDashboard(store(), { actor: doctor });
+    expect(closed.casesUnderReview).toBe(0);
+  });
+
   it('still refuses a doctor who is not on the roster, so the id is not a guessable grant', async () => {
     // The roster is the intended source of the id, not a requirement that it came from
     // one. What matters is that an id with no doctor profile behind it is refused — and
@@ -840,6 +870,7 @@ describe('the authorization matrix', () => {
       'case',
       'clinicalNotes',
       'followUps',
+      'householdAddress',
       'householdCode',
       'member',
       'observations',
@@ -866,5 +897,261 @@ describe('the authorization matrix', () => {
     });
     expect(keysOf(camp)).not.toContain('householdId');
     expect(keysOf(camp)).toContain('canManage');
+  });
+
+  it('keeps the ASHA referral, doctor review, camp recommendation, registration, and attendance on one member and case', async () => {
+    const household = await service.createHousehold(store(), {
+      actor: asha,
+      input: { name: 'Kamla Devi Household', addressLine: 'Bengaluru' },
+    });
+    const woman = await service.createMember(store(), {
+      actor: asha,
+      householdId: household.id,
+      input: { fullName: 'Kamla Devi', ageYears: 32, sex: 'FEMALE', relationToHead: 'Head' },
+    });
+    const registeredCase = await service.createCase(store(), {
+      actor: asha,
+      input: { householdId: household.id, memberId: woman.id, summary: 'Irregular periods', priority: 'ROUTINE' },
+    });
+    const registeredCaseId = registeredCase.id;
+    const registeredMemberId = woman.id;
+    await service.createObservation(store(), {
+      actor: asha,
+      caseId: registeredCaseId,
+      input: { reportedSymptoms: ['Abdominal pain', 'Fatigue'], severity: 'MODERATE', observedOn: '2030-01-10', durationDays: 5, notes: 'Symptoms reported during home visit' },
+    });
+    const referral = await service.createReferral(store(), {
+      actor: asha,
+      caseId: registeredCaseId,
+      input: { doctorId: DOCTOR, reason: 'Symptoms require clinical review' },
+    });
+    const incoming = await service.listReferrals(store(), { actor: doctor, query: {} });
+    expect(incoming.some((item) => item.id === referral.id && item.caseId === registeredCaseId)).toBe(true);
+    await service.acceptReferral(store(), { actor: doctor, referralId: referral.id });
+    const review = await service.getCaseReview(store(), { actor: doctor, caseId: registeredCaseId });
+    expect(review.case.id).toBe(registeredCaseId);
+    expect(review.case.memberId).toBe(registeredMemberId);
+    expect(review.member).toMatchObject({ id: registeredMemberId, fullName: 'Kamla Devi', ageYears: 32 });
+    expect(review.observations[0]).toMatchObject({ reportedSymptoms: ['Abdominal pain', 'Fatigue'], notes: 'Symptoms reported during home visit' });
+
+    await service.createClinicalNote(store(), { actor: doctor, caseId: registeredCaseId, input: {
+      assessment: 'Clinical assessment', observations: 'Symptoms reviewed', advice: 'Return if symptoms worsen',
+    } });
+    await service.createPrescription(store(), { actor: doctor, caseId: registeredCaseId, input: {
+      medicineName: 'Iron supplement', dosage: '1 tablet', frequency: 'Daily', duration: '30 days', instructions: 'Take with food',
+    } });
+    await service.createFollowUp(store(), { actor: doctor, caseId: registeredCaseId, input: {
+      assignedRole: 'DOCTOR', dueDate: '2030-02-15', notes: 'Review symptoms',
+    } });
+
+    const camp = await service.createCamp(store(), { actor: asha, input: {
+      title: 'Women’s health camp', description: null, campDate: '2030-03-01',
+      startTime: '09:00', endTime: '13:00', location: 'Community hall', capacity: 5,
+    } });
+    await service.changeCampStatus(store(), { actor: asha, campId: camp.id, status: 'PUBLISHED' });
+    const recommendation = await service.recommendCaseForCamp(store(), { actor: doctor, caseId: registeredCaseId, campId: camp.id });
+    expect(recommendation.caseId).toBe(registeredCaseId);
+    expect(recommendation.memberId).toBe(registeredMemberId);
+    expect(recommendation.registrationStatus).toBe('RECOMMENDED');
+
+    let [rosterEntry] = await service.listCampRegistrations(store(), { actor: asha, campId: camp.id });
+    expect(rosterEntry).toMatchObject({ caseId: registeredCaseId, memberId: registeredMemberId, memberName: 'Kamla Devi', caseNumber: review.case.caseNumber });
+    rosterEntry = await service.registerRecommendedPatient(store(), { actor: asha, campId: camp.id, registrationId: recommendation.registrationId });
+    expect(rosterEntry.registrationStatus).toBe('REGISTERED');
+    await service.markCampAttendance(store(), { actor: asha, campId: camp.id, registrationId: recommendation.registrationId, input: { status: 'ATTENDED' } });
+
+    const [finalEntry] = await service.listCampRegistrations(store(), { actor: asha, campId: camp.id });
+    expect(finalEntry).toMatchObject({ registrationId: recommendation.registrationId, caseId: registeredCaseId, memberId: registeredMemberId, caseNumber: review.case.caseNumber, memberName: 'Kamla Devi', registrationStatus: 'REGISTERED', attendanceStatus: 'ATTENDED' });
+  });
+
+  it('enforces role ownership and refuses a registration that substitutes another member', async () => {
+    const referral = await service.createReferral(store(), { actor: asha, caseId, input: { doctorId: DOCTOR, reason: 'Review' } });
+    await service.acceptReferral(store(), { actor: doctor, referralId: referral.id });
+    const camp = await service.createCamp(store(), { actor: asha, input: {
+      title: 'Women’s health camp', campDate: '2030-03-01', startTime: '09:00', endTime: '13:00', location: 'Hall', capacity: 5,
+    } });
+    await service.changeCampStatus(store(), { actor: asha, campId: camp.id, status: 'PUBLISHED' });
+    const recommendation = await service.recommendCaseForCamp(store(), { actor: doctor, caseId, campId: camp.id });
+    expect(await codeOf(() => service.recommendCaseForCamp(store(), { actor: asha, caseId, campId: camp.id }))).toBe('forbidden');
+    expect(await codeOf(() => service.createObservation(store(), { actor: doctor, caseId, input: { reportedSymptoms: ['Cramps'], severity: 'MILD', observedOn: '2030-01-02' } }))).toBe('forbidden');
+    expect(await codeOf(() => service.registerRecommendedPatient(store(), { actor: doctor, campId: camp.id, registrationId: recommendation.registrationId }))).toBe('not_found');
+    expect(await codeOf(() => store().recommendPatientForCamp({ campId: camp.id, caseId, householdMemberId: OTHER_MEMBER, recommendedByDoctorId: DOCTOR, recommendationReason: 'Wrong member' }))).toBe('not_found');
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * The referred-case count on a camp card                              *
+ * ------------------------------------------------------------------ */
+
+/**
+ * `referredCaseCount` used to be read from `health_cases.camp_id`, which is only
+ * populated for a case *created at* a camp. Nothing creates one, so the number was
+ * zero on every camp card including camps a doctor had referred cases into, and an
+ * organiser planning a camp had no way to see the demand heading their way.
+ *
+ * The relationship a recommendation actually writes is
+ * `camp_registrations.case_id`, so that is what is counted. These tests pin the
+ * three numbers apart from each other, because the failure mode being guarded
+ * against is a "fix" that simply reports the registration count under a new name.
+ */
+describe('a camp counts the cases referred to it', () => {
+  const publishCamp = async (title: string) => {
+    const camp = await service.createCamp(store(), {
+      actor: asha,
+      input: {
+        title,
+        description: null,
+        campDate: '2030-03-01',
+        startTime: '09:00',
+        endTime: '13:00',
+        location: 'Community hall',
+        capacity: 5,
+      },
+    });
+    await service.changeCampStatus(store(), { actor: asha, campId: camp.id, status: 'PUBLISHED' });
+    return camp;
+  };
+
+  /** A second case the doctor owns, which is what a recommendation requires. */
+  const openCaseForDoctor = async (summary: string) => {
+    const healthCase = await service.createCase(store(), {
+      actor: asha,
+      input: { householdId, memberId, summary, priority: 'ROUTINE' },
+    });
+    const referral = await service.createReferral(store(), {
+      actor: asha,
+      caseId: healthCase.id,
+      input: { doctorId: DOCTOR, reason: 'Specialist review' },
+    });
+    await service.acceptReferral(store(), { actor: doctor, referralId: referral.id });
+    return healthCase;
+  };
+
+  /** The camp card as an organiser sees it, which is the only viewer given the count. */
+  const cardFor = async (campId: string) => {
+    const camps = await service.listCamps(store(), { actor: asha, query: { status: 'ALL' } });
+    const card = camps.find((row) => row.id === campId);
+    if (!card) throw new Error('camp missing from the list');
+    return card;
+  };
+
+  it('counts a case once the doctor recommends it, against the same case', async () => {
+    const camp = await publishCamp('Anemia screening');
+    expect((await cardFor(camp.id)).referredCaseCount).toBe(0);
+
+    const healthCase = await openCaseForDoctor('Heavy menstrual bleeding');
+    const recommendation = await service.recommendCaseForCamp(store(), {
+      actor: doctor,
+      caseId: healthCase.id,
+      campId: camp.id,
+    });
+
+    // The recommendation is the same healthcare case, not a copy of it: the case
+    // the doctor acted on and the case on the camp's roster are one record, so a
+    // later change to the case is visible from the camp without a second link.
+    expect(recommendation.caseId).toBe(healthCase.id);
+    expect((await cardFor(camp.id)).referredCaseCount).toBe(1);
+
+    const [entry] = await service.listCampRegistrations(store(), { actor: asha, campId: camp.id });
+    expect(entry).toMatchObject({ caseId: healthCase.id, memberId, registrationStatus: 'RECOMMENDED' });
+
+    // And the case itself is untouched by the recommendation: no camp column, no
+    // status change, so the case's own workflow is not coupled to the camp's.
+    const stored = await store().getCase(healthCase.id);
+    expect(stored?.camp_id).toBeNull();
+  });
+
+  it('is a different number from the registrations and from the attendance', async () => {
+    const camp = await publishCamp('Anemia screening');
+    const healthCase = await openCaseForDoctor('Heavy menstrual bleeding');
+    const recommendation = await service.recommendCaseForCamp(store(), {
+      actor: doctor,
+      caseId: healthCase.id,
+      campId: camp.id,
+    });
+
+    // Referred, but not registered: this is the gap the count exists to show.
+    const referred = await cardFor(camp.id);
+    expect(referred.referredCaseCount).toBe(1);
+    expect(referred.registeredCount).toBe(0);
+    expect(referred.attendedCount).toBe(0);
+
+    await service.registerRecommendedPatient(store(), {
+      actor: asha,
+      campId: camp.id,
+      registrationId: recommendation.registrationId,
+    });
+
+    // Registering the woman converts the existing recommendation. It is not a
+    // second referral, so the referred count must not move.
+    const registered = await cardFor(camp.id);
+    expect(registered.registeredCount).toBe(1);
+    expect(registered.referredCaseCount).toBe(1);
+
+    await service.markCampAttendance(store(), {
+      actor: asha,
+      campId: camp.id,
+      registrationId: recommendation.registrationId,
+      input: { status: 'ATTENDED' },
+    });
+
+    // Attendance records that a person turned up. It says nothing about how many
+    // cases were referred, and must leave the referral count alone.
+    const attended = await cardFor(camp.id);
+    expect(attended.attendedCount).toBe(1);
+    expect(attended.referredCaseCount).toBe(1);
+    expect(attended.registeredCount).toBe(1);
+  });
+
+  it('stays at one when the same case is recommended twice', async () => {
+    const camp = await publishCamp('Anemia screening');
+    const healthCase = await openCaseForDoctor('Heavy menstrual bleeding');
+
+    const first = await service.recommendCaseForCamp(store(), {
+      actor: doctor,
+      caseId: healthCase.id,
+      campId: camp.id,
+    });
+    const second = await service.recommendCaseForCamp(store(), {
+      actor: doctor,
+      caseId: healthCase.id,
+      campId: camp.id,
+    });
+
+    // Idempotent at both levels: the same registration comes back, and the count
+    // does not double. A retried request on a bad connection must not inflate a
+    // number an organiser is making a staffing decision from.
+    expect(second.registrationId).toBe(first.registrationId);
+    expect((await cardFor(camp.id)).referredCaseCount).toBe(1);
+    expect(await store().listRegistrationsByCamp(camp.id)).toHaveLength(1);
+  });
+
+  it('counts each case once and keeps each camp to its own referrals', async () => {
+    const campA = await publishCamp('Anemia screening');
+    const campB = await publishCamp('PCOS awareness');
+    const first = await openCaseForDoctor('Heavy menstrual bleeding');
+    const second = await openCaseForDoctor('Irregular cycles');
+
+    await service.recommendCaseForCamp(store(), { actor: doctor, caseId: first.id, campId: campA.id });
+    await service.recommendCaseForCamp(store(), { actor: doctor, caseId: second.id, campId: campA.id });
+    // The same case can be referred to a second camp; that is a second camp's
+    // referral, not a second referral of the same case at the first.
+    await service.recommendCaseForCamp(store(), { actor: doctor, caseId: first.id, campId: campB.id });
+
+    expect((await cardFor(campA.id)).referredCaseCount).toBe(2);
+    expect((await cardFor(campB.id)).referredCaseCount).toBe(1);
+  });
+
+  it('is hidden from a member, who is not entitled to the number', async () => {
+    const camp = await publishCamp('Anemia screening');
+    const healthCase = await openCaseForDoctor('Heavy menstrual bleeding');
+    await service.recommendCaseForCamp(store(), { actor: doctor, caseId: healthCase.id, campId: camp.id });
+
+    const camps = await service.listCamps(store(), { actor: member, query: { status: 'ALL' } });
+    const card = camps.find((row) => row.id === camp.id);
+    expect(card).toBeDefined();
+    // Absent rather than zero: a member should not be able to read a camp's
+    // clinical pipeline by counting to it.
+    expect('referredCaseCount' in (card as object)).toBe(false);
   });
 });

@@ -1,8 +1,10 @@
 import { handleRequest } from '@/lib/healthcare/route';
 import { DEMO_DOCTOR_USER_ID, persistDemoRegistration } from '@/lib/demo/healthcare-demo';
+import { requireAsha } from '@/lib/healthcare/session';
 
 export async function POST(request: Request) {
   return handleRequest(request, async ({ store, actor, readBody }) => {
+    requireAsha(actor);
     const body = (await readBody()) as {
       name: string;
       age?: number;
